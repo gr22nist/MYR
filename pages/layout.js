@@ -2,6 +2,7 @@ import React from "react";
 import Head from "next/head";
 import Navbar from '../components/NavBar';
 import Footer from '../components/Footer';
+import ToastComponent from '@/components/common/ToastComponent';
 
 const Layout = ({ children }) => {
   
@@ -20,6 +21,7 @@ const Layout = ({ children }) => {
         <meta name="twitter:image" content="" />
       </Head>
       <Navbar />
+      <ToastComponent />
       <main>
         { children }
       </main>
