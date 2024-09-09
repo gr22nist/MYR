@@ -1,8 +1,11 @@
 import React from 'react';
 
 const About = () => {
+  
+  const container = `container max-w-default mx-auto`
+  
   return (
-    <section>
+    <section className={container}>
       서비스소개
     </section>
   );
