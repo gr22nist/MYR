@@ -1,29 +1,74 @@
-import React from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import React, { useState, useEffect, memo } from 'react';
+import dynamic from 'next/dynamic';
 
-const DraggableList = ({ items, onDragEnd, renderItem }) => {
+const DragDropContext = dynamic(
+  () => import('react-beautiful-dnd').then(mod => mod.DragDropContext),
+  { ssr: false }
+);
+const Droppable = dynamic(
+  () => import('react-beautiful-dnd').then(mod => mod.Droppable),
+  { ssr: false }
+);
+const Draggable = dynamic(
+  () => import('react-beautiful-dnd').then(mod => mod.Draggable),
+  { ssr: false }
+);
+
+const containerStyle = {
+  width: '100%',
+  maxWidth: '1200px', 
+  overflowX: 'hidden',
+  overflowY: 'auto',
+  border: '1px solid lightgray',
+  padding: '8px',
+  backgroundColor: '#f8f9fa'
+};
+
+const DraggableItem = memo(({ item, index, renderItem }) => {
+  const itemId = item.id || `item-${index}`;
+
+  return (
+    <Draggable draggableId={itemId} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          style={{
+            ...provided.draggableProps.style,
+            backgroundColor: snapshot.isDragging ? 'lightblue' : 'white',
+            marginBottom: '8px',
+            padding: '8px',
+            border: '1px solid #ddd',
+            borderRadius: '4px'
+          }}
+        >
+          <div {...provided.dragHandleProps}>
+            {renderItem(item)}
+          </div>
+        </div>
+      )}
+    </Draggable>
+  );
+});
+
+DraggableItem.displayName = 'DraggableItem';
+
+const DraggableList = memo(({ items, onDragEnd, renderItem }) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) return null;
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable-items">
+      <Droppable droppableId="list">
         {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef}>
+          <div {...provided.droppableProps} ref={provided.innerRef} style={containerStyle}>
             {items.map((item, index) => (
-              <Draggable key={index} draggableId={String(index)} index={index}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    style={{
-                      ...provided.draggableProps.style,
-                      boxShadow: snapshot.isDragging ? '0 4px 8px rgba(0,0,0,0.1)' : 'none',
-                      transition: 'box-shadow 0.2s ease',
-                    }}
-                  >
-                    {renderItem(item, index)}
-                  </div>
-                )}
-              </Draggable>
+              <DraggableItem key={item?.id ?? index} item={item} index={index} renderItem={renderItem} />
             ))}
             {provided.placeholder}
           </div>
@@ -31,6 +76,8 @@ const DraggableList = ({ items, onDragEnd, renderItem }) => {
       </Droppable>
     </DragDropContext>
   );
-};
+});
+
+DraggableList.displayName = 'DraggableList';
 
 export default DraggableList;
