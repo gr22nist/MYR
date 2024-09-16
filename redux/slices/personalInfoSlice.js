@@ -1,28 +1,74 @@
-// redux/slices/personalInfoSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { personalInfoDB } from '../../hooks/usePersonalInfoDB';
 
-const initialState = {
-  contact: '',
-  address: '',
-  birthdate: '',
-  email: '',
-  salary: '',
-  // 필요한 다른 필드들 추가
-};
+export const loadPersonalInfo = createAsyncThunk(
+  'personalInfo/loadPersonalInfo',
+  async () => {
+    const data = await personalInfoDB.fetchPersonalInfo();
+    return data || { items: [], isExpanded: false };
+  }
+);
+
+export const savePersonalInfo = createAsyncThunk(
+  'personalInfo/savePersonalInfo',
+  async (personalInfo, { getState }) => {
+    const { personalInfo: currentState } = getState();
+    const updatedState = {
+      ...currentState,
+      items: personalInfo.id 
+        ? currentState.items.map(item => item.id === personalInfo.id ? personalInfo : item)
+        : [...currentState.items, { ...personalInfo, id: Date.now() }]
+    };
+    await personalInfoDB.savePersonalInfoToDb(updatedState);
+    return updatedState;
+  }
+);
 
 const personalInfoSlice = createSlice({
   name: 'personalInfo',
-  initialState,
+  initialState: {
+    items: [],
+    isExpanded: false,
+    status: 'idle',
+  },
   reducers: {
-    updatePersonalInfo: (state, action) => {
-      return {
-        ...state,
-        ...action.payload, // 전달된 필드만 업데이트
-      };
+    toggleExpanded: (state) => {
+      state.isExpanded = !state.isExpanded;
     },
-    resetPersonalInfo: (state) => initialState, // 개인정보 초기화
+    addItem: (state, action) => {
+      state.items.push(action.payload);
+    },
+    updateItem: (state, action) => {
+      const index = state.items.findIndex(item => item.id === action.payload.id);
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
+    },
+    removeItem: (state, action) => {
+      state.items = state.items.filter(item => item.id !== action.payload);
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadPersonalInfo.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(loadPersonalInfo.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload.items || [];
+        state.isExpanded = action.payload.isExpanded || false;
+      })
+      .addCase(loadPersonalInfo.rejected, (state) => {
+        state.status = 'failed';
+        state.items = [];
+        state.isExpanded = false;
+      })
+      .addCase(savePersonalInfo.fulfilled, (state, action) => {
+        state.items = action.payload.items;
+      });
   },
 });
 
-export const { updatePersonalInfo, resetPersonalInfo } = personalInfoSlice.actions;
+export const { toggleExpanded, addItem, updateItem, removeItem } = personalInfoSlice.actions;
+
 export default personalInfoSlice.reducer;

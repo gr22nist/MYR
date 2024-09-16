@@ -1,29 +1,57 @@
-import React, { useState } from 'react';
-import ModalComponent from '../ModalComponent';
-import AddressInput from './AddressInput';
-import BirthDateInput from './BirthDateInput';
-import PhoneInput from './PhoneInput';
-import EmailInput from './EmailInput';
-import SalaryInput from './SalaryInput';
-import CustomFieldInput from './CustomFieldInput';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loadPersonalInfo, savePersonalInfo, toggleExpanded, removeItem } from '@/redux/slices/personalInfoSlice';
+import ModalComponent from './ModalComponent';
+import PersonalInfoItem from './PersonalInfoItem';
+import AddressInput from './inputs/AddressInput';
+import BirthDateInput from './inputs/BirthDateInput';
+import PhoneInput from './inputs/PhoneInput';
+import EmailInput from './inputs/EmailInput';
+import SalaryInput from './inputs/SalaryInput';
+import CustomFieldInput from './inputs/CustomFieldInput';
 
 const PersonalInfoForm = () => {
+  const dispatch = useDispatch();
+  const { items, isExpanded, status } = useSelector(state => state.personalInfo);
   const [activeField, setActiveField] = useState(null);
-  const [personalInfo, setPersonalInfo] = useState({
-    address: '',
-    birthDate: '',
-    phone: '',
-    email: '',
-    salary: '',
-    customField: { title: '', value: '' },
-  });
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(loadPersonalInfo());
+    }
+  }, [status, dispatch]);
+
+  if (status === 'loading') {
+    return <div>로딩 중...</div>;
+  }
+
+  if (status === 'failed') {
+    return <div>데이터를 불러오는데 실패했습니다.</div>;
+  }
+
+  const typeToKorean = {
+    address: '주소',
+    birthDate: '생년월일',
+    phone: '전화번호',
+    email: '이메일',
+    salary: '연봉',
+    custom: '자유서식'
+  };
 
   const handleFieldChange = (field, value) => {
-    setPersonalInfo((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-    setActiveField(null); // 모달 닫기
+    const newItem = { 
+      type: field, 
+      value: field === 'custom' ? value.value : value, 
+      displayType: field === 'custom' ? value.title : typeToKorean[field],
+      id: Date.now()
+    };
+    dispatch(savePersonalInfo(newItem));
+    setActiveField(null);
+  };
+
+  const handleRemoveItem = (itemId) => {
+    dispatch(removeItem(itemId));
+    dispatch(savePersonalInfo({ id: itemId })); // 삭제된 항목을 DB에도 반영
   };
 
   const fieldComponents = {
@@ -32,42 +60,46 @@ const PersonalInfoForm = () => {
     phone: <PhoneInput onChange={(value) => handleFieldChange('phone', value)} />,
     email: <EmailInput onChange={(value) => handleFieldChange('email', value)} />,
     salary: <SalaryInput onChange={(value) => handleFieldChange('salary', value)} />,
-    customField: <CustomFieldInput onChange={(title, value) => handleFieldChange('customField', { title, value })} />,
+    custom: <CustomFieldInput onChange={(title, value) => handleFieldChange('custom', { title, value })} />,
   };
 
   return (
-    <div>
-      {/* 버튼 클릭으로 모달 열기 */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setActiveField('address')}>주소 입력</button>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setActiveField('birthDate')}>생년월일 입력</button>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setActiveField('phone')}>전화번호 입력</button>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setActiveField('email')}>이메일 입력</button>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setActiveField('salary')}>연봉 입력</button>
-        <button className="p-2 bg-blue-500 text-white" onClick={() => setActiveField('customField')}>자유서식 입력</button>
-      </div>
+    <div className="personal-info">
+      <button onClick={() => dispatch(toggleExpanded())} className="expand-button">
+        {isExpanded ? '개인정보 접기' : '개인정보 펼치기'}
+      </button>
+      
+      {isExpanded && (
+        <div>
+          <div className="item-buttons flex flex-wrap gap-2 mb-4">
+            {Object.entries(typeToKorean).map(([type, label]) => (
+              <button 
+                key={type}
+                onClick={() => setActiveField(type)}
+                className="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                {label} 입력
+              </button>
+            ))}
+          </div>
+          
+          <div className="items-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {items.map((item) => (
+              <PersonalInfoItem 
+                key={item.id}
+                type={item.displayType}
+                value={item.value}
+                onRemove={() => handleRemoveItem(item.id)}
+                onEdit={() => setActiveField(item.type)}
+              />
+            ))}
+          </div>
 
-      {/* 모달 컴포넌트 */}
-      <ModalComponent isOpen={!!activeField} onClose={() => setActiveField(null)}>
-        {activeField && fieldComponents[activeField]}
-      </ModalComponent>
-
-      {/* 3개 필드씩 한 줄에 출력 */}
-      <div className="grid grid-cols-3 gap-4 mt-4">
-        {Object.entries(personalInfo).map(([key, value]) => {
-          if (key === 'customField' && value.title && value.value) {
-            return (
-              <div key={key} className="border p-2">
-                <strong>{value.title}: </strong>{value.value}
-              </div>
-            );
-          }
-          if (key === 'customField') {
-            return null; // 비어 있을 경우 렌더링하지 않음
-          }
-          return value && <div key={key} className="border p-2">{value}</div>;
-        })}
-      </div>
+          <ModalComponent isOpen={!!activeField} onClose={() => setActiveField(null)}>
+            {activeField && fieldComponents[activeField]}
+          </ModalComponent>
+        </div>
+      )}
     </div>
   );
 };
