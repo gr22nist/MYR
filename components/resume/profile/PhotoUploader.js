@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet'; // 아이콘 라이브러리에서 적절히 import 해주세요
-import { getImage, addImage, deleteImage } from '@/hooks/useIndexedDB';
+import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
+import { useIndexedDB } from '@/hooks/useIndexedDB';
 
 const PhotoUploader = () => {
   const [photo, setPhoto] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { getItem, addItem, deleteItem } = useIndexedDB();
 
   useEffect(() => {
     const loadPhoto = async () => {
       try {
-        const savedPhoto = await getImage('profilePhoto');
+        const savedPhoto = await getItem('profilePhotos', 'profilePhoto');
         if (savedPhoto) {
           setPhoto(savedPhoto);
         }
@@ -23,7 +24,7 @@ const PhotoUploader = () => {
     };
 
     loadPhoto();
-  }, []);
+  }, [getItem]);
 
   const handlePhotoUpload = async (event) => {
     const file = event.target.files[0];
@@ -36,7 +37,7 @@ const PhotoUploader = () => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const imageData = reader.result;
-        await addImage('profilePhoto', imageData);
+        await addItem('profilePhotos', 'profilePhoto', imageData, false);
         setPhoto(imageData);
         setIsLoading(false);
       };
@@ -53,7 +54,7 @@ const PhotoUploader = () => {
     setError(null);
 
     try {
-      await deleteImage('profilePhoto');
+      await deleteItem('profilePhotos', 'profilePhoto');
       setPhoto(null);
       setIsLoading(false);
     } catch (err) {
