@@ -1,37 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import InputField from '@/components/common/InputField';
 
-const CareerItem = ({ index, onCareerChange, career, onDelete, isDeletable }) => {
-  const [companyName, setCompanyName] = useState(career.companyName || '');
-  const [position, setPosition] = useState(career.position || '');
-  const [period, setPeriod] = useState(career.period || '');
-  const [tasks, setTasks] = useState(career.tasks || '');
-  const tasksRef = useRef(null);
-
-  const handleTasksChange = (value) => {
-    setTasks(value);
-    onCareerChange(index, { ...career, tasks: value });
+const CareerItem = ({ career, onCareerChange, onDelete, isDeletable }) => {
+  const handleChange = (field, value) => {
+    const updatedCareer = { ...career, [field]: value };
+    onCareerChange(updatedCareer);
   };
-
-  useEffect(() => {
-    if (tasksRef.current) {
-      tasksRef.current.style.height = 'auto';
-      tasksRef.current.style.height = `${tasksRef.current.scrollHeight}px`;
-    }
-  }, [tasks]);
 
   return (
     <div className="career-item my-4 p-4 border-b relative">
-      {/* 아이콘들을 좌측 상단에 배치 */}
       <div className="absolute top-0 left-0 flex flex-col items-center space-y-2">
-        {/* 드래그 아이콘 */}
         <div className="cursor-grab w-6 h-6 bg-gray-200 flex items-center justify-center rounded-full">
           <span className="text-gray-500">⠿</span>
         </div>
-        {/* 삭제 버튼 */}
         {isDeletable && (
           <button
-            onClick={() => onDelete(index)}
+            onClick={() => onDelete(career.id)}
             className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
           >
             X
@@ -41,40 +25,33 @@ const CareerItem = ({ index, onCareerChange, career, onDelete, isDeletable }) =>
 
       <InputField
         label="회사명"
-        value={companyName}
-        onChange={(value) => {
-          setCompanyName(value);
-          onCareerChange(index, { ...career, companyName: value });
-        }}
+        value={career.companyName}
+        onChange={(value) => handleChange('companyName', value)}
         placeholder="회사명"
         className="flex-grow"
+        spellCheck="false"
       />
       <InputField
         label="직위"
-        value={position}
-        onChange={(value) => {
-          setPosition(value);
-          onCareerChange(index, { ...career, position: value });
-        }}
+        value={career.position}
+        onChange={(value) => handleChange('position', value)}
         placeholder="직위"
+        spellCheck="false"
       />
       <InputField
         label="근무 기간"
-        value={period}
-        onChange={(value) => {
-          setPeriod(value);
-          onCareerChange(index, { ...career, period: value });
-        }}
+        value={career.period}
+        onChange={(value) => handleChange('period', value)}
         placeholder="근무 기간 (예: 2022.02-재직중)"
+        spellCheck="false"
       />
 
       <div className="my-2">
         <strong>담당 업무</strong>
         <textarea
-          ref={tasksRef}
           className="w-full text-sm p-2 border rounded overflow-hidden mt-2"
-          value={tasks}
-          onChange={(e) => handleTasksChange(e.target.value)}
+          value={career.tasks}
+          onChange={(e) => handleChange('tasks', e.target.value)}
           placeholder="담당 업무를 입력하세요. 각 항목은 새 줄에 작성하세요."
           rows="2"
           style={{ resize: 'none', minHeight: '60px' }}
