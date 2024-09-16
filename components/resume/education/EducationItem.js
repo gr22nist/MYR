@@ -32,6 +32,7 @@ const EducationItem = ({ education, onEducationChange, onDelete, isDeletable }) 
           onChange={(value) => handleChange('schoolName', value)}
           placeholder="학교명"
           className="flex-grow"
+          spellCheck="false"
         />
 
         {/* 라디오 버튼 */}
@@ -55,6 +56,7 @@ const EducationItem = ({ education, onEducationChange, onDelete, isDeletable }) 
         value={education.major}
         onChange={(value) => handleChange('major', value)}
         placeholder="전공"
+        spellCheck="false"
       />
       <InputField
         label="기간"
@@ -62,6 +64,7 @@ const EducationItem = ({ education, onEducationChange, onDelete, isDeletable }) 
         onChange={(value) => handleChange('period', value)}
         placeholder="기간 (예: 2016-2020)"
         inputStyle="w-1/2"
+        spellCheck="false"
       />
     </div>
   );

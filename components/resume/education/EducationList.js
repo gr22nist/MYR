@@ -4,22 +4,23 @@ import DraggableList from '../../common/DraggableList';
 
 const EducationList = () => {
   const [educations, setEducations] = useState([
-    { schoolName: '', major: '', period: '', graduationStatus: '재학중' }
+    { id: '1', schoolName: '', major: '', period: '', graduationStatus: '재학중' }
   ]);
 
-  const handleEducationChange = (index, updatedEducation) => {
-    const updatedEducations = educations.map((education, idx) =>
-      idx === index ? updatedEducation : education
+  const handleEducationChange = (id, updatedFields) => {
+    const updatedEducations = educations.map(education =>
+      education.id === id ? { ...education, ...updatedFields } : education
     );
-    setEducations(updatedEducations); // 여기서 onChange 대신 setEducations로 상태 업데이트
+    setEducations(updatedEducations);
   };
 
   const addEducation = () => {
-    setEducations([...educations, { schoolName: '', major: '', period: '', graduationStatus: '재학중' }]);
+    const newId = Date.now().toString();
+    setEducations([...educations, { id: newId, schoolName: '', major: '', period: '', graduationStatus: '재학중' }]);
   };
 
-  const deleteEducation = (index) => {
-    const updatedEducations = educations.filter((_, idx) => idx !== index);
+  const deleteEducation = (id) => {
+    const updatedEducations = educations.filter(education => education.id !== id);
     setEducations(updatedEducations);
   };
 
@@ -35,15 +36,14 @@ const EducationList = () => {
 
   return (
     <div className="education-list">
-      <div className="cursor-grab">⠿</div>
       <h2 className="text-xl font-bold mb-4">학력</h2>
 
       <DraggableList
         items={educations}
         onDragEnd={onDragEnd}
-        renderItem={(education, index) => (
+        renderItem={(education) => (
           <EducationItem
-            index={index}
+            key={education.id}
             education={education}
             onEducationChange={handleEducationChange}
             onDelete={deleteEducation}
