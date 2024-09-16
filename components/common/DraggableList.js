@@ -62,12 +62,15 @@ const DraggableList = memo(({ items, onDragEnd, renderItem }) => {
 
   if (!isClient) return null;
 
+  // items가 undefined거나 null이 아닌지, 그리고 배열인지 확인
+  const safeItems = Array.isArray(items) ? items : [];
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="list">
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef} style={containerStyle}>
-            {items.map((item, index) => (
+            {safeItems.map((item, index) => (
               <DraggableItem key={item?.id ?? index} item={item} index={index} renderItem={renderItem} />
             ))}
             {provided.placeholder}
