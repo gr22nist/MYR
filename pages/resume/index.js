@@ -1,94 +1,74 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import debounce from 'lodash.debounce';
-import Profile from '@/components/resume/Profile';
+import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Profile from '@/components/resume/profile/Profile';
 import PersonalInfoForm from '@/components/resume/personalInfo/PersonalInfoForm';
+import CareerList from '@/components/resume/career/CareerList';
+import EducationList from '@/components/resume/education/EducationList';
+import DraggableList from '@/components/common/DraggableList';
 import { resetResume } from '@/redux/slices/resumeSlice';
 import { showToast } from '@/redux/slices/globalSlice';
-import useMediaQuery from '@/hooks/useMediaQuery';
-import { useRouter } from 'next/router';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
 
 const Resume = () => {
-  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [profileData, setProfileData] = useState({
-    title: '',
-    paragraph: '',
-  });
   const dispatch = useDispatch();
-  const router = useRouter();
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const { addItem, getItem } = useIndexedDB('resumeDB', 'resumeStore');
+  const { deleteItem } = useIndexedDB();
 
-  // Debounced 저장 함수, useRef로 한 번만 생성
-  const debouncedSave = useRef(
-    debounce((newData) => {
-      addItem({ id: 'profile', data: newData });
-      dispatch(showToast({ message: '자동 임시 저장되었습니다.', type: 'success' }));
-    }, 1000)
-  ).current;
+  const profileRef = useRef();
+  const personalInfoRef = useRef();
+  const careerListRef = useRef();
+  const educationListRef = useRef();
 
-  // 임시저장 버튼 클릭 시 데이터 저장
-  const handleSave = () => {
-    addItem({ id: 'profile', data: profileData });
-    dispatch(showToast({ message: '임시 저장되었습니다.', type: 'success' }));
+  const [sections, setSections] = useState([
+    { id: 'career', component: <CareerList ref={careerListRef} /> },
+    { id: 'education', component: <EducationList ref={educationListRef} /> },
+  ]);
+
+  const onSectionDragEnd = (result) => {
+    if (!result.destination) return;
+    const reorderedSections = Array.from(sections);
+    const [movedSection] = reorderedSections.splice(result.source.index, 1);
+    reorderedSections.splice(result.destination.index, 0, movedSection);
+    setSections(reorderedSections);
   };
 
-  // 데이터 불러오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const savedData = await getItem('profile');
-      if (savedData) {
-        setProfileData(savedData.data);
-      }
-    };
-
-    fetchData();
-  }, [getItem]);
-
-  const handleInputChange = (field, value) => {
-    const updatedData = { ...profileData, [field]: value };
-    setProfileData(updatedData);
-    debouncedSave(updatedData); // Debounced 함수 실행
-  };
-
-  const openPreview = () => {
-    if (isMobile) {
-      setIsPreviewVisible(true);
-    } else {
-      router.push('/resume/preview');
+  const handleSave = async () => {
+    try {
+      await profileRef.current.handleSave();
+      await personalInfoRef.current.handleSave();
+      await careerListRef.current.handleSave();
+      await educationListRef.current.handleSave();
+      dispatch(showToast({ message: '임시 저장되었습니다.', type: 'success' }));
+    } catch (error) {
+      console.error('Failed to save some data:', error);
+      dispatch(showToast({ message: '저장 중 오류가 발생했습니다.', type: 'error' }));
     }
   };
 
-  const closePreview = () => setIsPreviewVisible(false);
-
-  const handleReset = () => {
+  const handleReset = async () => {
+    await deleteItem('resumeData', 'resume');
     dispatch(resetResume());
+    dispatch(showToast({ message: '서식이 초기화되었습니다.', type: 'success' }));
   };
 
-  const container = `container max-w-default mx-auto p-14 relative`;
-  
+  const container = `container max-w-default mx-auto`;
+
   return (
     <div className={container}>
-      {!isPreviewVisible && (
-        <>
-          <Profile profile={profileData} onChange={handleInputChange} />
-          <PersonalInfoForm />
-        </>
-      )}
+      <Profile ref={profileRef} />
+      <PersonalInfoForm />
+      <DraggableList
+        items={sections}
+        onDragEnd={onSectionDragEnd}
+        renderItem={(section, index) => (
+          <div className="section-container" key={section.id}>
+            {section.component}
+          </div>
+        )}
+      />
 
-      {isMobile && isPreviewVisible && (
-        <div className="fixed inset-0 bg-white z-50">
-          <button onClick={closePreview} className="p-4 text-xl">
-            뒤로가기
-          </button>
-        </div>
-      )}
-
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-100 border-t flex justify-center items-center gap-4 z-50 max-w-md mx-auto">
-        <button onClick={openPreview} className="bg-blue-500 text-white p-2 rounded">미리보기</button>
-        <button onClick={handleSave} className="bg-green-500 text-white p-2 rounded">임시 저장</button>
-        <button onClick={handleReset} className="bg-red-500 text-white p-2 rounded">서식 초기화</button>
+      <div className="fixed bottom-0 p-4">
+        <button onClick={handleSave} className="bg-green-500">임시 저장</button>
+        <button onClick={handleReset} className="bg-red-500">서식 초기화</button>
       </div>
     </div>
   );
