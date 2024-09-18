@@ -1,10 +1,14 @@
 // utils/cryptoUtils.js
 import CryptoJS from 'crypto-js';
 
+const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY;
+
 // 데이터 암호화 함수
 export const encryptData = (data) => {
   try {
-    return CryptoJS.AES.encrypt(data, process.env.NEXT_PUBLIC_SECRET_KEY).toString();
+    const jsonString = JSON.stringify(data);
+    const encrypted = CryptoJS.AES.encrypt(jsonString, SECRET_KEY).toString();
+    return encrypted;
   } catch (error) {
     console.error('Error encrypting data:', error);
     return null;
@@ -12,10 +16,10 @@ export const encryptData = (data) => {
 };
 
 // 데이터 복호화 함수
-export const decryptData = (ciphertext) => {
+export const decryptData = (encryptedData) => {
   try {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, process.env.NEXT_PUBLIC_SECRET_KEY);
-    return bytes.toString(CryptoJS.enc.Utf8);
+    const decrypted = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY).toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decrypted);
   } catch (error) {
     console.error('Error decrypting data:', error);
     return null;
