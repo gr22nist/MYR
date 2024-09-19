@@ -3,7 +3,7 @@ import InputField from '../../common/InputField';
 
 const EducationItem = ({ education, onEducationChange, onDelete, isDeletable }) => {
   const handleChange = (field, value) => {
-    onEducationChange(education.id, { [field]: value });
+    onEducationChange({ ...education, [field]: value });
   };
 
   return (
@@ -37,7 +37,7 @@ const EducationItem = ({ education, onEducationChange, onDelete, isDeletable }) 
 
         {/* 라디오 버튼 */}
         <div className="flex items-center space-x-2">
-          {['재학중', '졸업 예정', '졸업'].map((status) => (
+          {['졸업', '졸업 예정', '재학중'].map((status) => (
             <label key={status} className="text-sm">
               <input
                 type="radio"
