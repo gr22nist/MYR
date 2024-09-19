@@ -1,82 +1,41 @@
-import React, { useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import CareerItem from './CareerItem';
 import DraggableList from '../../common/DraggableList';
-import { addCareer, updateCareer, deleteCareer, reorderCareers, setCareers } from '@/redux/slices/careerSlice';
-import { useCareerDB } from '@/hooks/useCareerDB';
+import { addCareer, updateCareer, deleteCareer, loadCareers, saveCareers } from '@/redux/slices/careerSlice';
 
 const CareerList = () => {
-	const careersFromState = useSelector(state => state.careers);
-	const careers = useMemo(() => careersFromState || [], [careersFromState]);
+	const careers = useSelector(state => state.careers.items);
 	const dispatch = useDispatch();
-	const { fetchCareers, saveCareersToDb } = useCareerDB();
-	const initialLoadDone = useRef(false);
 
 	useEffect(() => {
-		const loadCareers = async () => {
-			if (!initialLoadDone.current) {
-				try {
-					let loadedCareers = await fetchCareers();
-					if (!loadedCareers || loadedCareers.length === 0) {
-						loadedCareers = [{
-							id: `career-${Date.now()}`,
-							companyName: '',
-							position: '',
-							period: '',
-							tasks: ''
-						}];
-					}
-					dispatch(setCareers(loadedCareers));
-				} catch (error) {
-					console.error('Failed to load careers:', error);
-				} finally {
-					initialLoadDone.current = true;
-				}
-			}
-		};
-
-		loadCareers();
-	}, [fetchCareers, dispatch]);
-
-	useEffect(() => {
-		if (initialLoadDone.current && careers.length > 0) {
-			const saveTimeout = setTimeout(() => {
-				saveCareersToDb(careers);
-			}, 500);
-
-			return () => clearTimeout(saveTimeout);
-		}
-	}, [careers, saveCareersToDb]);
+		dispatch(loadCareers());
+	}, [dispatch]);
 
 	const handleCareerChange = useCallback((updatedCareer) => {
 		dispatch(updateCareer(updatedCareer));
-	}, [dispatch]);
+		dispatch(saveCareers(careers.map(career => career.id === updatedCareer.id ? updatedCareer : career)));
+	}, [dispatch, careers]);
 
 	const handleAddCareer = useCallback(() => {
 		const newId = `career-${Date.now()}`;
-		dispatch(addCareer({ id: newId, companyName: '', position: '', period: '', tasks: '' }));
-	}, [dispatch]);
+		const newCareer = { id: newId, companyName: '', position: '', period: '', tasks: '' };
+		dispatch(addCareer(newCareer));
+		dispatch(saveCareers([...careers, newCareer]));
+	}, [dispatch, careers]);
 
 	const handleDeleteCareer = useCallback((id) => {
-		dispatch(deleteCareer(id));
-	}, [dispatch]);
-
-	const onDragEnd = useCallback((result) => {
-		if (!result.destination) return;
-
-		const items = Array.from(careers);
-		const [reorderedItem] = items.splice(result.source.index, 1);
-		items.splice(result.destination.index, 0, reorderedItem);
-
-		dispatch(reorderCareers(items));
-	}, [careers, dispatch]);
+		if (careers.length > 1) {
+			dispatch(deleteCareer(id));
+			dispatch(saveCareers(careers.filter(career => career.id !== id)));
+		}
+	}, [dispatch, careers]);
 
 	return (
 		<div className="career-list">
 			<h2 className="text-xl font-bold mb-4">경력</h2>
 			<DraggableList
 				items={careers}
-				onDragEnd={onDragEnd}
 				renderItem={(career) => (
 					<CareerItem
 						key={career.id}

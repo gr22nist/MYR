@@ -1,26 +1,32 @@
-import { useCallback } from 'react';
 import { useIndexedDB } from './useIndexedDB';
 
 export const useCareerDB = () => {
-  const { getEncryptedItem, addEncryptedItem } = useIndexedDB();
+  const { saveCareers, loadCareers } = useIndexedDB();
 
-  const fetchCareers = useCallback(async () => {
+  const saveCareersToDb = async (careers) => {
     try {
-      const careers = await getEncryptedItem('resumeData', 'careers');
-      return careers || [];
+      await saveCareers(careers);
+      console.log('Careers saved successfully');
     } catch (error) {
-      console.error('Failed to fetch careers:', error);
+      console.error('Error saving careers:', error);
+      throw error;
+    }
+  };
+
+  const fetchCareers = async () => {
+    try {
+      const data = await loadCareers();
+      if (data && data.length > 0) {
+        console.log('Loaded careers:', data);
+        return data;
+      }
+      console.log('No careers found in IndexedDB');
       return [];
-    }
-  }, [getEncryptedItem]);
-
-  const saveCareersToDb = useCallback(async (careers) => {
-    try {
-      await addEncryptedItem('resumeData', 'careers', careers);
     } catch (error) {
-      console.error('Failed to save careers:', error);
+      console.error('Error loading careers:', error);
+      throw error;
     }
-  }, [addEncryptedItem]);
+  };
 
-  return { fetchCareers, saveCareersToDb };
+  return { saveCareersToDb, fetchCareers };
 };
