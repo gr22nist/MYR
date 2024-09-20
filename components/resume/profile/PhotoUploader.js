@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
+import { addImage, getImage } from '@/utils/indexedDB';
 
 const PhotoUploader = () => {
   const [photo, setPhoto] = useState(null);
@@ -13,18 +14,17 @@ const PhotoUploader = () => {
   useEffect(() => {
     const loadPhoto = async () => {
       try {
-        const savedPhoto = await getItem('profilePhotos', 'profilePhoto');
+        const savedPhoto = await getImage('profilePhoto');
         if (savedPhoto) {
           setPhoto(savedPhoto);
         }
       } catch (err) {
         console.error('사진 불러오기 실패:', err);
-        setError('사진을 불러오는데 실패했습니다.');
       }
     };
 
     loadPhoto();
-  }, [getItem]);
+  }, []);
 
   const handlePhotoUpload = async (event) => {
     const file = event.target.files[0];
@@ -37,7 +37,7 @@ const PhotoUploader = () => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const imageData = reader.result;
-        await addItem('profilePhotos', 'profilePhoto', imageData, false);
+        await addImage('profilePhoto', imageData);
         setPhoto(imageData);
         setIsLoading(false);
       };
