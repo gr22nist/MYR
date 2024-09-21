@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import * as IndexedDB from '@/utils/indexedDB';
 
 export const loadCareers = createAsyncThunk(
@@ -30,6 +30,8 @@ export const saveCareers = createAsyncThunk(
     }
   }
 );
+
+export const resetCareers = createAction('careers/reset');
 
 const careerSlice = createSlice({
   name: 'careers',

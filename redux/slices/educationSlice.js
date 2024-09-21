@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import * as IndexedDB from '@/utils/indexedDB';
 
 export const loadEducations = createAsyncThunk(
@@ -30,6 +30,8 @@ export const saveEducations = createAsyncThunk(
     }
   }
 );
+
+export const resetEducations = createAction('educations/reset');
 
 const educationSlice = createSlice({
   name: 'educations',

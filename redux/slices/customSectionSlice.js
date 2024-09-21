@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import * as IndexedDB from '@/utils/indexedDB';
 
 export const loadCustomSections = createAsyncThunk(
@@ -40,6 +40,8 @@ export const removeCustomSection = createAsyncThunk(
     }
   }
 );
+
+export const resetCustomSections = createAction('customSections/reset');
 
 const customSectionSlice = createSlice({
   name: 'customSections',
