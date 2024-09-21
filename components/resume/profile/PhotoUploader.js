@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
-import { getItem, addItem, deleteItem } from '@/utils/indexedDB';  // deleteItem 추가
+import { addImage, deleteImage } from '@/utils/indexedDB';
 
-const PhotoUploader = ({ onImageChange }) => {
-  const [photo, setPhoto] = useState(null);
+const PhotoUploader = ({ onImageChange, currentImage }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    const loadPhoto = async () => {
-      try {
-        const savedPhoto = await getItem('profilePhotos', 'profilePhoto');
-        if (savedPhoto) {
-          setPhoto(savedPhoto);
-        }
-      } catch (err) {
-        console.error('사진 불러오기 실패:', err);
-      }
-    };
-
-    loadPhoto();
+  const isValidImageData = useCallback((data) => {
+    return typeof data === 'string' && data.startsWith('data:image');
   }, []);
 
   const handlePhotoUpload = async (event) => {
@@ -35,14 +24,17 @@ const PhotoUploader = ({ onImageChange }) => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const imageData = reader.result;
-        await addItem('profilePhotos', 'profilePhoto', imageData);
-        setPhoto(imageData);
+        if (isValidImageData(imageData)) {
+          await addImage('profilePhoto', imageData);
+          onImageChange(imageData);  // 부모 컴포넌트에 변경 사항 알림
+        } else {
+          throw new Error('Invalid image data');
+        }
         setIsLoading(false);
-        onImageChange(imageData);
       };
       reader.readAsDataURL(file);
     } catch (err) {
-      console.error('사진 업로드 실패:', err);
+      console.error('Photo upload error:', err);
       setError('사진 업로드에 실패했습니다.');
       setIsLoading(false);
     }
@@ -53,56 +45,77 @@ const PhotoUploader = ({ onImageChange }) => {
     setError(null);
 
     try {
-      await deleteItem('profilePhotos', 'profilePhoto');  // 'profilePhoto' 키 사용
-      setPhoto(null);
-      onImageChange(null);
+      await deleteImage('profilePhoto');
+      onImageChange(null);  // 부모 컴포넌트에 변경 사항 알림
       setIsLoading(false);
+      
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (err) {
-      console.error('사진 삭제 실패:', err);
+      console.error('Photo delete error:', err);
       setError('사진 삭제에 실패했습니다.');
       setIsLoading(false);
     }
   };
 
+  const photoWrapStyles = `
+    relative w-[110px] h-[144px] overflow-hidden cursor-pointer rounded-md
+    flex items-center justify-center
+  `;
+
+  const photoOverlayStyles = `
+    absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center
+  `;
+
+  const uploadBtnStyles = `
+    w-full h-full flex flex-col items-center justify-center bg-mono-f5 cursor-pointer
+  `;
+
   return (
     <div className="flex items-center flex-col">
       <div
-        className={`relative w-[110px] h-[144px] overflow-hidden cursor-pointer rounded-md ${
-          !photo ? 'border border-gray-300' : ''
-        }`}
-        onMouseEnter={() => photo && setIsHovered(true)}
+        className={photoWrapStyles}
+        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {photo ? (
+        {currentImage && isValidImageData(currentImage) ? (
           <div className="relative w-full h-full">
             <Image
-              src={photo}
+              src={currentImage}
               alt="Profile"
               fill
               style={{ objectFit: 'cover' }}
             />
+            {isHovered && (
+              <div className={photoOverlayStyles}>
+                <button onClick={handlePhotoDelete}>
+                  <PhotoRemove className="w-8 h-8 text-white" />
+                </button>
+              </div>
+            )}
           </div>
         ) : (
-          <label htmlFor="photo-upload" className="w-full h-full flex items-center justify-center bg-gray-100 cursor-pointer">
-            <PhotoAdd className="w-8 h-8 text-gray-400" />
+          <label htmlFor="photo-upload" className={uploadBtnStyles}>
+            {isHovered ? (
+              <PhotoAdd className="w-8 h-8 text-mono-99" />
+            ) : (
+              <p className="text-xs text-center text-mono-99 leading-normal">
+                사진 첨부가 <br />꼭 필요한 곳에만<br />사용해보세요<br /><br /> 110*140
+              </p>
+            )}
           </label>
-        )}
-        {photo && isHovered && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <button onClick={handlePhotoDelete}>
-              <PhotoRemove className="w-8 h-8 text-white" />
-            </button>
-          </div>
         )}
       </div>
       <input
         id="photo-upload"
+        ref={fileInputRef}
         type="file"
         accept="image/*"
         onChange={handlePhotoUpload}
         className="hidden"
       />
-      {isLoading && <p>사진 처리 중...</p>}
+      {isLoading && <p>로딩 중...</p>}
       {error && <p className="text-red-500">{error}</p>}
     </div>
   );

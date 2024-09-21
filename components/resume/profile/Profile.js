@@ -1,19 +1,22 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '@/redux/slices/resumeSlice';
 import PhotoUploader from './PhotoUploader';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
-import { addItem } from '@/utils/indexedDB';  // addItem 추가
+import { addItem, getImage } from '@/utils/indexedDB';
+import { profileStyles } from '@/styles/constLayout';
 
 const Profile = () => {
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.resume.profile);
   const { getEncryptedItem, addEncryptedItem } = useIndexedDB();
+  const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const storedTitle = await getEncryptedItem('profileTexts', 'profileTitle');
       const storedParagraph = await getEncryptedItem('profileTexts', 'profileParagraph');
+      const storedImage = await getImage('profilePhoto');
       
       const updatedProfile = { ...profile };
       let hasChanges = false;
@@ -24,6 +27,11 @@ const Profile = () => {
       }
       if (storedParagraph && storedParagraph !== profile.paragraph) {
         updatedProfile.paragraph = storedParagraph;
+        hasChanges = true;
+      }
+      if (storedImage && storedImage !== profile.imageUrl) {
+        updatedProfile.imageUrl = storedImage;
+        setProfileImage(storedImage);
         hasChanges = true;
       }
 
@@ -46,37 +54,27 @@ const Profile = () => {
     }
   };
 
-  const handleImageChange = (imageData) => {
-    addItem('profilePhotos', 'profilePhoto', imageData);  // 'false' 파라미터 제거
-    dispatch(updateProfile({ ...profile, imageUrl: imageData })); // Redux 상태 업데이트
-  };
-
-  const handleSave = useCallback(async () => {
-    try {
-      await addEncryptedItem('profileTexts', 'profileTitle', profile.title);
-      await addEncryptedItem('profileTexts', 'profileParagraph', profile.paragraph);
-      console.log('Profile data saved successfully');
-    } catch (error) {
-      console.error('Failed to save profile data:', error);
-    }
-  }, [addEncryptedItem, profile]);
+  const handleImageChange = useCallback((imageData) => {
+    setProfileImage(imageData);
+    dispatch(updateProfile({ ...profile, imageUrl: imageData }));
+  }, [dispatch, profile]);
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="relative w-full flex flex-row justify-between items-center gap-4">
+      <div className={profileStyles.profileTop}>
         <textarea
-          className="p-4 leading-normal bg-mono-f8 text-4xl text-mono-11 font-black h-36 resize-none border-0 focus:border-1 focus:border-mono-cc focus:ring-0 focus:outline-none rounded-lg overflow-hidden flex-grow"
+          className={`${profileStyles.textAreaStyle} text-4xl font-black h-36 flex-grow`}
           rows={2}
           value={profile.title || ''}
           onChange={(e) => handleChange('title', e.target.value)}
-          placeholder="간단한 제목을 쓰거나 인사를 해주세요. 두 줄로 쓰는 것이 가장 보기에 좋습니다."
+          placeholder={`간단한 제목을 쓰거나 인사를 해주세요.\n두 줄로 쓰는 것이 가장 보기에 좋습니다.`}
           spellCheck="false"
         />
-        <PhotoUploader onImageChange={handleImageChange} />
+        <PhotoUploader onImageChange={handleImageChange} currentImage={profileImage} />
       </div>
       <textarea
-        className="p-4 leading-normal bg-mono-f8 text-mono-11 font-normal resize-none border-0 focus:border-1 focus:border-mono-cc focus:ring-0 focus:outline-none rounded-lg overflow-hidden mt-4"
-        rows={2}
+        className={`${profileStyles.textAreaStyle} mt-4 font-bold`}
+        rows={3}
         value={profile.paragraph || ''}
         onChange={(e) => handleChange('paragraph', e.target.value)}
         placeholder="이력서는 읽은 지 10초 이내에 첫인상이 결정된다고 합니다."
