@@ -7,8 +7,7 @@
   --background-rgb: 255, 255, 255;
   --drag-background-color: #cccccc;
   --drag-text-color: #000000;
-  --navbar-height: 59px; /* 네비게이션 바 높이를 전역 변수로 설정 */
-  
+  /* --navbar-height: 59px; /* 네비게이션 바 높이를 전역 변수로 설정 */
 }
 
 @font-face {
@@ -20,21 +19,19 @@
   font-display: swap;
 }
 
-body {
-  font-family: 'NanumSquareNeo', sans-serif;
-}
+/* body의 font-family 설정 제거 */
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: NanumSquareNeo, sans-serif;
+  /* font-family 설정 제거 */
 }
 
 @layer utilities {
