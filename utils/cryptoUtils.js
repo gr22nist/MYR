@@ -18,8 +18,18 @@ export const encryptData = (data) => {
 // 데이터 복호화 함수
 export const decryptData = (encryptedData) => {
   try {
-    const decrypted = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY).toString(CryptoJS.enc.Utf8);
-    return JSON.parse(decrypted);
+    if (typeof encryptedData !== 'string') {
+      return encryptedData;
+    }
+    if (encryptedData.startsWith('data:image')) {
+      return encryptedData;
+    }
+    const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
+    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+    if (!decryptedData) {
+      return null;
+    }
+    return JSON.parse(decryptedData);
   } catch (error) {
     console.error('Error decrypting data:', error);
     return null;
