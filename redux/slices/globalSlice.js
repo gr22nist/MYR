@@ -31,7 +31,6 @@ const globalSlice = createSlice({
       state.toastVisible = true;
     },
     hideToast: (state) => {
-      state.toastMessage = '';
       state.toastVisible = false;
     },
     setUser: (state, action) => {

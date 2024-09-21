@@ -1,27 +1,32 @@
 // redux/store.js
 import { configureStore } from '@reduxjs/toolkit';
+import customSectionReducer from './slices/customSectionSlice';
 import resumeReducer from './slices/resumeSlice';
 import careerReducer from './slices/careerSlice';
+import educationReducer from './slices/educationSlice';
 import coverLetterReducer from './slices/coverLetterSlice';
 import experienceReducer from './slices/experienceSlice';
 import globalReducer from './slices/globalSlice';
-import personalInfoReducer from './slices/personalInfoSlice';
+import userInfoReducer from './slices/userInfoSlice';
+import { useCareerDB } from '../hooks/useCareerDB';
 
 const store = configureStore({
   reducer: {
+    customSections: customSectionReducer,
     resume: resumeReducer,
     careers: careerReducer,
+    educations: educationReducer,
     coverLetter: coverLetterReducer,
     experience: experienceReducer,
     global: globalReducer,
-    personalInfo: personalInfoReducer,
+    userInfo: userInfoReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: {
-      // 필요한 경우 특정 액션이나 경로를 무시하도록 설정할 수 있습니다.
-      // ignoredActions: ['some/action'],
-      // ignoredPaths: ['some.path'],
+    thunk: {
+      extraArgument: {
+        useCareerDB,
+      },
     },
   }),
 });
