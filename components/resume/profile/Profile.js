@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '@/redux/slices/resumeSlice';
 import PhotoUploader from './PhotoUploader';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
+import { addItem } from '@/utils/indexedDB';  // addItem 추가
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ const Profile = () => {
   };
 
   const handleImageChange = (imageData) => {
-    addItem('profilePhotos', 'profilePhoto', imageData, false); // 이미지 저장 시 암호화 안 함
+    addItem('profilePhotos', 'profilePhoto', imageData);  // 'false' 파라미터 제거
     dispatch(updateProfile({ ...profile, imageUrl: imageData })); // Redux 상태 업데이트
   };
 

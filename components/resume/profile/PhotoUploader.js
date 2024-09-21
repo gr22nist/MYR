@@ -1,20 +1,18 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
-import { useIndexedDB } from '@/hooks/useIndexedDB';
-import { addImage, getImage } from '@/utils/indexedDB';
+import { getItem, addItem, deleteItem } from '@/utils/indexedDB';  // deleteItem 추가
 
-const PhotoUploader = () => {
+const PhotoUploader = ({ onImageChange }) => {
   const [photo, setPhoto] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { getItem, addItem, deleteItem } = useIndexedDB();
 
   useEffect(() => {
     const loadPhoto = async () => {
       try {
-        const savedPhoto = await getImage('profilePhoto');
+        const savedPhoto = await getItem('profilePhotos', 'profilePhoto');
         if (savedPhoto) {
           setPhoto(savedPhoto);
         }
@@ -37,9 +35,10 @@ const PhotoUploader = () => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const imageData = reader.result;
-        await addImage('profilePhoto', imageData);
+        await addItem('profilePhotos', 'profilePhoto', imageData);
         setPhoto(imageData);
         setIsLoading(false);
+        onImageChange(imageData);
       };
       reader.readAsDataURL(file);
     } catch (err) {
@@ -54,8 +53,9 @@ const PhotoUploader = () => {
     setError(null);
 
     try {
-      await deleteItem('profilePhotos', 'profilePhoto');
+      await deleteItem('profilePhotos', 'profilePhoto');  // 'profilePhoto' 키 사용
       setPhoto(null);
+      onImageChange(null);
       setIsLoading(false);
     } catch (err) {
       console.error('사진 삭제 실패:', err);
