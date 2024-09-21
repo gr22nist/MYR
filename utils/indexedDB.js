@@ -5,19 +5,15 @@ const db = new Dexie('ResumeDB');
 
 const initializeDB = async () => {
   try {
-    console.log('Initializing database...');
-    db.version(13).stores({  // 버전을 13으로 올립니다.
+    db.version(13).stores({
       careers: '++id',
       educations: '++id',
-      userInfo: 'key',  // 'key'를 primary key로 사용합니다.
+      userInfo: 'key',
       profilePhotos: 'key',
       profileTexts: 'key',
       resumeData: 'key'
     });
-    console.log('Database schema defined.');
     await db.open();
-    console.log('Database opened successfully.');
-    console.log('Available stores:', db.tables.map(table => table.name));
   } catch (error) {
     console.error('Database initialization failed:', error);
   }
@@ -56,7 +52,6 @@ export const loaduserInfo = async () => {
 export const addItem = async (storeName, key, data, encrypt = true) => {
   try {
     if (!db.isOpen()) {
-      console.log('Database is not open. Attempting to open...');
       await db.open();
     }
     if (!db[storeName]) {
@@ -64,13 +59,7 @@ export const addItem = async (storeName, key, data, encrypt = true) => {
     }
     const value = encrypt ? encryptData(data) : data;
     await db[storeName].put({ key, value });
-    console.log(`Item added to ${storeName}:`, { key, value });
-    
-    // 저장 후 즉시 데이터를 다시 로드하여 확인
-    const savedItem = await db[storeName].get(key);
-    console.log(`Saved item retrieved from ${storeName}:`, savedItem);
-    
-    return savedItem ? savedItem.value : null;
+    return value;
   } catch (error) {
     console.error(`Error in addItem (${storeName}, ${key}):`, error);
     throw error;
@@ -80,22 +69,20 @@ export const addItem = async (storeName, key, data, encrypt = true) => {
 export const getItem = async (storeName, key, decrypt = true) => {
   try {
     if (!db.isOpen()) {
-      console.log('Database is not open. Attempting to open...');
       await db.open();
     }
     if (!db[storeName]) {
       throw new Error(`Object store "${storeName}" not found.`);
     }
     const item = await db[storeName].get(key);
-    console.log(`Raw item retrieved from ${storeName}:`, item);
     if (item && item.value) {
       if (decrypt) {
-        const decryptedData = decryptData(item.value);
-        if (decryptedData === null) {
+        try {
+          return decryptData(item.value);
+        } catch (decryptError) {
           console.warn(`Failed to decrypt data for key "${key}" in store "${storeName}". Returning raw value.`);
           return item.value;
         }
-        return decryptedData;
       }
       return item.value;
     }
@@ -109,7 +96,6 @@ export const getItem = async (storeName, key, decrypt = true) => {
 export const deleteItem = async (storeName, key) => {
   try {
     await db[storeName].delete(key);
-    console.log('Item deleted from the store', key);
   } catch (error) {
     console.error('Error deleting item from the store', error);
     throw error;
@@ -159,4 +145,24 @@ export const saveCustomSections = async (sections) => {
 
 export const loadCustomSections = async () => {
   return db.customSections.toArray();
+};
+
+export const clearDatabase = async () => {
+  try {
+    if (!db.isOpen()) {
+      await db.open();
+    }
+    await db.careers.clear();
+    await db.educations.clear();
+    await db.userInfo.clear();
+    await db.profilePhotos.clear();
+    await db.profileTexts.clear();
+    await db.resumeData.clear();
+    if (db.customSections) {
+      await db.customSections.clear();
+    }
+  } catch (error) {
+    console.error('데이터베이스 초기화 중 오류 발생:', error);
+    throw error;
+  }
 };
