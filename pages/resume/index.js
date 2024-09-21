@@ -1,74 +1,34 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import Profile from '@/components/resume/profile/Profile';
-import PersonalInfoForm from '@/components/resume/personalInfo/PersonalInfoForm';
-import CareerList from '@/components/resume/career/CareerList';
-import EducationList from '@/components/resume/education/EducationList';
+import UserInfoForm from '@/components/resume/userInfo/UserInfoForm';
 import DraggableList from '@/components/common/DraggableList';
-import { resetResume } from '@/redux/slices/resumeSlice';
-import { showToast } from '@/redux/slices/globalSlice';
-import { useIndexedDB } from '@/hooks/useIndexedDB';
+import { useSections } from '@/hooks/useSections';
+import { useResumeActions } from '@/hooks/useResumeActions';
+import { resumeStyles } from '@/styles/constLayout';
 
 const Resume = () => {
-  const dispatch = useDispatch();
-  const { deleteItem } = useIndexedDB();
+  const { sections, onSectionDragEnd } = useSections();
+  const { handleReset, handlePreview } = useResumeActions();
 
-  const profileRef = useRef();
-  const personalInfoRef = useRef();
-  const careerListRef = useRef();
-  const educationListRef = useRef();
-
-  const [sections, setSections] = useState([
-    { id: 'career', component: <CareerList ref={careerListRef} /> },
-    { id: 'education', component: <EducationList ref={educationListRef} /> },
-  ]);
-
-  const onSectionDragEnd = (result) => {
-    if (!result.destination) return;
-    const reorderedSections = Array.from(sections);
-    const [movedSection] = reorderedSections.splice(result.source.index, 1);
-    reorderedSections.splice(result.destination.index, 0, movedSection);
-    setSections(reorderedSections);
-  };
-
-  const handleSave = async () => {
-    try {
-      await profileRef.current.handleSave();
-      await personalInfoRef.current.handleSave();
-      await careerListRef.current.handleSave();
-      await educationListRef.current.handleSave();
-      dispatch(showToast({ message: '임시 저장되었습니다.', type: 'success' }));
-    } catch (error) {
-      console.error('Failed to save some data:', error);
-      dispatch(showToast({ message: '저장 중 오류가 발생했습니다.', type: 'error' }));
-    }
-  };
-
-  const handleReset = async () => {
-    await deleteItem('resumeData', 'resume');
-    dispatch(resetResume());
-    dispatch(showToast({ message: '서식이 초기화되었습니다.', type: 'success' }));
-  };
-
-  const container = `container max-w-default mx-auto`;
-
+  const container = `container max-w-myr mx-auto px-12 py-16 flex flex-col justify-center gap-8 bg-white`
   return (
+    // <div className={resumeStyles.container}>
     <div className={container}>
-      <Profile ref={profileRef} />
-      <PersonalInfoForm />
+      <Profile />
+      <UserInfoForm />
       <DraggableList
         items={sections}
         onDragEnd={onSectionDragEnd}
-        renderItem={(section, index) => (
+        renderItem={(section) => (
           <div className="section-container" key={section.id}>
             {section.component}
           </div>
         )}
       />
 
-      <div className="fixed bottom-0 p-4">
-        <button onClick={handleSave} className="bg-green-500">임시 저장</button>
-        <button onClick={handleReset} className="bg-red-500">서식 초기화</button>
+      <div className={resumeStyles.buttonContainer}>
+        <button onClick={handlePreview} className={resumeStyles.previewButton}>미리보기</button>
+        <button onClick={handleReset} className={resumeStyles.resetButton}>서식 초기화</button>
       </div>
     </div>
   );
