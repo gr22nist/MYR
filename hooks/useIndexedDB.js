@@ -1,12 +1,13 @@
-import { useMemo } from 'react';
 import * as IndexedDB from '@/utils/indexedDB';
 
 export const useIndexedDB = () => {
-  return useMemo(() => ({
+  return {
     saveCareers: IndexedDB.saveCareers,
     loadCareers: IndexedDB.loadCareers,
-    savePersonalInfo: IndexedDB.savePersonalInfo,
-    loadPersonalInfo: IndexedDB.loadPersonalInfo,
+    saveEducations: IndexedDB.saveEducations,
+    loadEducations: IndexedDB.loadEducations,
+    saveuserInfo: IndexedDB.saveuserInfo,
+    loaduserInfo: IndexedDB.loaduserInfo,
     addItem: IndexedDB.addItem,
     getItem: IndexedDB.getItem,
     deleteItem: IndexedDB.deleteItem,
@@ -17,5 +18,5 @@ export const useIndexedDB = () => {
     getEncryptedText: IndexedDB.getEncryptedText,
     getEncryptedItem: IndexedDB.getEncryptedItem,
     addEncryptedItem: IndexedDB.addEncryptedItem
-  }), []);
+  };
 };
