@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
 import { commonStyles } from '@/styles/constLayout';
+import { CSSTransition } from 'react-transition-group';
 
 const CareerItem = ({ career, onCareerChange, onDelete, isDeletable, dragHandleProps, className }) => {
+  const nodeRef = useRef(null);
+
   const handleChange = (field, value) => {
     onCareerChange({ ...career, [field]: value });
   };
@@ -20,53 +23,63 @@ const CareerItem = ({ career, onCareerChange, onDelete, isDeletable, dragHandleP
   };
 
   return (
-    <div className={`career-item my-4 border-b relative ${className}`}>
-      <ActionButtons 
-        onDelete={() => onDelete(career.id)} 
-        isDeletable={isDeletable} 
-        dragHandleProps={dragHandleProps} 
-      />
+    <CSSTransition
+      nodeRef={nodeRef}
+      in={true}
+      timeout={300}
+      classNames="fade"
+      unmountOnExit
+    >
+      <div ref={nodeRef} className={`career-item my-4 relative flex flex-col gap-2 ${className}`}>
+        <ActionButtons 
+          onDelete={() => onDelete(career.id)} 
+          isDeletable={isDeletable} 
+          dragHandleProps={dragHandleProps} 
+        />
 
-      <div className="flex items-center space-x-4 mb-2">
-        <div className="flex-grow">
+        <div className="flex items-center gap-4">
+          <div className="flex-grow max-w-[320px]">
+            <FloatingLabelInput
+              label="회사명"
+              value={career.companyName}
+              onChange={(e) => handleChange('companyName', e.target.value)}
+              placeholder="회사명"
+              spellCheck="false"
+              maxLength="100"
+              className=""
+              isTitle={true}
+            />
+          </div>
+          <DateRangeInput
+            onChange={handleDateChange}
+            initialStartDate={career.startDate || ''}
+            initialEndDate={career.endDate || ''}
+            initialIsCurrent={career.isCurrent || false}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
           <FloatingLabelInput
-            label="회사명"
-            value={career.companyName}
-            onChange={(e) => handleChange('companyName', e.target.value)}
-            placeholder="회사명"
+            label="직위"
+            value={career.position}
+            onChange={(e) => handleChange('position', e.target.value)}
+            placeholder="팀명/직위/포지션을 써주세요"
             spellCheck="false"
             maxLength="100"
             className=""
-            isTitle={true}
+          />
+
+          <FloatingLabelTextarea
+            label="담당업무"
+            value={career.tasks}
+            onChange={(e) => handleChange('tasks', e.target.value)}
+            placeholder={tasksPlaceholder}
+            spellCheck="false"
+            className={`overflow-hidden resize-none px-4 ${commonStyles.placeholderStyle}`}
           />
         </div>
-        <DateRangeInput
-          onChange={handleDateChange}
-          initialStartDate={career.startDate || ''}
-          initialEndDate={career.endDate || ''}
-          initialIsCurrent={career.isCurrent || false}
-        />
       </div>
-
-      <FloatingLabelInput
-        label="직위"
-        value={career.position}
-        onChange={(e) => handleChange('position', e.target.value)}
-        placeholder="팀명/직위/포지션을 써주세요"
-        spellCheck="false"
-        maxLength="100"
-        className=""
-      />
-
-      <FloatingLabelTextarea
-        label="담당업무"
-        value={career.tasks}
-        onChange={(e) => handleChange('tasks', e.target.value)}
-        placeholder={tasksPlaceholder}
-        spellCheck="false"
-        className={`overflow-hidden resize-none px-4 ${commonStyles.placeholderStyle}`}
-      />
-    </div>
+    </CSSTransition>
   );
 };
 
