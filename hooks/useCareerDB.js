@@ -16,12 +16,8 @@ export const useCareerDB = () => {
   const fetchCareers = async () => {
     try {
       const data = await loadCareers();
-      if (data && data.length > 0) {
-        console.log('Loaded careers:', data);
-        return data;
-      }
-      console.log('No careers found in IndexedDB');
-      return [];
+      console.log('Loaded careers:', data);
+      return data.length > 0 ? data : [];
     } catch (error) {
       console.error('Error loading careers:', error);
       throw error;

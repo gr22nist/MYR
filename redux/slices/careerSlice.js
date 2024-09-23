@@ -1,48 +1,37 @@
-import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import * as IndexedDB from '@/utils/indexedDB';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDb } from '@/utils/indexedDB';
+
+const initialState = {
+  items: [],
+  status: 'idle',
+  error: null,
+};
 
 export const loadCareers = createAsyncThunk(
   'careers/loadCareers',
-  async (_, { rejectWithValue }) => {
-    try {
-      const careers = await IndexedDB.loadCareers();
-      return careers.length > 0 ? careers : [{
-        id: `career-${Date.now()}`,
-        companyName: '',
-        position: '',
-        period: '',
-        tasks: ''
-      }];
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
+  async () => {
+    const careers = await loadCareersFromDB();
+    return careers;
   }
 );
 
 export const saveCareers = createAsyncThunk(
   'careers/saveCareers',
-  async (careers, { rejectWithValue }) => {
+  async (careers, { dispatch }) => {
     try {
-      await IndexedDB.saveCareers(careers);
+      await saveCareersToDb(careers);
+      await dispatch(loadCareers());
       return careers;
     } catch (error) {
-      return rejectWithValue(error.message);
+      throw error;
     }
   }
 );
 
-export const resetCareers = createAction('careers/reset');
-
 const careerSlice = createSlice({
   name: 'careers',
   initialState: {
-    items: [{
-      id: `career-${Date.now()}`,
-      companyName: '',
-      position: '',
-      period: '',
-      tasks: ''
-    }],
+    items: [],
     status: 'idle',
     error: null,
   },
@@ -58,15 +47,6 @@ const careerSlice = createSlice({
     },
     deleteCareer: (state, action) => {
       state.items = state.items.filter(career => career.id !== action.payload);
-      if (state.items.length === 0) {
-        state.items.push({
-          id: `career-${Date.now()}`,
-          companyName: '',
-          position: '',
-          period: '',
-          tasks: ''
-        });
-      }
     },
     reorderCareers: (state, action) => {
       state.items = action.payload;
@@ -83,7 +63,7 @@ const careerSlice = createSlice({
       })
       .addCase(loadCareers.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload;
+        state.error = action.error.message;
       })
       .addCase(saveCareers.fulfilled, (state, action) => {
         state.items = action.payload;

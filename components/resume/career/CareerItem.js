@@ -1,64 +1,80 @@
 import React from 'react';
-import InputField from '@/components/common/InputField';
+import DateRangeInput from '@/components/common/DateRangeInput';
+import FloatingLabelInput from '@/components/common/FloatingLabelInput';
+import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
+import ActionButtons from '@/components/common/actions/ActionBtns';
+import { commonStyles } from '@/styles/constLayout';
 
-const CareerItem = ({ career, onCareerChange, onDelete, isDeletable }) => {
+const CareerItem = ({ career, onCareerChange, onDelete, isDeletable, dragHandleProps, className }) => {
   const handleChange = (field, value) => {
-    const updatedCareer = { ...career, [field]: value };
-    onCareerChange(updatedCareer);
+    onCareerChange({ ...career, [field]: value });
+  };
+
+  const handleDateChange = ({ startDate, endDate, isCurrent }) => {
+    onCareerChange({
+      ...career,
+      startDate,
+      endDate: isCurrent ? '현재' : endDate,
+      isCurrent
+    });
   };
 
   return (
-    <div className="career-item my-4 p-4 border-b relative">
-      <div className="absolute top-0 left-0 flex flex-col items-center space-y-2">
-        <div className="cursor-grab w-6 h-6 bg-gray-200 flex items-center justify-center rounded-full">
-          <span className="text-gray-500">⠿</span>
+    <div className={`career-item my-4 border-b relative ${className}`}>
+      <ActionButtons 
+        onDelete={() => onDelete(career.id)} 
+        isDeletable={isDeletable} 
+        dragHandleProps={dragHandleProps} 
+      />
+
+      <div className="flex items-center space-x-4 mb-2">
+        <div className="flex-grow">
+          <FloatingLabelInput
+            label="회사명"
+            value={career.companyName}
+            onChange={(e) => handleChange('companyName', e.target.value)}
+            placeholder="회사명"
+            spellCheck="false"
+            maxLength="100"
+            className=""
+            isTitle={true}
+          />
         </div>
-        {isDeletable && (
-          <button
-            onClick={() => onDelete(career.id)}
-            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
-          >
-            X
-          </button>
-        )}
-      </div>
-
-      <InputField
-        label="회사명"
-        value={career.companyName}
-        onChange={(value) => handleChange('companyName', value)}
-        placeholder="회사명"
-        className="flex-grow"
-        spellCheck="false"
-      />
-      <InputField
-        label="직위"
-        value={career.position}
-        onChange={(value) => handleChange('position', value)}
-        placeholder="직위"
-        spellCheck="false"
-      />
-      <InputField
-        label="근무 기간"
-        value={career.period}
-        onChange={(value) => handleChange('period', value)}
-        placeholder="근무 기간 (예: 2022.02-재직중)"
-        spellCheck="false"
-      />
-
-      <div className="my-2">
-        <strong>담당 업무</strong>
-        <textarea
-          className="w-full text-sm p-2 border rounded overflow-hidden mt-2"
-          value={career.tasks}
-          onChange={(e) => handleChange('tasks', e.target.value)}
-          placeholder="담당 업무를 입력하세요. 각 항목은 새 줄에 작성하세요."
-          rows="2"
-          style={{ resize: 'none', minHeight: '60px' }}
+        <DateRangeInput
+          onChange={handleDateChange}
+          initialStartDate={career.startDate || ''}
+          initialEndDate={career.endDate || ''}
+          initialIsCurrent={career.isCurrent || false}
         />
       </div>
+
+      <FloatingLabelInput
+        label="직위"
+        value={career.position}
+        onChange={(e) => handleChange('position', e.target.value)}
+        placeholder="팀명/직위/포지션을 써주세요"
+        spellCheck="false"
+        maxLength="100"
+        className=""
+      />
+
+      <FloatingLabelTextarea
+        label="담당업무"
+        value={career.tasks}
+        onChange={(e) => handleChange('tasks', e.target.value)}
+        placeholder={tasksPlaceholder}
+        spellCheck="false"
+        className={`overflow-hidden resize-none px-4 ${commonStyles.placeholderStyle}`}
+      />
     </div>
   );
 };
 
-export default CareerItem;
+const tasksPlaceholder = `
+· 담당 업무에 대해 간단한 서술형 문장으로 작성하시는 것을 추천드립니다.
+· 프로젝트 단위의 업무가 흔한 직군이라면 대표 프로젝트에 대한 소개를 추가 해주세요.
+· 업무의 성과나 숫자로 나타낼 수 있는 지표가 있다면 활용해보세요.
+· 특별한 프로그램이나 사용기술이 있다면 경력기술서 열람에 도움이 됩니다.
+`.trim();
+
+export default React.memo(CareerItem);

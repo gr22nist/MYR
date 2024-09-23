@@ -1,16 +1,20 @@
 import React, { useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import CareerItem from './CareerItem';
-import DraggableList from '../../common/DraggableList';
+// import DraggableList from '../../common/DraggableList';
 import { addCareer, updateCareer, deleteCareer, loadCareers, saveCareers } from '@/redux/slices/careerSlice';
+import { AddBtn } from '@/components/icons/IconSet';
 
 const CareerList = () => {
 	const careers = useSelector(state => state.careers.items);
+	const status = useSelector(state => state.careers.status);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		dispatch(loadCareers());
-	}, [dispatch]);
+		if (status === 'idle') {
+			dispatch(loadCareers());
+		}
+	}, [dispatch, status]);
 
 	const handleCareerChange = useCallback((updatedCareer) => {
 		dispatch(updateCareer(updatedCareer));
@@ -19,42 +23,59 @@ const CareerList = () => {
 
 	const handleAddCareer = useCallback(() => {
 		const newId = `career-${Date.now()}`;
-		const newCareer = { id: newId, companyName: '', position: '', period: '', tasks: '' };
+		const newCareer = { 
+			id: newId, 
+			companyName: '', 
+			position: '', 
+			startDate: '', 
+			endDate: '', 
+			isCurrent: false, 
+			tasks: '' 
+		};
 		dispatch(addCareer(newCareer));
 		dispatch(saveCareers([...careers, newCareer]));
 	}, [dispatch, careers]);
 
 	const handleDeleteCareer = useCallback((id) => {
+		console.log('Deleting career with id:', id); // 디버깅을 위한 로그
 		if (careers.length > 1) {
 			dispatch(deleteCareer(id));
-			dispatch(saveCareers(careers.filter(career => career.id !== id)));
+			const updatedCareers = careers.filter(career => career.id !== id);
+			console.log('Updated careers after deletion:', updatedCareers); // 디버깅을 위한 로그
+			dispatch(saveCareers(updatedCareers));
+		} else {
+			console.log('Cannot delete the last career item'); // 디버깅을 위한 로그
 		}
 	}, [dispatch, careers]);
 
 	return (
-		<div className="career-list">
-			<h2 className="text-xl font-bold mb-4">경력</h2>
-			<DraggableList
-				items={careers}
-				renderItem={(career) => (
-					<CareerItem
-						key={career.id}
-						career={career}
-						onCareerChange={handleCareerChange}
-						onDelete={() => handleDeleteCareer(career.id)}
-						isDeletable={careers.length > 1}
-					/>
-				)}
-			/>
-			<div className="mt-4 flex justify-center">
+		<section className="career-list">
+			<div className="flex justify-between items-center mb-4">
+				<h2 className="text-xl font-extrabold">경력</h2>
 				<button
-					className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center"
+					className="p-1 rounded-full"
 					onClick={handleAddCareer}
 				>
-					+
+					<AddBtn className="fill-mono-99 hover:fill-secondary-dark hover:scale-110 duration-300" />
 				</button>
 			</div>
-		</div>
+			{careers.length > 0 ? (
+				<div>
+					{careers.map((career) => (
+						<CareerItem
+							key={career.id}
+							career={career}
+							onCareerChange={handleCareerChange}
+							onDelete={handleDeleteCareer}
+							isDeletable={careers.length > 1}
+							className=""
+						/>
+					))}
+				</div>
+			) : (
+				<div>No careers added yet. Click the add button to create a new career item.</div>
+			)}
+		</section>
 	);
 };
 
