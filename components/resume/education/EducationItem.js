@@ -1,73 +1,92 @@
-import React from 'react';
-import InputField from '../../common/InputField';
+import React, { useRef } from 'react';
+import DateRangeInput from '@/components/common/DateRangeInput';
+import FloatingLabelInput from '@/components/common/FloatingLabelInput';
+import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
+import ActionButtons from '@/components/common/actions/ActionBtns';
+import { CSSTransition } from 'react-transition-group';
 
-const EducationItem = ({ education, onEducationChange, onDelete, isDeletable }) => {
+const EducationItem = ({ education, onEducationChange, onDelete, isDeletable, dragHandleProps, className }) => {
+  const nodeRef = useRef(null);
+
   const handleChange = (field, value) => {
     onEducationChange({ ...education, [field]: value });
   };
 
-  return (
-    <div className="education-item my-4 p-4 border-b relative">
-      {/* 아이콘들을 좌측 상단에 배치 */}
-      <div className="absolute top-0 left-0 flex flex-col items-center space-y-2">
-        {/* 드래그 아이콘 */}
-        <div className="cursor-grab w-6 h-6 bg-gray-200 flex items-center justify-center rounded-full">
-          <span className="text-gray-500">⠿</span>
-        </div>
-        {/* 삭제 버튼 */}
-        {isDeletable && (
-          <button
-            onClick={() => onDelete(education.id)}
-            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
-          >
-            X
-          </button>
-        )}
-      </div>
+  const handleDateChange = ({ startDate, endDate, isCurrent }) => {
+    onEducationChange({
+      ...education,
+      startDate,
+      endDate: isCurrent ? '현재' : endDate,
+      isCurrent
+    });
+  };
 
-      <div className="flex items-center space-x-4">
-        <InputField
-          label="학교명"
-          value={education.schoolName}
-          onChange={(value) => handleChange('schoolName', value)}
-          placeholder="학교명"
-          className="flex-grow"
-          spellCheck="false"
+  return (
+    <CSSTransition
+      nodeRef={nodeRef}
+      in={true}
+      timeout={300}
+      classNames="fade"
+      unmountOnExit
+    >
+      <div ref={nodeRef} className={`education-item my-4 relative flex flex-col gap-2 ${className}`}>
+        <ActionButtons 
+          onDelete={() => onDelete(education.id)} 
+          isDeletable={isDeletable} 
+          dragHandleProps={dragHandleProps} 
         />
 
-        {/* 라디오 버튼 */}
-        <div className="flex items-center space-x-2">
-          {['졸업', '졸업 예정', '재학중'].map((status) => (
-            <label key={status} className="text-sm">
-              <input
-                type="radio"
-                name={`graduationStatus-${education.id}`}
-                value={status}
-                checked={education.graduationStatus === status}
-                onChange={() => handleChange('graduationStatus', status)}
-              /> {status}
-            </label>
-          ))}
+        <div className="flex items-center gap-4">
+          <div className="flex-grow max-w-[300px]">
+            <FloatingLabelInput
+              label="학교명"
+              value={education.schoolName}
+              onChange={(e) => handleChange('schoolName', e.target.value)}
+              placeholder="학교명"
+              spellCheck="false"
+              maxLength="30"
+              className=""
+              isTitle={true}
+            />
+          </div>
+          <div className="flex items-center space-x-2 mt-2 text-sm">
+            {['졸업', '졸업 예정', '재학중'].map((status) => (
+              <label key={status} className="text-sm">
+                <input
+                  type="radio"
+                  name={`graduationStatus-${education.id}`}
+                  value={status}
+                  checked={education.graduationStatus === status}
+                  onChange={() => handleChange('graduationStatus', status)}
+                /> {status}
+              </label>
+            ))}
+          </div>
+          <DateRangeInput
+            onChange={handleDateChange}
+            initialStartDate={education.startDate || ''}
+            initialEndDate={education.endDate || ''}
+            initialIsCurrent={education.isCurrent || false}
+          />
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <FloatingLabelTextarea
+            label="전공"
+            value={education.major}
+            onChange={(e) => handleChange('major', e.target.value)}
+            placeholder={majorsPlaceholder}
+            spellCheck="false"
+          />
         </div>
       </div>
-
-      <InputField
-        label="전공"
-        value={education.major}
-        onChange={(value) => handleChange('major', value)}
-        placeholder="전공"
-        spellCheck="false"
-      />
-      <InputField
-        label="기간"
-        value={education.period}
-        onChange={(value) => handleChange('period', value)}
-        placeholder="기간 (예: 2016-2020)"
-        inputStyle="w-1/2"
-        spellCheck="false"
-      />
-    </div>
+    </CSSTransition>
   );
 };
 
-export default EducationItem;
+const majorsPlaceholder = `
+· 학점이나 긍정적인 특이사항, 교내 활동 등을 어필해보세요.
+· 졸업논문이나 수상이력을 포함시키는 것도 좋습니다.
+`.trim();
+
+export default React.memo(EducationItem);

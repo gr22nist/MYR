@@ -1,37 +1,26 @@
-import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import * as IndexedDB from '@/utils/indexedDB';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDb } from '@/utils/indexedDB';
 
 export const loadEducations = createAsyncThunk(
   'educations/loadEducations',
-  async (_, { rejectWithValue }) => {
-    try {
-      const educations = await IndexedDB.loadEducations();
-      return educations.length > 0 ? educations : [{
-        id: `education-${Date.now()}`,
-        schoolName: '',
-        major: '',
-        period: '',
-        graduationStatus: '재학중'
-      }];
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
+  async () => {
+    const educations = await loadEducationsFromDB();
+    return educations;
   }
 );
 
 export const saveEducations = createAsyncThunk(
   'educations/saveEducations',
-  async (educations, { rejectWithValue }) => {
+  async (educations, { dispatch }) => {
     try {
-      await IndexedDB.saveEducations(educations);
+      await saveEducationsToDb(educations);
+      await dispatch(loadEducations());
       return educations;
     } catch (error) {
-      return rejectWithValue(error.message);
+      throw error;
     }
   }
 );
-
-export const resetEducations = createAction('educations/reset');
 
 const educationSlice = createSlice({
   name: 'educations',
@@ -53,6 +42,9 @@ const educationSlice = createSlice({
     deleteEducation: (state, action) => {
       state.items = state.items.filter(education => education.id !== action.payload);
     },
+    reorderEducations: (state, action) => {
+      state.items = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -65,7 +57,7 @@ const educationSlice = createSlice({
       })
       .addCase(loadEducations.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload;
+        state.error = action.error.message;
       })
       .addCase(saveEducations.fulfilled, (state, action) => {
         state.items = action.payload;
@@ -73,6 +65,6 @@ const educationSlice = createSlice({
   },
 });
 
-export const { addEducation, updateEducation, deleteEducation } = educationSlice.actions;
+export const { addEducation, updateEducation, deleteEducation, reorderEducations } = educationSlice.actions;
 
 export default educationSlice.reducer;

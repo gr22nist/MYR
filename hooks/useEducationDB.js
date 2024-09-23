@@ -1,15 +1,14 @@
 import { useIndexedDB } from './useIndexedDB';
 
 export const useEducationDB = () => {
-  const indexedDB = useIndexedDB();
-  const { saveEducations, loadEducations } = indexedDB;
+  const { saveEducations, loadEducations } = useIndexedDB();
 
   const saveEducationsToDb = async (educations) => {
     try {
       await saveEducations(educations);
-      console.log('Educations saved successfully');
+      console.log('학력 정보가 성공적으로 저장되었습니다');
     } catch (error) {
-      console.error('Error saving educations:', error);
+      console.error('학력 정보 저장 중 오류 발생:', error);
       throw error;
     }
   };
@@ -17,14 +16,10 @@ export const useEducationDB = () => {
   const fetchEducations = async () => {
     try {
       const data = await loadEducations();
-      if (data && data.length > 0) {
-        console.log('Loaded educations:', data);
-        return data;
-      }
-      console.log('No educations found in IndexedDB');
-      return [];
+      console.log('불러온 학력 정보:', data);
+      return data.length > 0 ? data : [];
     } catch (error) {
-      console.error('Error loading educations:', error);
+      console.error('학력 정보 불러오기 중 오류 발생:', error);
       throw error;
     }
   };
