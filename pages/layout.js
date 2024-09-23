@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
-import Navbar from '../components/NavBar';
-import Footer from '../components/Footer';
+import Navbar from '@/components/NavBar';
+import Footer from '@/components/Footer';
 import ToastComponent from '@/components/common/ToastComponent';
 
 const Layout = ({ children }) => {
@@ -22,7 +22,7 @@ const Layout = ({ children }) => {
       </Head>
       <Navbar />
       <ToastComponent />
-      <main>
+      <main className="bg-mono-ee py-8">
         { children }
       </main>
       <Footer />
