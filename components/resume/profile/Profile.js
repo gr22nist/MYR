@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateProfile } from '@/redux/slices/resumeSlice';
 import PhotoUploader from './PhotoUploader';
 import { useIndexedDB } from '@/hooks/useIndexedDB';
-import { addItem, getImage } from '@/utils/indexedDB';
-import { profileStyles } from '@/styles/constLayout';
+import { getImage } from '@/utils/indexedDB';
+import { commonStyles } from '@/styles/constLayout';
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -59,11 +59,14 @@ const Profile = () => {
     dispatch(updateProfile({ ...profile, imageUrl: imageData }));
   }, [dispatch, profile]);
 
+  const textAreaBaseStyle = 'p-4 bg-mono-f5 leading-normal text-mono-11 resize-none border-0 rounded-lg overflow-hidden';
+  const textAreaStyle = `${textAreaBaseStyle} ${commonStyles.focusStyle}`;
+
   return (
-    <section className="flex flex-col gap-4">
-      <div className={profileStyles.profileTop}>
+    <section className="flex flex-col gap-2">
+      <div className="relative w-full flex flex-row justify-between items-center gap-4">
         <textarea
-          className={`${profileStyles.textAreaStyle} text-4xl font-black h-36 flex-grow`}
+          className={`${textAreaStyle} text-4xl font-black h-36 flex-grow`}
           rows={2}
           value={profile.title || ''}
           onChange={(e) => handleChange('title', e.target.value)}
@@ -73,7 +76,7 @@ const Profile = () => {
         <PhotoUploader onImageChange={handleImageChange} currentImage={profileImage} />
       </div>
       <textarea
-        className={`${profileStyles.textAreaStyle} mt-4 font-bold`}
+        className={`${textAreaStyle} font-bold h-auto`}
         rows={3}
         value={profile.paragraph || ''}
         onChange={(e) => handleChange('paragraph', e.target.value)}
