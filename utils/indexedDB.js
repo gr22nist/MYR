@@ -22,8 +22,22 @@ const initializeDB = async () => {
 initializeDB();
 
 export const saveCareers = async (careers) => {
-  await db.careers.clear();
-  await db.careers.bulkAdd(careers);
+  try {
+    await db.transaction('rw', db.careers, async () => {
+      await db.careers.clear();
+      for (const career of careers) {
+        if (career.id) {
+          await db.careers.put(career);
+        } else {
+          delete career.id;  // id가 없는 경우 자동 생성을 위해 제거
+          await db.careers.add(career);
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error saving careers:', error);
+    throw error;
+  }
 };
 
 export const loadCareers = async () => {
