@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import TagButtons from '@/components/common/TagButtons';
 import ModalComponent from './ModalComponent';
 import UserInfoItem from './UserInfoItem';
@@ -10,11 +11,13 @@ import SalaryInput from './inputs/SalaryInput';
 import CustomFieldInput from './inputs/CustomFieldInput';
 import useUserInfo from '@/hooks/useUserInfo';
 import { typeToKorean } from '@/constants/userInfoConstants';
+import { useTransitionClasses } from '@/hooks/useTransitionClasses';
 
 const UserInfoForm = () => {
   const { items, status, error, handleFieldChange, handleRemoveItem, retryLoading } = useUserInfo();
   const [activeField, setActiveField] = useState(null);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const nodeRefs = useRef(new Map());
 
   const handleRetry = useCallback(() => {
     retryLoading();
@@ -58,6 +61,8 @@ const UserInfoForm = () => {
     };
   }, [handleFieldChange, activeField, items]);
 
+  const { classNames } = useTransitionClasses();
+
   if (status === 'loading') {
     return <div className="text-center py-4">로딩 중...</div>;
   }
@@ -98,18 +103,31 @@ const UserInfoForm = () => {
         
       </div>
 
-      <div className="w-full items-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {items.map((item) => (
-          <UserInfoItem 
-            key={item.id}
-            type={item.type}
-            displayType={item.displayType}
-            value={item.value}
-            onRemove={() => handleRemoveItem(item.id)}
-            onEdit={() => setActiveField({ type: item.type, id: item.id })}
-          />
-        ))}
-      </div>
+      <TransitionGroup className="w-full items-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {items.map((item) => {
+          if (!nodeRefs.current.has(item.id)) {
+            nodeRefs.current.set(item.id, React.createRef());
+          }
+          return (
+            <CSSTransition
+              key={item.id}
+              nodeRef={nodeRefs.current.get(item.id)}
+              timeout={300}
+              classNames={classNames}
+            >
+              <div ref={nodeRefs.current.get(item.id)}>
+                <UserInfoItem 
+                  type={item.type}
+                  displayType={item.displayType}
+                  value={item.value}
+                  onRemove={() => handleRemoveItem(item.id)}
+                  onEdit={() => setActiveField({ type: item.type, id: item.id })}
+                />
+              </div>
+            </CSSTransition>
+          );
+        })}
+      </TransitionGroup>
 
       <ModalComponent isOpen={!!activeField} onClose={() => setActiveField(null)}>
         {activeField && fieldComponents[activeField.type]}

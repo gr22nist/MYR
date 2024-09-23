@@ -1,21 +1,32 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { EditBtnSm, DeleteBtnSm } from '@/components/icons/IconSet';
+import { CSSTransition } from 'react-transition-group';
 
 const UserInfoItem = ({ type, displayType, value, onRemove, onEdit }) => {
+  const nodeRef = useRef(null);
+
   return (
-    <div className="personal-info-item p-4 relative rounded-lg bg-mono-f5">
-      <div className="text-sm font-bold mb-2 text-mono-99">{displayType}</div>
-      <div className="text-mono-11 font-bold">{value}</div>
-      <div className="absolute top-2 right-2 flex space-x-2">
-        <button onClick={onEdit} className="text-mono-dd hover:text-mono-66 duration-300">
-          <EditBtnSm />
-        </button>
-        <button onClick={onRemove} className="text-mono-dd hover:text-red-700 duration-300">
-          <DeleteBtnSm />
-        </button>
+    <CSSTransition
+      nodeRef={nodeRef}
+      in={true}
+      timeout={300}
+      classNames="fade"
+      unmountOnExit
+    >
+      <div ref={nodeRef} className="personal-info-item p-4 relative rounded-lg bg-mono-f5">
+        <div className="text-sm font-bold mb-2 text-mono-99">{displayType}</div>
+        <div className="text-mono-11 font-bold">{value}</div>
+        <div className="absolute top-2 right-2 flex space-x-2">
+          <button onClick={onEdit} className="text-mono-dd hover:text-mono-66 duration-300">
+            <EditBtnSm />
+          </button>
+          <button onClick={onRemove} className="text-mono-dd hover:text-red-700 duration-300">
+            <DeleteBtnSm />
+          </button>
+        </div>
       </div>
-    </div>
+    </CSSTransition>
   );
 };
 
