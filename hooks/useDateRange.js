@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
-import { validateAndFormatDate, isValidDateOrder } from '@/utils/dateUtils';
+import { validateAndFormatDate, isValidDateOrder, isValidDateString } from '@/utils/dateUtils';
 
 const ERROR_MESSAGE = '종료일이 시작일보다 빠를 수 없습니다.';
+const INVALID_MONTH_MESSAGE = '유효한 월을 입력하세요.';
 
 export const useDateRange = (initialStartDate = '', initialEndDate = '', initialIsCurrent = false) => {
   const [startDate, setStartDate] = useState(initialStartDate);
@@ -10,13 +11,17 @@ export const useDateRange = (initialStartDate = '', initialEndDate = '', initial
   const [errorMessage, setErrorMessage] = useState('');
 
   const validateDates = useCallback(() => {
-    if (startDate && endDate && !isValidDateOrder(startDate, endDate)) {
+    if (!isCurrent && startDate && endDate && !isValidDateOrder(startDate, endDate)) {
       setErrorMessage(ERROR_MESSAGE);
+      return false;
+    }
+    if (!isValidDateString(startDate) || (!isCurrent && !isValidDateString(endDate))) {
+      setErrorMessage(INVALID_MONTH_MESSAGE);
       return false;
     }
     setErrorMessage('');
     return true;
-  }, [startDate, endDate]);
+  }, [startDate, endDate, isCurrent]);
 
   const handleStartDateChange = useCallback((e) => {
     const newStartDate = validateAndFormatDate(e.target.value);
@@ -38,7 +43,7 @@ export const useDateRange = (initialStartDate = '', initialEndDate = '', initial
 
   useEffect(() => {
     validateDates();
-  }, [startDate, endDate, validateDates]);
+  }, [startDate, endDate, isCurrent, validateDates]);
 
   return {
     startDate,

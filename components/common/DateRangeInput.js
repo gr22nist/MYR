@@ -17,12 +17,12 @@ const DateRangeInput = ({
     handleEndDateChange,
     handleCurrentChange,
     validateDates
-  } = useDateRange(initialStartDate, initialEndDate, initialIsCurrent, onChange);
+  } = useDateRange(initialStartDate, initialEndDate, initialIsCurrent);
 
   const inputClasses = useMemo(() => combineClasses(
     commonStyles.inputBase,
     commonStyles.focusStyle,
-    'w-16'
+    'w-20'
   ), []);
 
   const endDateInputClasses = useMemo(() => combineClasses(
@@ -37,28 +37,37 @@ const DateRangeInput = ({
           type="text"
           className={inputClasses}
           value={startDate}
-          onChange={handleStartDateChange}
+          onChange={(e) => {
+            handleStartDateChange(e);
+            onChange({ startDate: e.target.value, endDate, isCurrent });
+          }}
           onBlur={validateDates}
-          placeholder="YY.MM"
-          maxLength="5"
+          placeholder="yyyymm"
+          maxLength="7"
         />
         <span className="text-gray-500">~</span>
         <input
           type="text"
           className={endDateInputClasses}
           value={isCurrent ? '현재' : endDate}
-          onChange={handleEndDateChange}
+          onChange={(e) => {
+            handleEndDateChange(e);
+            onChange({ startDate, endDate: e.target.value, isCurrent });
+          }}
           onBlur={validateDates}
-          placeholder="YY.MM"
+          placeholder="yyyy.mm"
           disabled={isCurrent}
-          maxLength="5"
+          maxLength="7"
         />
         <label className="flex items-center whitespace-nowrap">
           <input
             type="checkbox"
             className="form-checkbox mr-1"
             checked={isCurrent}
-            onChange={handleCurrentChange}
+            onChange={(e) => {
+              handleCurrentChange(e);
+              onChange({ startDate, endDate, isCurrent: e.target.checked });
+            }}
           />
           <span className="text-sm">현재</span>
         </label>
