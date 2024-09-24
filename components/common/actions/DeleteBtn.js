@@ -1,17 +1,13 @@
 import React from 'react';
 import { DeleteBtn } from '@/components/icons/IconSet';
+import IconButton from '../IconButton';
 
 const DeleteButton = ({ onClick }) => (
-  <button 
-    onClick={(e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onClick();
-    }} 
-    className="p-1 rounded-full"
-  >
-    <DeleteBtn className="fill-mono-99 hover:fill-red-500 hover:scale-110 duration-300" />
-  </button>
+  <IconButton 
+    icon={DeleteBtn} 
+    onClick={onClick} 
+    hoverFill="fill-red-500"
+  />
 );
 
 export default DeleteButton;
