@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { EditBtnSm, DragHandler } from '@/components/icons/IconSet';
+import { FoldBtn, DragHandleBtn } from '@/components/icons/IconSet';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 const AccordionSection = ({ title, addButtonComponent, children }) => {
@@ -49,23 +49,25 @@ const AccordionSection = ({ title, addButtonComponent, children }) => {
   };
 
   return (
-    <section className={`accordion-section ${isExpanded ? '' : 'bg-gray-100'} transition-colors duration-300`}>
+    <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5 hover:bg-accent-dark hover:text-white duration-300'} transition-colors duration-300 rounded-lg`}>
       <div className={`flex items-center justify-between p-2 ${isExpanded ? '' : 'h-16'}`}>
         <div className="flex items-center">
           <h2 className="text-xl font-extrabold mr-2">{title}</h2>
           {isExpanded && addButtonComponent}
         </div>
         <div className="flex items-center">
+          {!isExpanded && (
+            <div className="cursor-grab active:cursor-grabbing mr-2">
+              <DragHandleBtn className="w-5 h-5" />
+            </div>
+          )}
           <button
-            className="p-1 rounded-full mr-2"
+            className="p-1 rounded-full"
             onClick={toggleExpand}
             aria-label={isExpanded ? `${title} 접기` : `${title} 펼치기`}
           >
-            <EditBtnSm className={`w-5 h-5 fill-mono-99 hover:fill-secondary-dark hover:scale-110 duration-300 transform ${isExpanded ? 'rotate-180' : ''}`} />
+            <FoldBtn className={` fill-mono-99 hover:fill-secondary-dark hover:scale-110 duration-300 transform ${isExpanded ? 'rotate-180' : ''}`} />
           </button>
-          <div className="cursor-grab active:cursor-grabbing">
-            <DragHandler className="w-5 h-5" />
-          </div>
         </div>
       </div>
       <div 
