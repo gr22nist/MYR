@@ -4,7 +4,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import CareerItem from './CareerItem';
 import AccordionSection from '../../common/AccordionSection';
 import { addCareer, updateCareer, deleteCareer, loadCareers, saveCareers } from '@/redux/slices/careerSlice';
-import { AddBtn } from '@/components/icons/IconSet';
+import AddButton from '@/components/common/actions/AddBtn';
 import { useTransitionClasses } from '@/hooks/useTransitionClasses';
 
 const CareerList = () => {
@@ -47,20 +47,14 @@ const CareerList = () => {
     }
   }, [dispatch, careers]);
 
-  const addButton = (
-    <button
-      className="p-1 rounded-full"
-      onClick={handleAddCareer}
-      aria-label="경력 추가"
-    >
-      <AddBtn className="w-5 h-5 fill-mono-99 hover:fill-secondary-dark hover:scale-110 duration-300" />
-    </button>
+  const addButtonComponent = (
+    <AddButton onClick={handleAddCareer} ariaLabel="경력 추가" />
   );
 
   const { classNames } = useTransitionClasses();
 
   return (
-    <AccordionSection title="경력" addButtonComponent={addButton}>
+    <AccordionSection title="경력" addButtonComponent={addButtonComponent}>
       <TransitionGroup className="space-y-4">
         {careers.map((career) => {
           if (!nodeRefs.current.has(career.id)) {

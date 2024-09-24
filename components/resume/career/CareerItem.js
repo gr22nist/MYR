@@ -38,7 +38,7 @@ const CareerItem = ({ career, onCareerChange, onDelete, isDeletable, dragHandleP
         />
 
         <div className="flex items-center gap-4">
-          <div className="flex-grow max-w-[320px]">
+          <div className="flex-grow max-w-[520px]">
             <FloatingLabelInput
               label="회사명"
               value={career.companyName}
