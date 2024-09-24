@@ -3,22 +3,23 @@ import Head from "next/head";
 import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import ToastComponent from '@/components/common/ToastComponent';
+import { nanum } from '../utils/fonts'
 
 const Layout = ({ children }) => {
   
   return (
-    <>
+    <div className={`${nanum.variable} font-sans`}>
       <Head>
         <title>마이력서</title>
         <meta name="description" content="누구나 간단하게 작성하는 나의 역사, My력서" />
-        <meta property="og:title" content="" />
+        <meta property="og:title" content="마이력서" />
         <meta property="og:description" content="누구나 간단하게 작성하는 나의 역사, My력서" />
-        <meta property="og:image" content="" />
-        <meta property="og:url" content="" />
-        <meta name="twitter:card" content="" />
-        <meta name="twitter:title" content="" />
-        <meta name="twitter:descriptio" content="누구나 간단하게 작성하는 나의 역사, My력서" />
-        <meta name="twitter:image" content="" />
+        <meta property="og:image" content="[이미지 URL]" />
+        <meta property="og:url" content="[웹사이트 URL]" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="마이력서" />
+        <meta name="twitter:description" content="누구나 간단하게 작성하는 나의 역사, My력서" />
+        <meta name="twitter:image" content="[이미지 URL]" />
       </Head>
       <Navbar />
       <ToastComponent />
@@ -26,7 +27,7 @@ const Layout = ({ children }) => {
         { children }
       </main>
       <Footer />
-    </>
+    </div>
   );
 };
 

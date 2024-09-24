@@ -7,17 +7,16 @@
   --background-rgb: 255, 255, 255;
   --drag-background-color: #cccccc;
   --drag-text-color: #000000;
-  /* --navbar-height: 59px; /* 네비게이션 바 높이를 전역 변수로 설정 */
 }
 
-@font-face {
+/* @font-face {
   font-family: 'NanumSquareNeo';
   src: url('/fonts/NanumSquareNeo-Variable.woff2') format('woff2'),
        url('/fonts/NanumSquareNeo-Variable.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-}
+} */
 
 /* body의 font-family 설정 제거 */
 
@@ -29,14 +28,13 @@
 } */
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  /* font-family 설정 제거 */
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer base {
+  html {
+    font-family: 'NanumSquareNeo', system-ui, sans-serif;
   }
 }
 
