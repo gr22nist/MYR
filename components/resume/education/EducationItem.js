@@ -37,7 +37,7 @@ const EducationItem = ({ education, onEducationChange, onDelete, isDeletable, dr
         />
 
         <div className="flex items-center gap-4">
-          <div className="flex-grow max-w-[300px]">
+          <div className="flex-grow max-w-[520px]">
             <FloatingLabelInput
               label="학교명"
               value={education.schoolName}
