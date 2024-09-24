@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import { EditBtnSm, DeleteBtnSm } from '@/components/icons/IconSet';
+import { EditBtn, DeleteBtn } from '@/components/icons/IconSet';
 import { CSSTransition } from 'react-transition-group';
 
 const UserInfoItem = ({ type, displayType, value, onRemove, onEdit }) => {
@@ -19,10 +19,10 @@ const UserInfoItem = ({ type, displayType, value, onRemove, onEdit }) => {
         <div className="text-mono-11 font-bold">{value}</div>
         <div className="absolute top-2 right-2 flex space-x-2">
           <button onClick={onEdit} className="text-mono-dd hover:text-mono-66 duration-300">
-            <EditBtnSm />
+            <EditBtn />
           </button>
           <button onClick={onRemove} className="text-mono-dd hover:text-red-700 duration-300">
-            <DeleteBtnSm />
+            <DeleteBtn />
           </button>
         </div>
       </div>
