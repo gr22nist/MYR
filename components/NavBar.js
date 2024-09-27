@@ -4,7 +4,7 @@ import Link from "next/link";
 const NavBar = () => {
 
   const container = `border-b`;
-  const navWrap = `container max-w-default mx-auto flex justify-between py-4`;
+  const navWrap = `container max-w-myr mx-auto flex justify-between py-4`;
   const navList = `flex gap-6`;
 
   return (
