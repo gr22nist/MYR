@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 리덕스 폴더와 백업 무시
+src/redux/
+*.zip
