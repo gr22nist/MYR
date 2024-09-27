@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { FoldBtn, DragHandleBtn } from '@/components/icons/IconSet';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import ActionButtons from './actions/ActionBtns';
 
-const AccordionSection = ({ title, addButtonComponent, children }) => {
+const AccordionSection = ({ title, addButtonComponent, children, dragHandleProps }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const contentRef = useRef(null);
   const observerRef = useRef(null);
@@ -40,7 +39,6 @@ const AccordionSection = ({ title, addButtonComponent, children }) => {
   }, [updateHeight, isExpanded]);
 
   useEffect(() => {
-    // 컨텐츠가 변경될 때마다 높이를 업데이트합니다.
     updateHeight();
   }, [children, updateHeight]);
 
@@ -55,20 +53,12 @@ const AccordionSection = ({ title, addButtonComponent, children }) => {
           <h2 className="text-xl font-extrabold mr-2">{title}</h2>
           {isExpanded && addButtonComponent}
         </div>
-        <div className="flex items-center">
-          {!isExpanded && (
-            <div className="cursor-grab active:cursor-grabbing mr-2">
-              <DragHandleBtn className="w-5 h-5" />
-            </div>
-          )}
-          <button
-            className="p-1 rounded-full"
-            onClick={toggleExpand}
-            aria-label={isExpanded ? `${title} 접기` : `${title} 펼치기`}
-          >
-            <FoldBtn className={` fill-mono-99 hover:fill-secondary-dark hover:scale-110 duration-300 transform ${isExpanded ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
+        <ActionButtons
+          onFold={toggleExpand}
+          isExpanded={isExpanded}
+          dragHandleProps={dragHandleProps}
+          mode="section"
+        />
       </div>
       <div 
         ref={contentRef}
