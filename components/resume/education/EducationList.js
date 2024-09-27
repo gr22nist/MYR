@@ -1,28 +1,58 @@
-import React, { useEffect, useCallback, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import React, { useEffect, useCallback } from 'react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import EducationItem from './EducationItem';
-import AccordionSection from '../../common/AccordionSection';
-import { addEducation, updateEducation, deleteEducation, loadEducations, saveEducations } from '@/redux/slices/educationSlice';
-import { AddBtn } from '@/components/icons/IconSet';
-import { useTransitionClasses } from '@/hooks/useTransitionClasses';
+import AccordionSection from '@/components/common/AccordionSection';
+import AddButton from '@/components/common/actions/AddBtn';
+import useEducationStore from '@/store/educationStore';
+
+const SortableEducationItem = ({ education, onEducationChange, onDelete, isDeletable }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: education.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <EducationItem
+        education={education}
+        onEducationChange={onEducationChange}
+        onDelete={onDelete}
+        isDeletable={isDeletable}
+        dragHandleProps={{ ...attributes, ...listeners }}
+      />
+    </div>
+  );
+};
 
 const EducationList = () => {
-  const educations = useSelector(state => state.educations.items);
-  const status = useSelector(state => state.educations.status);
-  const dispatch = useDispatch();
-  const nodeRefs = useRef(new Map());
+  const { 
+    educations, 
+    addEducation, 
+    updateEducation, 
+    deleteEducation, 
+    loadEducations, 
+    saveEducations,
+    reorderEducations 
+  } = useEducationStore();
 
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(loadEducations());
-    }
-  }, [dispatch, status]);
+    loadEducations();
+  }, [loadEducations]);
 
   const handleEducationChange = useCallback((updatedEducation) => {
-    dispatch(updateEducation(updatedEducation));
-    dispatch(saveEducations(educations.map(edu => edu.id === updatedEducation.id ? updatedEducation : edu)));
-  }, [dispatch, educations]);
+    updateEducation(updatedEducation);
+    saveEducations(); // 변경 사항 저장
+  }, [updateEducation, saveEducations]);
 
   const handleAddEducation = useCallback(() => {
     const newId = `education-${Date.now()}`;
@@ -33,58 +63,68 @@ const EducationList = () => {
       startDate: '',
       endDate: '',
       isCurrent: false,
-      graduationStatus: '재학중'
+      graduationStatus: '졸업'
     };
-    dispatch(addEducation(newEducation));
-    dispatch(saveEducations([...educations, newEducation]));
-  }, [dispatch, educations]);
+    addEducation(newEducation);
+    saveEducations(); // 추가 후 저장
+  }, [addEducation, saveEducations]);
 
   const handleDeleteEducation = useCallback((id) => {
-    if (educations.length > 1) {
-      dispatch(deleteEducation(id));
-      const updatedEducations = educations.filter(edu => edu.id !== id);
-      dispatch(saveEducations(updatedEducations));
+    if (educations.items.length > 1) {
+      deleteEducation(id);
+      saveEducations(); // 삭제 후 저장
     }
-  }, [dispatch, educations]);
+  }, [deleteEducation, educations.items, saveEducations]);
 
-  const addButton = (
-    <button
-      className="p-1 rounded-full"
-      onClick={handleAddEducation}
-      aria-label="학력 추가"
-    >
-      <AddBtn className="w-5 h-5 fill-mono-99 hover:fill-secondary-dark hover:scale-110 duration-300" />
-    </button>
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
   );
 
-  const { classNames } = useTransitionClasses();
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = educations.items.findIndex((education) => education.id === active.id);
+      const newIndex = educations.items.findIndex((education) => education.id === over.id);
+      reorderEducations(oldIndex, newIndex);
+      saveEducations(); // 순서 변경 후 저장
+    }
+  };
+
+  const addButtonComponent = (
+    <AddButton onClick={handleAddEducation} ariaLabel="학력 추가" />
+  );
+
+  // 서버 사이드 렌더링 중 오류 방지
+  if (typeof window === 'undefined' || !educations.items) {
+    return null;
+  }
 
   return (
-    <AccordionSection title="학력" addButtonComponent={addButton}>
-      <TransitionGroup className="space-y-4">
-        {educations.map((education) => {
-          if (!nodeRefs.current.has(education.id)) {
-            nodeRefs.current.set(education.id, React.createRef());
-          }
-          return (
-            <CSSTransition
+    <AccordionSection title="학력" addButtonComponent={addButtonComponent}>
+      <DndContext 
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={educations.items.map(education => education.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {educations.items.map((education) => (
+            <SortableEducationItem
               key={education.id}
-              nodeRef={nodeRefs.current.get(education.id)}
-              timeout={300}
-              classNames={classNames}
-            >
-              <div ref={nodeRefs.current.get(education.id)}>
-                <EducationItem
-                  education={education}
-                  onEducationChange={handleEducationChange}
-                  onDelete={handleDeleteEducation}
-                  isDeletable={educations.length > 1}
-                />
-              </div>
-            </CSSTransition>
-          );
-        })}
-      </TransitionGroup>
+              education={education}
+              onEducationChange={handleEducationChange}
+              onDelete={handleDeleteEducation}
+              isDeletable={educations.items.length > 1}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
     </AccordionSection>
   );
 };
