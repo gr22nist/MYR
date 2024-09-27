@@ -19,6 +19,8 @@ export const theme = {
     },
     width: {
       "myr": "1144px",
+      "label": "520px",
+
     },
     maxWidth: {
       "myr": "1240px",
