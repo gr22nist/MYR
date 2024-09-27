@@ -1,85 +1,120 @@
 import React, { useEffect, useCallback, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import CareerItem from './CareerItem';
-import AccordionSection from '../../common/AccordionSection';
-import { addCareer, updateCareer, deleteCareer, loadCareers, saveCareers } from '@/redux/slices/careerSlice';
+import AccordionSection from '@/components/common/AccordionSection';
 import AddButton from '@/components/common/actions/AddBtn';
-import { useTransitionClasses } from '@/hooks/useTransitionClasses';
+import useCareerStore from '@/store/careerStore';
+
+const SortableCareerItem = ({ career, onCareerChange, onDelete, isDeletable }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: career.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <CareerItem
+        career={career}
+        onCareerChange={onCareerChange}
+        onDelete={onDelete}
+        isDeletable={isDeletable}
+        dragHandleProps={{ ...attributes, ...listeners }}
+      />
+    </div>
+  );
+};
 
 const CareerList = () => {
-  const careers = useSelector(state => state.careers.items);
-  const status = useSelector(state => state.careers.status);
-  const dispatch = useDispatch();
-  const nodeRefs = useRef(new Map());
+  const { careers, addCareer, updateCareer, deleteCareer, loadCareers, saveCareers, reorderCareers } = useCareerStore();
 
   useEffect(() => {
-    if (status === 'idle') {
-      dispatch(loadCareers());
+    if (careers.status === 'idle') {
+      loadCareers();
     }
-  }, [dispatch, status]);
+  }, [careers.status, loadCareers]);
 
   const handleCareerChange = useCallback((updatedCareer) => {
-    dispatch(updateCareer(updatedCareer));
-    dispatch(saveCareers(careers.map(career => career.id === updatedCareer.id ? updatedCareer : career)));
-  }, [dispatch, careers]);
+    updateCareer(updatedCareer);
+  }, [updateCareer]);
 
   const handleAddCareer = useCallback(() => {
-    const newId = `career-${Date.now()}`;
-    const newCareer = { 
-      id: newId, 
-      companyName: '', 
-      position: '', 
-      startDate: '', 
-      endDate: '', 
-      isCurrent: false, 
-      tasks: '' 
-    };
-    dispatch(addCareer(newCareer));
-    dispatch(saveCareers([...careers, newCareer]));
-  }, [dispatch, careers]);
+    if (careers.items.length > 0) {
+      const newId = `career-${Date.now()}`;
+      const newCareer = { 
+        id: newId, 
+        companyName: '', 
+        position: '', 
+        startDate: '', 
+        endDate: '', 
+        isCurrent: false, 
+        tasks: '' 
+      };
+      addCareer(newCareer);
+    }
+  }, [careers.items, addCareer]);
 
   const handleDeleteCareer = useCallback((id) => {
-    if (careers.length > 1) {
-      dispatch(deleteCareer(id));
-      const updatedCareers = careers.filter(career => career.id !== id);
-      dispatch(saveCareers(updatedCareers));
+    if (careers.items.length > 1) {
+      deleteCareer(id);
     }
-  }, [dispatch, careers]);
+  }, [careers.items, deleteCareer]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = careers.items.findIndex((career) => career.id === active.id);
+      const newIndex = careers.items.findIndex((career) => career.id === over.id);
+      reorderCareers(oldIndex, newIndex);
+    }
+  };
 
   const addButtonComponent = (
     <AddButton onClick={handleAddCareer} ariaLabel="경력 추가" />
   );
 
-  const { classNames } = useTransitionClasses();
+  // careers.items가 배열인지 확인
+  const careerItems = Array.isArray(careers.items) ? careers.items : [];
 
   return (
     <AccordionSection title="경력" addButtonComponent={addButtonComponent}>
-      <TransitionGroup className="space-y-4">
-        {careers.map((career) => {
-          if (!nodeRefs.current.has(career.id)) {
-            nodeRefs.current.set(career.id, React.createRef());
-          }
-          return (
-            <CSSTransition
+      <DndContext 
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={careerItems.map(career => career.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {careerItems.map((career) => (
+            <SortableCareerItem
               key={career.id}
-              nodeRef={nodeRefs.current.get(career.id)}
-              timeout={300}
-              classNames={classNames}
-            >
-              <div ref={nodeRefs.current.get(career.id)}>
-                <CareerItem
-                  career={career}
-                  onCareerChange={handleCareerChange}
-                  onDelete={handleDeleteCareer}
-                  isDeletable={careers.length > 1}
-                  className=""
-                />
-              </div>
-            </CSSTransition>
-          );
-        })}
-      </TransitionGroup>
+              career={career}
+              onCareerChange={handleCareerChange}
+              onDelete={handleDeleteCareer}
+              isDeletable={careerItems.length > 1}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
     </AccordionSection>
   );
 };

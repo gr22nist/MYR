@@ -1,126 +1,123 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { saveCustomSection } from '@/redux/slices/customSectionSlice';
-import CustomSectionItem from './CustomItem';
-import TextInput from './TextInput';
-import TextAreaInput from './TextAreaInput';
-import DateRangeInput from '@/components/common/DateRangeInput';
+import React, { useMemo, useEffect, useRef } from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import TagButtons from '@/components/common/TagButtons';
+import CustomSectionInput from './CustomSectionInput';
+import { useTransitionClasses } from '@/hooks/useTransitionClasses';
+import useCustomStore from '@/store/customStore';
+import { PREDEFINED_SECTIONS, CUSTOM_SECTION_TYPE, CUSTOM_SECTION_TITLE } from '@/constants/resumeConstants';
 
-const CustomSectionForm = () => {
-  const dispatch = useDispatch();
-  const customSections = useSelector(state => state.customSections.sections);
-  const [activeField, setActiveField] = useState(null);
-  const [formData, setFormData] = useState({});
+const CustomForm = () => {
+  const { customSections, loadCustomSections, addCustomSection, updateCustomSection, removeCustomSection } = useCustomStore();
+  const nodeRefs = useRef(new Map());
 
-  const predefinedSections = {
-    project: '프로젝트',
-    award: '수상 경력',
-    certificate: '자격증',
-    language: '외국어',
-    skill: '보유 기술',
-    link: '링크'
-  };
+  useEffect(() => {
+    loadCustomSections();
+  }, [loadCustomSections]);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const tags = useMemo(() => 
+    Object.entries(PREDEFINED_SECTIONS).map(([type, label]) => ({ type, label })), 
+    []
+  );
 
-  const handleAddSection = () => {
-    if (!activeField) return;
+  const handleAddSection = (type) => {
+    if (type !== CUSTOM_SECTION_TYPE && customSections.some(section => section.type === type)) {
+      return;
+    }
 
     const newSection = {
       id: Date.now(),
-      type: activeField,
-      ...formData
+      type,
+      title: type === CUSTOM_SECTION_TYPE ? CUSTOM_SECTION_TITLE : PREDEFINED_SECTIONS[type],
+      content: ''
     };
-    dispatch(saveCustomSection(newSection));
-    setActiveField(null);
-    setFormData({});
+    addCustomSection(newSection);
   };
 
-  const renderSectionForm = () => {
-    switch(activeField) {
-      case 'project':
-        return (
-          <div>
-            <TextInput label="프로젝트명" onChange={(value) => handleInputChange('title', value)} />
-            <TextAreaInput label="설명" onChange={(value) => handleInputChange('description', value)} />
-            <DateRangeInput label="기간" onChange={(value) => handleInputChange('period', value)} />
-          </div>
-        );
-      case 'award':
-        return (
-          <div>
-            <TextInput label="수상명" onChange={(value) => handleInputChange('title', value)} />
-            <TextInput label="수여 기관" onChange={(value) => handleInputChange('organization', value)} />
-            <DateRangeInput label="수상 일자" onChange={(value) => handleInputChange('date', value)} />
-          </div>
-        );
-      // 다른 predefined 섹션들에 대한 폼도 여기에 추가...
-      default:
-        return (
-          <div>
-            <TextInput label="제목" onChange={(value) => handleInputChange('title', value)} />
-            <TextAreaInput label="내용" onChange={(value) => handleInputChange('content', value)} />
-          </div>
-        );
-    }
-  };
+  const { classNames } = useTransitionClasses();
+
+  const disabledTags = useMemo(() => 
+    Object.keys(PREDEFINED_SECTIONS).filter(type => 
+      customSections.some(section => section.type === type)
+    ),
+    [customSections]
+  );
 
   return (
-    <div className="custom-section flex flex-col justify-center items-center">
-      <div className="flex items-center mb-4">
-        <button 
-          onClick={() => setActiveField('custom')}
-          className="add-section-button bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          <span className="plus-icon">+</span> 자유서식 추가하기
-        </button>
-      </div>
-      
-      <div className="tags-container flex flex-wrap gap-2 mb-4">
-        <span className='tag px-3 py-2 rounded-md transition-colors'>추천태그: </span>
-        {Object.entries(predefinedSections).map(([type, label]) => (
-          <button 
-            key={type}
-            onClick={() => setActiveField(type)}
-            className={`tag px-3 py-2 rounded-md transition-colors ${
-              activeField === type ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            #{label}
-          </button>
-        ))}
-      </div>
-      
-      <p className="info-message text-sm text-gray-600 mb-4">
-        자유서식을 추가하여 이력서를 더욱 풍성하게 만들어보세요.
-      </p>
-
-      {activeField && (
-        <div className="form-container mb-4">
-          {renderSectionForm()}
-          <button 
-            onClick={handleAddSection}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors mt-4"
-          >
-            추가
-          </button>
-        </div>
-      )}
-
-      <div className="w-full sections-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {customSections.map((section) => (
-          <CustomSectionItem 
-            key={section.id}
-            section={section}
-            onRemove={() => handleRemoveSection(section.id)}
-            onEdit={() => setActiveField(section.type)}
-          />
-        ))}
-      </div>
+    <div className="custom-form">
+      <InfoMessage />
+      <SectionControls 
+        onAddCustom={() => handleAddSection(CUSTOM_SECTION_TYPE)}
+        tags={tags}
+        onTagClick={handleAddSection}
+        disabledTags={disabledTags}
+      />
+      <SectionList 
+        sections={customSections}
+        nodeRefs={nodeRefs}
+        classNames={classNames}
+        onSectionChange={updateCustomSection}
+        onDelete={removeCustomSection}
+      />
     </div>
   );
 };
 
-export default CustomSectionForm;
+const InfoMessage = () => (
+  <div className="w-full py-3 px-2 flex flex-col gap-6 items-center border rounded-lg bg-gray-50">
+    <div className="info-message bg-mono-ee border-l-4 border-mono-33 text-mono-66 font-bold p-4 w-full">
+      <p className="text-sm">
+        추가된 항목이 없으면 작성 완료 시 해당 영역이 보이지 않습니다. 
+        꼭 필요한 개인정보만 작성해주세요.
+      </p>
+    </div>
+  </div>
+);
+
+const SectionControls = ({ onAddCustom, tags, onTagClick, disabledTags }) => (
+  <div className="flex items-center justify-center bg-white rounded-md p-2 min-h-[60px] w-full">
+    <button 
+      onClick={onAddCustom}
+      className="bg-secondary-dark text-white px-6 py-4 rounded-md hover:bg-accent-dark transition-colors text-base font-bold flex-shrink-0"
+    >
+      + 자유 서식 추가하기
+    </button>
+    <TagButtons 
+      tags={tags}
+      onTagClick={onTagClick}
+      disabledTags={disabledTags}
+      className="flex-wrap justify-center"
+    />
+  </div>
+);
+
+const SectionList = ({ sections, nodeRefs, classNames, onSectionChange, onDelete }) => (
+  <TransitionGroup className="space-y-4 mt-4">
+    {Array.isArray(sections) && sections.map((section) => {
+      if (!nodeRefs.current.has(section.id)) {
+        nodeRefs.current.set(section.id, React.createRef());
+      }
+      return (
+        <CSSTransition
+          key={section.id}
+          nodeRef={nodeRefs.current.get(section.id)}
+          timeout={300}
+          classNames={classNames}
+        >
+          <div ref={nodeRefs.current.get(section.id)}>
+            <CustomSectionInput
+              type={section.type}
+              section={section}
+              onSectionChange={onSectionChange}
+              onDelete={onDelete}
+              isDeletable={true}
+              dragHandleProps={{}}
+              className=""
+            />
+          </div>
+        </CSSTransition>
+      );
+    })}
+  </TransitionGroup>
+);
+
+export default CustomForm;

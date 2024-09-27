@@ -31,30 +31,33 @@ const CareerItem = ({ career, onCareerChange, onDelete, isDeletable, dragHandleP
       unmountOnExit
     >
       <div ref={nodeRef} className={`career-item my-4 relative flex flex-col gap-2 ${className}`}>
-        <ActionButtons 
-          onDelete={() => onDelete(career.id)} 
-          isDeletable={isDeletable} 
-          dragHandleProps={dragHandleProps} 
-        />
-
-        <div className="flex items-center gap-4">
-          <div className="flex-grow max-w-[520px]">
-            <FloatingLabelInput
-              label="회사명"
-              value={career.companyName}
-              onChange={(e) => handleChange('companyName', e.target.value)}
-              placeholder="회사명"
-              spellCheck="false"
-              maxLength="100"
-              className=""
-              isTitle={true}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="w-label"> {/* 이 div로 감싸서 너비 지정 */}
+              <FloatingLabelInput
+                label="회사명"
+                value={career.companyName}
+                onChange={(e) => handleChange('companyName', e.target.value)}
+                placeholder="회사명을 작성해주세요. 예: 네이버 주식회사, Google "
+                spellCheck="false"
+                maxLength="100"
+                className="w-full" // w-full을 사용하여 부모 div의 전체 너비를 차지하도록 함
+                isCore={true}
+                isTitle={true}
+                tooltipMessage="회사명을 꼭 입력해 주세요."
+              />
+            </div>
+            <DateRangeInput
+              onChange={handleDateChange}
+              initialStartDate={career.startDate || ''}
+              initialEndDate={career.endDate || ''}
+              initialIsCurrent={career.isCurrent || false}
             />
           </div>
-          <DateRangeInput
-            onChange={handleDateChange}
-            initialStartDate={career.startDate || ''}
-            initialEndDate={career.endDate || ''}
-            initialIsCurrent={career.isCurrent || false}
+          <ActionButtons 
+            onDelete={() => onDelete(career.id)} 
+            isDeletable={isDeletable} 
+            dragHandleProps={dragHandleProps} 
           />
         </div>
 
