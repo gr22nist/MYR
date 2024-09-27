@@ -4,7 +4,7 @@ import TagButtons from '@/components/common/TagButtons';
 import CustomSectionInput from './CustomSectionInput';
 import { useTransitionClasses } from '@/hooks/useTransitionClasses';
 import useCustomStore from '@/store/customStore';
-import { PREDEFINED_SECTIONS, CUSTOM_SECTION_TYPE, CUSTOM_SECTION_TITLE } from '@/constants/resumeConstants';
+import { PREDEFINED_SECTIONS, CUSTOM_SECTIONS } from '@/constants/resumeConstants';
 
 const CustomForm = () => {
   const { customSections, loadCustomSections, addCustomSection, updateCustomSection, removeCustomSection } = useCustomStore();
@@ -20,14 +20,14 @@ const CustomForm = () => {
   );
 
   const handleAddSection = (type) => {
-    if (type !== CUSTOM_SECTION_TYPE && customSections.some(section => section.type === type)) {
+    if (type !== CUSTOM_SECTIONS.type && customSections.some(section => section.type === type)) {
       return;
     }
 
     const newSection = {
       id: Date.now(),
       type,
-      title: type === CUSTOM_SECTION_TYPE ? CUSTOM_SECTION_TITLE : PREDEFINED_SECTIONS[type],
+      title: type === CUSTOM_SECTIONS.type ? CUSTOM_SECTIONS.type : PREDEFINED_SECTIONS[type],
       content: ''
     };
     addCustomSection(newSection);
@@ -46,7 +46,7 @@ const CustomForm = () => {
     <div className="custom-form">
       <InfoMessage />
       <SectionControls 
-        onAddCustom={() => handleAddSection(CUSTOM_SECTION_TYPE)}
+        onAddCustom={() => handleAddSection(CUSTOM_SECTIONS.type)}
         tags={tags}
         onTagClick={handleAddSection}
         disabledTags={disabledTags}

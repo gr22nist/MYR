@@ -9,7 +9,7 @@ import PhoneInput from './inputs/PhoneInput';
 import EmailInput from './inputs/EmailInput';
 import SalaryInput from './inputs/SalaryInput';
 import CustomFieldInput from './inputs/CustomFieldInput';
-import { typeToKorean } from '@/constants/userInfoConstants';
+import { typeToKorean } from '@/constants/resumeConstants';
 import { useTransitionClasses } from '@/hooks/useTransitionClasses';
 import useUserInfoStore from '@/store/userInfoStore';
 

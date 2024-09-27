@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import useUserInfoStore from '@/store/userInfoStore';
-import { typeToKorean } from '@/constants/userInfoConstants';
+import { typeToKorean } from '@/constants/resumeConstants';
 
 const useUserInfo = () => {
   const { 
