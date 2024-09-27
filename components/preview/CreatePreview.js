@@ -1,6 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import PersonalInfoPreview from './PersonalInfoPreview';
+import useResumeStore from '@/store/resumeStore';
 import ProfilePreview from './ProfilePreview';
 
 const fieldConfigs = {
@@ -13,10 +12,10 @@ const fieldConfigs = {
 };
 
 const CreatePreview = () => {
-  const { profile, personalInfo } = useSelector((state) => state.resume);
+  const { profile, userInfo } = useResumeStore();
 
   // 개인 정보가 입력된 필드가 있는지 체크
-  const hasPersonalInfo = Object.values(personalInfo).some((value) => value !== '');
+  //const hasuserInfo = Object.values(userInfo).some((value) => value !== '');
 
   return (
     <div className="p-4">
@@ -28,12 +27,6 @@ const CreatePreview = () => {
       </div>
 
       {/* 개인 정보 섹션 */}
-      {hasPersonalInfo && (
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold mb-2">개인 정보</h3>
-          <PersonalInfoPreview formData={personalInfo} fieldConfigs={fieldConfigs} />
-        </div>
-      )}
     </div>
   );
 };

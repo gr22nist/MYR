@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PersonalInfoPreview = ({ formData, fieldConfigs }) => {
+const userInfoPreview = ({ formData, fieldConfigs }) => {
   return (
     <div className="grid grid-cols-1 gap-4">
       {Object.keys(fieldConfigs).map((field) => {
@@ -18,4 +18,4 @@ const PersonalInfoPreview = ({ formData, fieldConfigs }) => {
   );
 };
 
-export default PersonalInfoPreview;
+export default userInfoPreview;
