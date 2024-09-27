@@ -22,7 +22,7 @@ const DateRangeInput = ({
   const inputClasses = useMemo(() => combineClasses(
     commonStyles.inputBase,
     commonStyles.focusStyle,
-    'w-20'
+    'w-24'
   ), []);
 
   const endDateInputClasses = useMemo(() => combineClasses(
@@ -42,7 +42,7 @@ const DateRangeInput = ({
             onChange({ startDate: e.target.value, endDate, isCurrent });
           }}
           onBlur={validateDates}
-          placeholder="yyyymm"
+          placeholder="예: 202401"
           maxLength="7"
         />
         <span className="text-gray-500">~</span>
@@ -55,7 +55,7 @@ const DateRangeInput = ({
             onChange({ startDate, endDate: e.target.value, isCurrent });
           }}
           onBlur={validateDates}
-          placeholder="yyyy.mm"
+          placeholder="예: 202401"
           disabled={isCurrent}
           maxLength="7"
         />
