@@ -1,21 +1,27 @@
 import { useEffect, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { loaduserInfo, saveuserInfo, removeItem, updateItem } from '@/redux/slices/userInfoSlice';
+import useUserInfoStore from '@/store/userInfoStore';
 import { typeToKorean } from '@/constants/userInfoConstants';
 
 const useUserInfo = () => {
-  const dispatch = useDispatch();
-  const { items, status, error } = useSelector(state => state.userInfo);
+  const { 
+    items, 
+    status, 
+    error, 
+    loaduserInfo, 
+    saveuserInfo, 
+    updateItem, 
+    removeItem 
+  } = useUserInfoStore();
 
   const loadUserInfoData = useCallback(() => {
-    dispatch(loaduserInfo());
-  }, [dispatch]);
+    loaduserInfo();
+  }, [loaduserInfo]);
 
   useEffect(() => {
     loadUserInfoData();
   }, [loadUserInfoData]);
 
-  // 새로 추가된 retryLoading 함수
+  // 기존의 retryLoading 함수 유지
   const retryLoading = useCallback(() => {
     loadUserInfoData();
   }, [loadUserInfoData]);
@@ -29,7 +35,7 @@ const useUserInfo = () => {
           value: field === 'custom' ? value.value : value,
           displayType: field === 'custom' ? value.title : typeToKorean[field]
         };
-        dispatch(updateItem(updatedItem));
+        updateItem(updatedItem);
       }
     } else {
       if (field !== 'custom' && items.some(item => item.type === field)) {
@@ -41,12 +47,12 @@ const useUserInfo = () => {
         value: field === 'custom' ? value.value : value,
         displayType: field === 'custom' ? value.title : typeToKorean[field]
       };
-      dispatch(saveuserInfo(newItem));
+      saveuserInfo(newItem);
     }
   };
 
   const handleRemoveItem = (itemId) => {
-    dispatch(removeItem(itemId));
+    removeItem(itemId);
   };
 
   return { 
@@ -55,7 +61,7 @@ const useUserInfo = () => {
     error, 
     handleFieldChange, 
     handleRemoveItem, 
-    retryLoading  // 새로 추가된 retryLoading 함수를 반환
+    retryLoading
   };
 };
 

@@ -5,6 +5,8 @@ import { CSSTransition } from 'react-transition-group';
 
 const UserInfoItem = ({ type, displayType, value, onRemove, onEdit }) => {
   const nodeRef = useRef(null);
+  const displayValue = typeof value === 'string' ? value : 
+                       (typeof value === 'object' && value !== null ? value.value : '');
 
   return (
     <CSSTransition
@@ -16,7 +18,7 @@ const UserInfoItem = ({ type, displayType, value, onRemove, onEdit }) => {
     >
       <div ref={nodeRef} className="personal-info-item p-4 relative rounded-lg bg-mono-f5">
         <div className="text-sm font-bold mb-2 text-mono-99">{displayType}</div>
-        <div className="text-mono-11 font-bold">{value}</div>
+        <div className="text-mono-11 font-bold">{displayValue}</div>
         <div className="absolute top-2 right-2 flex space-x-2">
           <button onClick={onEdit} className="text-mono-dd hover:text-mono-66 duration-300">
             <EditBtn />

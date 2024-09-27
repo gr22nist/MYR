@@ -1,37 +1,35 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { resetResume } from '@/redux/slices/resumeSlice';
-import { resetCareers } from '@/redux/slices/careerSlice';
-import { resetEducations } from '@/redux/slices/educationSlice';
-import { resetCustomSections } from '@/redux/slices/customSectionSlice';
-import { resetUserInfo } from '@/redux/slices/userInfoSlice';
-import { showToast } from '@/redux/slices/globalSlice';
+import useUserInfoStore from '@/store/userInfoStore';
+import useCareerStore from '@/store/careerStore';
+import useEducationStore from '@/store/educationStore';
+import useProfileStore from '@/store/profileStore';
+import useCustomSectionStore from '@/store/customStore';
 import { clearDatabase } from '@/utils/indexedDB';
 
 export const useResumeActions = () => {
-  const dispatch = useDispatch();
+  const { resetUserInfo } = useUserInfoStore();
+  const { resetCareers } = useCareerStore();
+  const { resetEducations } = useEducationStore();
+  const { resetProfile } = useProfileStore();
+  const { resetCustomSections } = useCustomSectionStore();
 
   const handleReset = useCallback(async () => {
     try {
-      // 데이터베이스 초기화
       await clearDatabase();
-      
-      // Redux 상태 초기화
-      dispatch(resetResume());
-      dispatch(resetCareers());
-      dispatch(resetEducations());
-      dispatch(resetCustomSections());
-      dispatch(resetUserInfo());
-      
-      dispatch(showToast({ message: '서식이 초기화되었습니다.', type: 'success' }));
+      await resetUserInfo();
+      await resetCareers();
+      await resetEducations();
+      await resetProfile();
+      await resetCustomSections();
+      return true;
     } catch (error) {
-      console.error('서식 초기화 중 오류 발생:', error);
-      dispatch(showToast({ message: '서식 초기화에 실패했습니다.', type: 'error' }));
+      console.error('초기화 중 오류 발생:', error);
+      return false;
     }
-  }, [dispatch]);
+  }, [resetUserInfo, resetCareers, resetEducations, resetProfile, resetCustomSections]);
 
   const handlePreview = useCallback(() => {
-    window.open('/resume/preview', '_blank');
+    window.open('/preview', '_blank');
   }, []);
 
   return { handleReset, handlePreview };
