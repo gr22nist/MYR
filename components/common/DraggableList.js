@@ -1,86 +1,39 @@
-import React, { useState, useEffect, memo } from 'react';
-import dynamic from 'next/dynamic';
+import React from 'react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-const DragDropContext = dynamic(
-  () => import('react-beautiful-dnd').then(mod => mod.DragDropContext),
-  { ssr: false }
-);
-const Droppable = dynamic(
-  () => import('react-beautiful-dnd').then(mod => mod.Droppable),
-  { ssr: false }
-);
-const Draggable = dynamic(
-  () => import('react-beautiful-dnd').then(mod => mod.Draggable),
-  { ssr: false }
-);
+const SortableItem = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
-const containerStyle = {
-  width: '100%',
-  maxWidth: '1200px', 
-  overflowX: 'hidden',
-  overflowY: 'auto',
-  border: '1px solid lightgray',
-  padding: '8px',
-  backgroundColor: '#f8f9fa'
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {React.isValidElement(children) 
+        ? React.cloneElement(children, { dragHandleProps: { ...attributes, ...listeners } })
+        : children}
+    </div>
+  );
 };
 
-const DraggableItem = memo(({ item, index, renderItem }) => {
-  const itemId = item.id || `item-${index}`;
+const DraggableList = ({ items, onDragEnd, renderItem }) => {
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
   return (
-    <Draggable draggableId={itemId} index={index}>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          style={{
-            ...provided.draggableProps.style,
-            backgroundColor: snapshot.isDragging ? 'lightblue' : 'white',
-            marginBottom: '8px',
-            padding: '8px',
-            border: '1px solid #ddd',
-            borderRadius: '4px'
-          }}
-        >
-          <div {...provided.dragHandleProps}>
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        {items.map((item) => (
+          <SortableItem key={item.id} id={item.id}>
             {renderItem(item)}
-          </div>
-        </div>
-      )}
-    </Draggable>
+          </SortableItem>
+        ))}
+      </SortableContext>
+    </DndContext>
   );
-});
-
-DraggableItem.displayName = 'DraggableItem';
-
-const DraggableList = memo(({ items, onDragEnd, renderItem }) => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) return null;
-
-  // items가 undefined거나 null이 아닌지, 그리고 배열인지 확인
-  const safeItems = Array.isArray(items) ? items : [];
-
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="list">
-        {(provided) => (
-          <div {...provided.droppableProps} ref={provided.innerRef} style={containerStyle}>
-            {safeItems.map((item, index) => (
-              <DraggableItem key={item?.id ?? index} item={item} index={index} renderItem={renderItem} />
-            ))}
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
-  );
-});
-
-DraggableList.displayName = 'DraggableList';
+};
 
 export default DraggableList;

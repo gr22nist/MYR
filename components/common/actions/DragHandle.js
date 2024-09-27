@@ -1,13 +1,5 @@
-import React from 'react';
-import { DragHandleBtn } from '@/components/icons/IconSet';
-import IconButton from '../IconButton';
+import dynamic from 'next/dynamic';
 
-const DragHandle = ({ dragHandleProps }) => (
-  <IconButton 
-    icon={DragHandleBtn} 
-    {...dragHandleProps} 
-    className="cursor-grab"
-  />
-);
+const DragHandle = dynamic(() => import('./DragHandleComponent'), { ssr: false });
 
 export default DragHandle;

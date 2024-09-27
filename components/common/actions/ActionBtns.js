@@ -1,37 +1,27 @@
 import React from 'react';
 import DeleteButton from './DeleteBtn';
 import FoldButton from './FoldBtn';
-import { DragHandleBtn } from '@/components/icons/IconSet';
+import DragHandle from './DragHandle';
 
 const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, dragHandleProps, mode = 'item' }) => {
   if (mode === 'item') {
     return (
       <div className="flex items-center space-x-2">
+        <DragHandle dragHandleProps={dragHandleProps} />
         {isDeletable && <DeleteButton onClick={onDelete} />}
-        <div className="cursor-grab active:cursor-grabbing" {...dragHandleProps}>
-          <DragHandleBtn className="w-5 h-5" />
-        </div>
       </div>
     );
   } else if (mode === 'section') {
     return (
       <div className="flex items-center space-x-2">
-        {!isExpanded && (
-          <div className="cursor-grab active:cursor-grabbing" {...dragHandleProps}>
-            <DragHandleBtn className="w-5 h-5" />
-          </div>
-        )}
+        {!isExpanded && <DragHandle dragHandleProps={dragHandleProps} />}
         <FoldButton onClick={onFold} isExpanded={isExpanded} />
       </div>
     );
   } else if (mode === 'custom') {
     return (
       <div className="flex items-center space-x-2">
-        {!isExpanded && (
-          <div className="cursor-grab active:cursor-grabbing" {...dragHandleProps}>
-            <DragHandleBtn className="w-5 h-5" />
-          </div>
-        )}
+        {!isExpanded && <DragHandle dragHandleProps={dragHandleProps} />}
         {isDeletable && <DeleteButton onClick={onDelete} />}
         <FoldButton onClick={onFold} isExpanded={isExpanded} />
       </div>
