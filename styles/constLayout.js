@@ -20,10 +20,14 @@ export const getColorClass = (color, type = 'text') => {
 
 // 레이아웃 관련 상수
 export const layout = {
-  mainContentWidth: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
   container: 'container max-w-myr mx-auto px-12 py-16 flex flex-col gap-4 justify-center bg-white',
-  buttonContainer: 'fixed bottom-0 right-0 p-4 flex space-x-2',
-  previewButton: 'bg-blue-500 text-white px-4 py-2 rounded',
-  resetButton: 'bg-red-500 text-white px-4 py-2 rounded',
+  previewButton: 'flex bg-blue-500 text-white p-4 rounded',
+  resetButton: 'flex  bg-red-500 text-white p-4 rounded',
 };
 
+
+export const btn = {
+  base: '',
+  preview: 'flex bg-blue-500 text-white px-4 py-2 rounded',
+  reset: 'flex  bg-red-500 text-white px-4 py-2 rounded',
+};
