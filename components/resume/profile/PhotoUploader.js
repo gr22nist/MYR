@@ -1,86 +1,115 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useCallback, useRef, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
-import { addImage, deleteImage } from '@/utils/indexedDB';
+import imageCompression from 'browser-image-compression';
+import useGlobalStore from '@/store/globalStore';
+
+// 컴포넌트 외부로 이동
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const PhotoUploader = ({ onImageChange, currentImage }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { showToast } = useGlobalStore();
   const fileInputRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [error, setError] = useState(null);
 
-  const isValidImageData = useCallback((data) => {
-    return typeof data === 'string' && data.startsWith('data:image');
+  const compressImage = useCallback(async (file) => {
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1000,
+      useWebWorker: true
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile;
+    } catch (error) {
+      console.error('이미지 압축 실패:', error);
+      showToast({ message: '이미지 압축에 실패했습니다.', type: 'error' });
+      return file;
+    }
+  }, [showToast]);
+
+  const resizeImage = useCallback((file, maxWidth, maxHeight) => {
+    return new Promise((resolve) => {
+      const img = new window.Image();  // 'window.Image'를 사용
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(resolve, 'image/jpeg', 0.7);
+      };
+      img.src = URL.createObjectURL(file);
+    });
   }, []);
 
-  const handlePhotoUpload = async (event) => {
+  const handlePhotoUpload = useCallback(async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const imageData = reader.result;
-        if (isValidImageData(imageData)) {
-          await addImage('profilePhoto', imageData);
-          onImageChange(imageData);  // 부모 컴포넌트에 변경 사항 알림
-        } else {
-          throw new Error('Invalid image data');
-        }
-        setIsLoading(false);
-      };
-      reader.readAsDataURL(file);
-    } catch (err) {
-      console.error('Photo upload error:', err);
-      setError('사진 업로드에 실패했습니다.');
-      setIsLoading(false);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      showToast({ message: '지원되지 않는 파일 형식입니다. JPG, PNG, WEBP 형식만 허용됩니다.', type: 'error' });
+      return;
     }
-  };
 
-  const handlePhotoDelete = async () => {
-    setIsLoading(true);
     setError(null);
 
     try {
-      await deleteImage('profilePhoto');
-      onImageChange(null);  // 부모 컴포넌트에 변경 사항 알림
-      setIsLoading(false);
+      const compressedFile = await compressImage(file);
+      const resizedBlob = await resizeImage(compressedFile, 110, 144);
       
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    } catch (err) {
-      console.error('Photo delete error:', err);
-      setError('사진 삭제에 실패했습니다.');
-      setIsLoading(false);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imageData = reader.result;
+        onImageChange(imageData);
+        showToast({ message: '이미지가 성공적으로 업로드되었습니다.', type: 'success' });
+      };
+      reader.readAsDataURL(resizedBlob);
+    } catch (error) {
+      console.error('이미지 처리 실패:', error);
+      showToast({
+        message: '이미지 처리 중 오류가 발생했습니다. 다시 시도해 주세요.',
+        type: 'error'
+      });
+      setError('이미지 처리 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
-  };
+  }, [onImageChange, showToast, compressImage, resizeImage]);
 
-  const photoWrapStyles = `
-    relative w-[110px] h-[144px] overflow-hidden cursor-pointer rounded-md
-    flex items-center justify-center
-  `;
-
-  const photoOverlayStyles = `
-    absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center
-  `;
-
-  const uploadBtnStyles = `
-    w-full h-full flex flex-col items-center justify-center bg-mono-f5 cursor-pointer
-  `;
+  const handlePhotoDelete = useCallback(() => {
+    onImageChange(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    showToast({ message: '이미지가 삭제되었습니다.', type: 'info' });
+  }, [onImageChange, showToast]);
 
   return (
     <div className="flex items-center flex-col">
-      <div
-        className={photoWrapStyles}
+      <div 
+        className="relative w-[110px] h-[144px] overflow-hidden cursor-pointer rounded-md flex items-center justify-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {currentImage && isValidImageData(currentImage) ? (
-          <div className="relative w-full h-full">
+        {currentImage ? (
+          <div className="relative w-full h-full group">
             <Image
               src={currentImage}
               alt="Profile"
@@ -88,7 +117,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
               style={{ objectFit: 'cover' }}
             />
             {isHovered && (
-              <div className={photoOverlayStyles}>
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity">
                 <button onClick={handlePhotoDelete}>
                   <PhotoRemove className="w-8 h-8 text-white" />
                 </button>
@@ -96,7 +125,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
             )}
           </div>
         ) : (
-          <label htmlFor="photo-upload" className={uploadBtnStyles}>
+          <label htmlFor="photo-upload" className="w-full h-full flex flex-col items-center justify-center bg-mono-f5 cursor-pointer">
             {isHovered ? (
               <PhotoAdd className="w-8 h-8 text-mono-99" />
             ) : (
@@ -115,8 +144,6 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
         onChange={handlePhotoUpload}
         className="hidden"
       />
-      {isLoading && <p>로딩 중...</p>}
-      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 };
