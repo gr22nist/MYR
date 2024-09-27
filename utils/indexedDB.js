@@ -5,13 +5,14 @@ const db = new Dexie('ResumeDB');
 
 const initializeDB = async () => {
   try {
-    db.version(13).stores({
+    db.version(14).stores({
       careers: '++id',
       educations: '++id',
       userInfo: 'key',
       profilePhotos: 'key',
       profileTexts: 'key',
-      resumeData: 'key'
+      resumeData: 'key',
+      customSections: '++id'
     });
     await db.open();
   } catch (error) {
@@ -26,41 +27,67 @@ export const saveCareers = async (careers) => {
     await db.transaction('rw', db.careers, async () => {
       await db.careers.clear();
       for (const career of careers) {
+        const encryptedCareer = encryptData(career);
         if (career.id) {
-          await db.careers.put(career);
+          await db.careers.put({ id: career.id, value: encryptedCareer });
         } else {
-          delete career.id;  // id가 없는 경우 자동 생성을 위해 제거
-          await db.careers.add(career);
+          await db.careers.add({ value: encryptedCareer });
         }
       }
     });
   } catch (error) {
-    console.error('Error saving careers:', error);
+    console.error('경력 저장 중 오류 발생:', error);
     throw error;
   }
 };
 
 export const loadCareers = async () => {
-  return db.careers.toArray();
+  const encryptedCareers = await db.careers.toArray();
+  return encryptedCareers.map(item => ({
+    ...decryptData(item.value),
+    id: item.id
+  }));
 };
 
 export const saveEducations = async (educations) => {
   await db.educations.clear();
-  await db.educations.bulkAdd(educations);
+  const encryptedEducations = educations.map(edu => ({ value: encryptData(edu) }));
+  await db.educations.bulkAdd(encryptedEducations);
 };
 
 export const loadEducations = async () => {
-  return db.educations.toArray();
+  const encryptedEducations = await db.educations.toArray();
+  return encryptedEducations.map(item => ({
+    ...decryptData(item.value),
+    id: item.id
+  }));
 };
 
 export const saveuserInfo = async (userInfo) => {
-  await db.userInfo.clear();
-  await db.userInfo.add(userInfo);
+  try {
+    await db.userInfo.clear();
+    const encryptedUserInfo = encryptData(userInfo);
+    await db.userInfo.add({ key: 'userInfo', value: encryptedUserInfo });
+    console.log('User info saved successfully');
+  } catch (error) {
+    console.error('Error saving user info to IndexedDB:', error);
+    throw error;
+  }
 };
 
 export const loaduserInfo = async () => {
-  const alluserInfo = await db.userInfo.toArray();
-  return alluserInfo[0] || { items: [], isExpanded: false };
+  try {
+    const encryptedUserInfo = await db.userInfo.get('userInfo');
+    if (encryptedUserInfo && encryptedUserInfo.value) {
+      const decryptedUserInfo = decryptData(encryptedUserInfo.value);
+      
+      return Array.isArray(decryptedUserInfo) ? decryptedUserInfo : [];
+    }
+    return [];
+  } catch (error) {
+    console.error('Error loading user info:', error);
+    throw error;
+  }
 };
 
 export const addItem = async (storeName, key, data, encrypt = true) => {
@@ -153,12 +180,31 @@ export const addEncryptedItem = async (storeName, key, value) => {
 };
 
 export const saveCustomSections = async (sections) => {
-  await db.customSections.clear();
-  await db.customSections.bulkAdd(sections);
+  try {
+    await db.transaction('rw', db.customSections, async () => {
+      await db.customSections.clear();
+      for (const section of sections) {
+        const encryptedSection = encryptData(section);
+        await db.customSections.add({ value: encryptedSection });
+      }
+    });
+  } catch (error) {
+    console.error('사용자 정의 섹션 저장 중 오류 발생:', error);
+    throw error;
+  }
 };
 
 export const loadCustomSections = async () => {
-  return db.customSections.toArray();
+  try {
+    const encryptedSections = await db.customSections.toArray();
+    return encryptedSections.map(item => ({
+      ...decryptData(item.value),
+      id: item.id
+    }));
+  } catch (error) {
+    console.error('사용자 정의 섹션 로딩 중 오류 발생:', error);
+    throw error;
+  }
 };
 
 export const clearDatabase = async () => {
@@ -177,6 +223,15 @@ export const clearDatabase = async () => {
     }
   } catch (error) {
     console.error('데이터베이스 초기화 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+export const deleteCustomSection = async (id) => {
+  try {
+    await db.customSections.delete(id);
+  } catch (error) {
+    console.error('Failed to delete custom section:', error);
     throw error;
   }
 };
