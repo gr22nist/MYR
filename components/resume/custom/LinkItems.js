@@ -5,9 +5,17 @@ const LinkItems = ({ links, onChange }) => {
   const [newSiteName, setNewSiteName] = useState('');
   const [newLink, setNewLink] = useState('');
 
+  const formatUrl = (url) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return `https://${url}`;
+  };
+
   const handleAddLink = () => {
     if (newSiteName && newLink) {
-      onChange([...links, { siteName: newSiteName, link: newLink }]);
+      const formattedLink = formatUrl(newLink);
+      onChange([...links, { siteName: newSiteName, link: formattedLink }]);
       setNewSiteName('');
       setNewLink('');
     }
@@ -16,6 +24,10 @@ const LinkItems = ({ links, onChange }) => {
   const handleRemoveLink = (index) => {
     const newLinks = links.filter((_, i) => i !== index);
     onChange(newLinks);
+  };
+
+  const handleLinkChange = (e) => {
+    setNewLink(e.target.value);
   };
 
   return (
@@ -33,7 +45,7 @@ const LinkItems = ({ links, onChange }) => {
         <FloatingLabelInput
           label="링크"
           value={newLink}
-          onChange={(e) => setNewLink(e.target.value)}
+          onChange={handleLinkChange}
           placeholder="https://"
           spellCheck="false"
           className="mr-2"
