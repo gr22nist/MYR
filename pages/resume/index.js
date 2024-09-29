@@ -1,88 +1,110 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { layout } from '@/styles/constLayout';
 import Profile from '@/components/resume/profile/Profile';
 import UserInfoForm from '@/components/resume/userInfo/UserInfoForm';
 import { useResumeActions } from '@/hooks/useResumeActions';
-import ModalComponent from '@/components/resume/userInfo/ModalComponent';
 import FloatingControls from '@/components/common/actions/FloatingControls';
-import DraggableList from '@/components/common/DraggableList';
-import useResumeSectionsStore from '@/store/resumeSectionsStore';
-import useUserInfoStore from '@/store/userInfoStore';
-import CareerList from '@/components/resume/career/CareerList';
-import EducationList from '@/components/resume/education/EducationList';
 import CustomForm from '@/components/resume/custom/CustomForm';
+import useResumeSections from '@/hooks/useResumeSections';
+import SortableSectionList from '@/components/common/SortableSectionList';
+import ResetModal from '@/components/common/actions/ResetModal';
 
 const Resume = () => {
-  const { sections, setSections, updateSection, removeSection, reorderSections } = useResumeSectionsStore();
-  // resetUserInfo 제거
   const { handleReset, handlePreview } = useResumeActions();
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  
+  const { 
+    sections,
+    sectionOrder,
+    loadAllSections, 
+    updateSection, 
+    removeSection, 
+    addSection,
+    updateSectionOrder,
+    isLoaded
+  } = useResumeSections();
+
+  const [expandedSections, setExpandedSections] = useState({});
 
   useEffect(() => {
-    // 여기서 초기 섹션 데이터를 로드합니다.
-    if (sections.length === 0) {
-      const initialSections = [
-        { id: 'career', type: 'career' },
-        { id: 'education', type: 'education' },
-        // 커스텀 섹션은 여러 개일 수 있습니다
-      ];
-      setSections(initialSections);
+    if (!isLoaded) {
+      console.log('Loading sections in Resume component...');
+      loadAllSections();
     }
-  }, [sections, setSections]);
+  }, [isLoaded, loadAllSections]);
 
-  const handleResetClick = () => {
-    setIsResetModalOpen(true);
-  };
+  useEffect(() => {
+    console.log('Current sections:', sections);
+    // 섹션이 로드되면 모든 섹션을 펼친 상태로 초기화
+    if (sections.length > 0) {
+      const initialExpandedState = sections.reduce((acc, section) => {
+        acc[section.id] = true;
+        return acc;
+      }, {});
+      setExpandedSections(initialExpandedState);
+    }
+  }, [sections]);
+
+  const orderedSections = useMemo(() => {
+    if (!sectionOrder || !sections) return [];
+    return sectionOrder
+      .map(id => sections.find(section => section.id === id))
+      .filter(Boolean);
+  }, [sectionOrder, sections]);
+
+  useEffect(() => {
+    console.log('Current sections:', sections);
+  }, [sections]);
+
+  const handleDeleteSection = useCallback((id) => {
+    removeSection(id);
+  }, [removeSection]);
+
+  const toggleExpand = useCallback((id) => {
+    setExpandedSections(prev => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
+  
+  const handleResetClick = () => setIsResetModalOpen(true);
 
   const handleConfirmReset = async () => {
-    setIsResetModalOpen(false);
-    const resetSuccess = await handleReset();
-    if (resetSuccess) {
-      console.log('초기화 성공, 새로고침 실행');
-      window.location.reload();
-    } else {
-      console.log('초기화 실패');
+    try {
+      await handleReset();
+      setIsResetModalOpen(false);
+      setExpandedSections({}); // 로컬 상태 초기화
+      await loadAllSections(); // 섹션 다시 로드
+    } catch (error) {
+      console.error('초기화 중 오류 발생:', error);
+      // 오류 처리 (예: 사용자에게 알림)
     }
   };
 
-  const renderSection = (section) => {
-    switch (section.type) {
-      case 'career':
-        return <CareerList />;
-      case 'education':
-        return <EducationList />;
-      case 'custom':
-        return (
-          <CustomForm
-            section={section}
-            onSectionChange={(updatedSection) => updateSection(updatedSection)}
-            onDelete={() => removeSection(section.id)}
-          />
-        );
-      default:
-        return null;
-    }
-  };
+  const handleReorder = useCallback((oldIndex, newIndex) => {
+    const newOrder = Array.from(orderedSections);
+    const [reorderedItem] = newOrder.splice(oldIndex, 1);
+    newOrder.splice(newIndex, 0, reorderedItem);
+    updateSectionOrder(newOrder.map(section => section.id));
+  }, [orderedSections, updateSectionOrder]);
 
   return (
-    <div className={`${layout.container} pb-20 sm:pb-0`}>
+    <div className={`${layout.container}`}>
       <Profile />
       <UserInfoForm />
-      <DraggableList
-        items={sections}
-        onDragEnd={reorderSections}
-        renderItem={renderSection}
+      <SortableSectionList
+        sections={orderedSections}
+        onSectionChange={updateSection}
+        onDelete={handleDeleteSection}
+        onReorder={handleReorder}
+        expandedSections={expandedSections}
+        onToggleExpand={toggleExpand}
       />
-
+      <CustomForm onAddSection={addSection} />
       <FloatingControls onPreview={handlePreview} onReset={handleResetClick} />
-
-      <ModalComponent isOpen={isResetModalOpen} onClose={() => setIsResetModalOpen(false)}>
-        <p>정말로 모든 데이터를 초기화하시겠습니까?</p>
-        <div className="flex justify-end space-x-2 mt-4">
-          <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={() => setIsResetModalOpen(false)}>취소</button>
-          <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleConfirmReset}>초기화</button>
-        </div>
-      </ModalComponent>
+      <ResetModal
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+        onConfirm={handleConfirmReset}
+      />
     </div>
   );
 };
