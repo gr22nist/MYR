@@ -4,7 +4,7 @@ import { commonStyles } from '@/styles/constLayout';
 import useProfileStore from '@/store/profileStore';
 
 const Profile = () => {
-	const { profile, isLoading, loadProfile, updateProfile, updateProfileImage } = useProfileStore();
+	const { profile, isLoading, error, loadProfile, updateProfile, updateProfileImage } = useProfileStore();
 
 	useEffect(() => {
 		loadProfile();
@@ -19,7 +19,11 @@ const Profile = () => {
 	}, [updateProfileImage]);
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <div>프로필 로딩 중...</div>;
+	}
+
+	if (error) {
+		return <div>에러 발생: {error}</div>;
 	}
 
 	const textAreaBaseStyle = 'p-4 bg-mono-f5 leading-normal text-mono-11 resize-none border-0 rounded-lg overflow-hidden';
