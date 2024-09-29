@@ -1,12 +1,34 @@
 // hooks/dbConfig.js
 import Dexie from 'dexie';
 
-export const initializeDB = () => {
-  const db = new Dexie('MYRDB');
+let db;
+
+export const initializeDB = async () => {
+  if (db) return db;
+  
+  db = new Dexie('ResumeDB');
   db.version(1).stores({
-    profilePhotos: '++id,profilePhoto',
-    profileTexts: '++id,profileTitle,profileParagraph',
-    resumeData: '++id,data',
+    careers: '&id',
+    educations: '&id',
+    userInfo: '&id',
+    profilePhotos: 'key',
+    resumeData: 'key',
+    customSections: '&id',
+    profileData: 'key'
   });
+
+  try {
+    await db.open();
+    return db;
+  } catch (error) {
+    console.error('데이터베이스 열기 실패:', error);
+    throw error;
+  }
+};
+
+export const getDB = async () => {
+  if (!db) {
+    return await initializeDB();
+  }
   return db;
 };
