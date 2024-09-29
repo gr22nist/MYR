@@ -3,38 +3,10 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 15, 23, 42;
-  --background-rgb: 255, 255, 255;
-  --drag-background-color: #cccccc;
-  --drag-text-color: #000000;
+  --font-nanum: 'Nanum Gothic', sans-serif;
 }
-
-/* @font-face {
-  font-family: 'NanumSquareNeo';
-  src: url('/fonts/NanumSquareNeo-Variable.woff2') format('woff2'),
-       url('/fonts/NanumSquareNeo-Variable.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-} */
-
-/* body의 font-family 설정 제거 */
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-}
-
-@layer base {
-  html {
-    font-family: 'NanumSquareNeo', system-ui, sans-serif;
-  }
+  font-family: var(--font-nanum);
 }
 
