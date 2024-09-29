@@ -1,65 +1,82 @@
 import { create } from 'zustand';
-import { loaduserInfo as loaduserInfoFromDB, saveuserInfo as saveuserInfoToDB } from '@/utils/indexedDB';
+import { createBaseActions } from '@/utils/storeUtils';
+import { loadUserInfo as loadUserInfoFromDB, saveUserInfo as saveUserInfoToDB } from '@/utils/indexedDB';
+import { generateUUID } from '@/utils/uuid';
+import { typeToKorean } from '@/constants/resumeConstants';
 
 const useUserInfoStore = create((set, get) => ({
-  items: [],
+  items: [], // 초기 상태를 빈 배열로 변경
   status: 'idle',
   error: null,
+  ...createBaseActions('items', loadUserInfoFromDB, saveUserInfoToDB),
+
+  addUserInfo: (newItem) => {
+    const newItemWithId = { 
+      ...newItem, 
+      id: generateUUID(),
+      displayType: newItem.type === 'custom' ? newItem.value.title : typeToKorean[newItem.type]
+    };
+    set(state => {
+      const updatedItems = [...state.items, newItemWithId];
+      saveUserInfoToDB(updatedItems);
+      return { items: updatedItems };
+    });
+  },
+
+  updateUserInfo: (updatedItem) => {
+    set(state => {
+      const updatedItems = state.items.map(item => 
+        item.id === updatedItem.id 
+          ? {
+              ...updatedItem,
+              displayType: updatedItem.type === 'custom' ? updatedItem.value.title : typeToKorean[updatedItem.type]
+            }
+          : item
+      );
+      saveUserInfoToDB(updatedItems);
+      return { items: updatedItems };
+    });
+  },
+
+  removeUserInfo: (id) => {
+    set(state => {
+      const updatedItems = state.items.filter(item => item.id !== id);
+      saveUserInfoToDB(updatedItems);
+      return { items: updatedItems };
+    });
+  },
+
+  reorderUserInfo: (oldIndex, newIndex) => {
+    set(state => {
+      const updatedItems = [...state.items];
+      const [reorderedItem] = updatedItems.splice(oldIndex, 1);
+      updatedItems.splice(newIndex, 0, reorderedItem);
+      saveUserInfoToDB(updatedItems);
+      return { items: updatedItems };
+    });
+  },
+
+  resetUserInfo: () => {
+    set(() => {
+      saveUserInfoToDB([]);
+      return { items: [] };
+    });
+  },
 
   loadUserInfo: async () => {
     set({ status: 'loading' });
     try {
-      const data = await loaduserInfoFromDB();
-      set({ items: Array.isArray(data) ? data : [], status: 'succeeded', error: null });
+      const loadedItems = await loadUserInfoFromDB();
+      set({ items: loadedItems, status: 'success' });
     } catch (error) {
-      set({ status: 'failed', error: error.message });
+      console.error('Error loading user info in store:', error);
+      set({ error: error.message, status: 'error' });
     }
   },
 
-  saveUserInfo: async (newItem) => {
-    try {
-      const currentItems = get().items;
-      const updatedItems = [...currentItems, { ...newItem, id: `userInfo-${Date.now()}` }];
-      await saveuserInfoToDB(updatedItems);
-      set({ items: updatedItems });
-    } catch (error) {
-      console.error('Error saving user info:', error);
-      set({ status: 'failed', error: error.message });
-    }
-  },
-
-  updateItem: async (updatedItem) => {
-    try {
-      const currentItems = get().items;
-      const updatedItems = currentItems.map(item => 
-        item.id === updatedItem.id ? { ...item, ...updatedItem } : item
-      );
-      await saveuserInfoToDB(updatedItems);
-      set({ items: updatedItems });
-    } catch (error) {
-      console.error('Error updating user info:', error);
-      set({ status: 'failed', error: error.message });
-    }
-  },
-
-  removeItem: async (itemId) => {
-    try {
-      const currentItems = get().items;
-      const updatedItems = currentItems.filter(item => item.id !== itemId);
-      await saveuserInfoToDB(updatedItems);
-      set({ items: updatedItems });
-    } catch (error) {
-      set({ status: 'failed', error: error.message });
-    }
-  },
-
-  resetUserInfo: async () => {
-    try {
-      await saveuserInfoToDB([]);
-      set({ items: [], status: 'idle' });
-    } catch (error) {
-      console.error('Failed to reset user info:', error);
-    }
+  saveUserInfo: () => {
+    const { items } = get();
+    saveUserInfoToDB(items);
   },
 }));
 
