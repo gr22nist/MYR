@@ -1,35 +1,23 @@
 import { useCallback } from 'react';
-import useUserInfoStore from '@/store/userInfoStore';
-import useCareerStore from '@/store/careerStore';
-import useEducationStore from '@/store/educationStore';
-import useProfileStore from '@/store/profileStore';
-import useCustomSectionStore from '@/store/customStore';
+import useResumeStore from '@/store/resumeStore';
 import { clearDatabase } from '@/utils/indexedDB';
 
 export const useResumeActions = () => {
-  const { resetUserInfo } = useUserInfoStore();
-  const { resetCareers } = useCareerStore();
-  const { resetEducations } = useEducationStore();
-  const { resetProfile } = useProfileStore();
-  const { resetCustomSections } = useCustomSectionStore();
-
+  const resetStore = useResumeStore(state => state.resetStore);
+  
   const handleReset = useCallback(async () => {
     try {
       await clearDatabase();
-      await resetUserInfo();
-      await resetCareers();
-      await resetEducations();
-      await resetProfile();
-      await resetCustomSections();
-      return true;
+      resetStore();
+      console.log('Database and store reset successfully');
     } catch (error) {
       console.error('초기화 중 오류 발생:', error);
-      return false;
+      throw error;
     }
-  }, [resetUserInfo, resetCareers, resetEducations, resetProfile, resetCustomSections]);
+  }, [resetStore]);
 
   const handlePreview = useCallback(() => {
-    window.open('/preview', '_blank');
+    // 미리보기 로직
   }, []);
 
   return { handleReset, handlePreview };
