@@ -1,75 +1,59 @@
 import { create } from 'zustand';
-import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDb } from '@/utils/indexedDB';
+import { createBaseActions } from '@/utils/storeUtils';
+import { loadEducations, saveEducations } from '@/utils/indexedDB';
+import { generateUUID } from '@/utils/uuid';
 
 const createInitialEducation = () => ({
-  id: `education-${Date.now()}`,
+  id: generateUUID(),
   schoolName: '',
   major: '',
   startDate: '',
   endDate: '',
   department: '',
   isCurrent: false,
-  graduationStatus: '졸업'
+  graduationStatus: '졸업',
+  order: 0
 });
 
 const useEducationStore = create((set, get) => ({
-  educations: {
-    items: [createInitialEducation()],
-    status: 'idle',
-    error: null,
+  educations: [createInitialEducation()],
+  status: 'idle',
+  error: null,
+  ...createBaseActions('educations', loadEducations, saveEducations),
+
+  addEducation: (newEducation) => {
+    const { add } = get();
+    add({ ...newEducation, id: generateUUID() });
   },
-  addEducation: (education) => set((state) => ({
-    educations: { ...state.educations, items: [...state.educations.items, education] }
-  })),
-  updateEducation: (updatedEducation) => set((state) => ({
-    educations: {
-      ...state.educations,
-      items: state.educations.items.map(education => 
-        education.id === updatedEducation.id ? updatedEducation : education
-      )
-    }
-  })),
-  deleteEducation: (id) => set((state) => ({
-    educations: {
-      ...state.educations,
-      items: state.educations.items.filter(education => education.id !== id)
-    }
-  })),
-  reorderEducations: (oldIndex, newIndex) => set((state) => {
-    const newItems = [...state.educations.items];
-    const [reorderedItem] = newItems.splice(oldIndex, 1);
-    newItems.splice(newIndex, 0, reorderedItem);
-    return { educations: { ...state.educations, items: newItems } };
-  }),
-  resetEducations: () => set((state) => ({
-    educations: { items: [createInitialEducation()], status: 'idle', error: null }
-  })),
+
+  updateEducation: (updatedEducation) => {
+    const { update } = get();
+    update(updatedEducation);
+  },
+
+  deleteEducation: (id) => {
+    const { remove } = get();
+    remove(id);
+  },
+
+  reorderEducations: (oldIndex, newIndex) => {
+    const { reorder } = get();
+    reorder(oldIndex, newIndex);
+  },
+
+  resetEducations: () => {
+    const { reset } = get();
+    reset([createInitialEducation()]);
+  },
+
   loadEducations: async () => {
-    set((state) => ({ educations: { ...state.educations, status: 'loading' } }));
-    try {
-      const educations = await loadEducationsFromDB();
-      set((state) => ({
-        educations: {
-          ...state.educations,
-          items: educations.length > 0 ? educations : [createInitialEducation()],
-          status: 'succeeded'
-        }
-      }));
-    } catch (error) {
-      set((state) => ({
-        educations: { ...state.educations, status: 'failed', error: error.message }
-      }));
-    }
+    const { load } = get();
+    await load();
   },
-  saveEducations: async () => {
-    try {
-      const educations = get().educations.items;
-      await saveEducationsToDb(educations);
-    } catch (error) {
-      set((state) => ({
-        educations: { ...state.educations, status: 'failed', error: error.message }
-      }));
-    }
+
+  saveEducations: () => {
+    const { educations } = get();
+    saveEducations(educations);
   },
 }));
 

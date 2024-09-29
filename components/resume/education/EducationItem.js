@@ -71,7 +71,8 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
           <ActionButtons 
             onDelete={() => onDelete(education.id)} 
             isDeletable={isDeletable} 
-            dragHandleProps={dragHandleProps} 
+            dragHandleProps={dragHandleProps}
+            isSubItem={true}
           />
         </div>
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useCallback } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import EducationItem from './EducationItem';
 import AccordionSection from '@/components/common/AccordionSection';
 import AddButton from '@/components/common/actions/AddBtn';
 import useEducationStore from '@/store/educationStore';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-const SortableEducationItem = ({ education, onEducationChange, onDelete, isDeletable }) => {
+const SortableEducationItem = ({ education, ...props }) => {
   const {
     attributes,
     listeners,
@@ -22,37 +22,42 @@ const SortableEducationItem = ({ education, onEducationChange, onDelete, isDelet
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} {...attributes}>
       <EducationItem
         education={education}
-        onEducationChange={onEducationChange}
-        onDelete={onDelete}
-        isDeletable={isDeletable}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        {...props}
+        dragHandleProps={{ ...listeners }}
       />
     </div>
   );
 };
 
-const EducationList = () => {
+const EducationList = ({ isExpanded, onToggle, section, onSectionChange }) => {
   const { 
     educations, 
     addEducation, 
     updateEducation, 
     deleteEducation, 
     loadEducations, 
-    saveEducations,
     reorderEducations 
   } = useEducationStore();
 
   useEffect(() => {
-    loadEducations();
-  }, [loadEducations]);
+    if (educations.status === 'idle') {
+      loadEducations();
+    }
+  }, [educations.status, loadEducations]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleEducationChange = useCallback((updatedEducation) => {
     updateEducation(updatedEducation);
-    saveEducations(); // 변경 사항 저장
-  }, [updateEducation, saveEducations]);
+  }, [updateEducation]);
 
   const handleAddEducation = useCallback(() => {
     const newId = `education-${Date.now()}`;
@@ -62,35 +67,27 @@ const EducationList = () => {
       major: '',
       startDate: '',
       endDate: '',
-      isCurrent: false,
-      graduationStatus: '졸업'
+      department: '',
+      graduationStatus: '졸업',
+      order: educations.items.length
     };
     addEducation(newEducation);
-    saveEducations(); // 추가 후 저장
-  }, [addEducation, saveEducations]);
+  }, [addEducation, educations.items.length]);
 
   const handleDeleteEducation = useCallback((id) => {
     if (educations.items.length > 1) {
       deleteEducation(id);
-      saveEducations(); // 삭제 후 저장
     }
-  }, [deleteEducation, educations.items, saveEducations]);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  }, [educations.items.length, deleteEducation]);
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
-
-    if (active.id !== over.id) {
+    if (active && over && active.id !== over.id) {
       const oldIndex = educations.items.findIndex((education) => education.id === active.id);
       const newIndex = educations.items.findIndex((education) => education.id === over.id);
-      reorderEducations(oldIndex, newIndex);
-      saveEducations(); // 순서 변경 후 저장
+      if (oldIndex !== -1 && newIndex !== -1) {
+        reorderEducations(oldIndex, newIndex);
+      }
     }
   };
 
@@ -98,33 +95,37 @@ const EducationList = () => {
     <AddButton onClick={handleAddEducation} ariaLabel="학력 추가" />
   );
 
-  // 서버 사이드 렌더링 중 오류 방지
-  if (typeof window === 'undefined' || !educations.items) {
-    return null;
+  if (educations.status === 'loading') {
+    return <div>학력 정보를 불러오는 중...</div>;
+  }
+
+  if (educations.status === 'failed') {
+    return <div>학력 정보를 불러오는데 실패했습니다: {educations.error}</div>;
   }
 
   return (
-    <AccordionSection title="학력" addButtonComponent={addButtonComponent}>
-      <DndContext 
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={educations.items.map(education => education.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {educations.items.map((education) => (
-            <SortableEducationItem
-              key={education.id}
-              education={education}
-              onEducationChange={handleEducationChange}
-              onDelete={handleDeleteEducation}
-              isDeletable={educations.items.length > 1}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
+    <AccordionSection 
+      title="학력" 
+      addButtonComponent={addButtonComponent}
+      isExpanded={isExpanded}
+      onToggle={onToggle}
+      mode="section"
+    >
+      {isExpanded && (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={educations.items.map(education => education.id)} strategy={verticalListSortingStrategy}>
+            {educations.items.map((education) => (
+              <SortableEducationItem
+                key={education.id}
+                education={education}
+                onEducationChange={handleEducationChange}
+                onDelete={handleDeleteEducation}
+                isDeletable={educations.items.length > 1}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
+      )}
     </AccordionSection>
   );
 };
