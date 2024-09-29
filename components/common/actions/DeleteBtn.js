@@ -1,13 +1,22 @@
 import React from 'react';
-import { DeleteBtn } from '@/components/icons/IconSet';
-import IconButton from '../IconButton';
+import { DeleteBtn, DeleteLineBtn } from '@/components/icons/IconSet';
 
-const DeleteButton = ({ onClick }) => (
-  <IconButton 
-    icon={DeleteBtn} 
-    onClick={onClick} 
-    hoverFill="fill-red-500"
-  />
-);
+const DeleteButton = ({ onClick, isSubItem }) => {
+  const handleClick = (e) => {
+    console.log('DeleteButton clicked');
+    e.preventDefault();
+    e.stopPropagation();
+    onClick();
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="rounded-full hover:bg-gray-200 transition-colors duration-200"
+    >
+      {isSubItem ? <DeleteBtn /> : <DeleteLineBtn />}
+    </button>
+  );
+};
 
 export default DeleteButton;

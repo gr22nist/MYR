@@ -24,7 +24,7 @@ const IconButton = ({
       className={`rounded-full ${sizeClasses[size]} ${className}`}
       {...props}
     >
-      <Icon className={`fill-mono-99 hover:${hoverFill} hover:scale-110 duration-300`} />
+      <Icon className={`hover:${hoverFill} hover:scale-110 duration-300`} />
     </button>
   );
 };
