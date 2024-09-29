@@ -7,24 +7,19 @@ const useUserInfo = () => {
     items, 
     status, 
     error, 
-    loaduserInfo, 
-    saveuserInfo, 
-    updateItem, 
-    removeItem 
+    loadUserInfo,
+    addUserInfo,
+    updateUserInfo, 
+    removeUserInfo 
   } = useUserInfoStore();
 
-  const loadUserInfoData = useCallback(() => {
-    loaduserInfo();
-  }, [loaduserInfo]);
-
   useEffect(() => {
-    loadUserInfoData();
-  }, [loadUserInfoData]);
+    loadUserInfo();
+  }, [loadUserInfo]);
 
-  // 기존의 retryLoading 함수 유지
   const retryLoading = useCallback(() => {
-    loadUserInfoData();
-  }, [loadUserInfoData]);
+    loadUserInfo();
+  }, [loadUserInfo]);
 
   const handleFieldChange = (field, value, itemId = null) => {
     if (itemId) {
@@ -35,7 +30,7 @@ const useUserInfo = () => {
           value: field === 'custom' ? value.value : value,
           displayType: field === 'custom' ? value.title : typeToKorean[field]
         };
-        updateItem(updatedItem);
+        updateUserInfo(updatedItem);
       }
     } else {
       if (field !== 'custom' && items.some(item => item.type === field)) {
@@ -47,12 +42,12 @@ const useUserInfo = () => {
         value: field === 'custom' ? value.value : value,
         displayType: field === 'custom' ? value.title : typeToKorean[field]
       };
-      saveuserInfo(newItem);
+      addUserInfo(newItem);
     }
   };
 
   const handleRemoveItem = (itemId) => {
-    removeItem(itemId);
+    removeUserInfo(itemId);
   };
 
   return { 
