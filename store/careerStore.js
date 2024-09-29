@@ -1,86 +1,58 @@
 import { create } from 'zustand';
-import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDb } from '@/utils/indexedDB';
+import { createBaseActions } from '@/utils/storeUtils';
+import { loadCareers, saveCareers } from '@/utils/indexedDB';
+import { generateUUID } from '@/utils/uuid';
 
 const createInitialCareer = () => ({
-  id: `career-${Date.now()}`,
+  id: generateUUID(),
   companyName: '',
   position: '',
   startDate: '',
   endDate: '',
   isCurrent: false,
-  tasks: ''
+  tasks: '',
+  order: 0
 });
 
 const useCareerStore = create((set, get) => ({
-  careers: {
-    items: [createInitialCareer()],
-    status: 'idle',
-    error: null,
-  },
+  careers: [createInitialCareer()],
+  status: 'idle',
+  error: null,
+  ...createBaseActions('careers', loadCareers, saveCareers),
+
   addCareer: (newCareer) => {
-    set((state) => ({
-      careers: { ...state.careers, items: [...state.careers.items, newCareer] }
-    }));
-    get().saveCareers();
+    const { add } = get();
+    add({ ...newCareer, id: generateUUID() });
   },
+
   updateCareer: (updatedCareer) => {
-    set((state) => ({
-      careers: {
-        ...state.careers,
-        items: state.careers.items.map(career => 
-          career.id === updatedCareer.id ? updatedCareer : career
-        )
-      }
-    }));
-    get().saveCareers();
+    const { update } = get();
+    update(updatedCareer);
   },
+
   deleteCareer: (id) => {
-    set((state) => ({
-      careers: {
-        ...state.careers,
-        items: state.careers.items.filter(career => career.id !== id)
-      }
-    }));
-    get().saveCareers();
+    const { remove } = get();
+    remove(id);
   },
-  reorderCareers: (oldIndex, newIndex) => set((state) => {
-    const newItems = [...state.careers.items];
-    const [reorderedItem] = newItems.splice(oldIndex, 1);
-    newItems.splice(newIndex, 0, reorderedItem);
-    return { careers: { ...state.careers, items: newItems } };
-  }),
+
+  reorderCareers: (oldIndex, newIndex) => {
+    const { reorder } = get();
+    reorder(oldIndex, newIndex);
+  },
+
   resetCareers: () => {
-    set((state) => ({
-      careers: { items: [createInitialCareer()], status: 'idle', error: null }
-    }));
-    get().saveCareers();
+    const { reset } = get();
+    reset([createInitialCareer()]);
   },
+
   loadCareers: async () => {
-    set((state) => ({ careers: { ...state.careers, status: 'loading' } }));
-    try {
-      const careers = await loadCareersFromDB();
-      set((state) => ({
-        careers: {
-          ...state.careers,
-          items: careers.length > 0 ? careers : [createInitialCareer()],
-          status: 'succeeded'
-        }
-      }));
-    } catch (error) {
-      set((state) => ({
-        careers: { ...state.careers, status: 'failed', error: error.message }
-      }));
-    }
+    const { load } = get();
+    await load();
   },
-  saveCareers: async () => {
-    try {
-      const careers = get().careers.items;
-      await saveCareersToDb(careers);
-    } catch (error) {
-      set((state) => ({
-        careers: { ...state.careers, status: 'failed', error: error.message }
-      }));
-    }
+
+  saveCareers: () => {
+    const { careers } = get();
+    saveCareers(careers);
   },
 }));
 
