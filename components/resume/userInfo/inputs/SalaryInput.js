@@ -1,61 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import BaseInput from '@/components/common/BaseInput';
+import Button from '@/components/common/Button';
 
-const SalaryInput = ({ onChange }) => {
+const SalaryInput = ({ onChange, onClose, initialValue }) => {
   const [inputValue, setInputValue] = useState('');
   const [confirmedValue, setConfirmedValue] = useState('');
 
-  const handleChange = (e) => {
+  useEffect(() => {
+    if (initialValue) {
+      setInputValue(initialValue.replace(/[^0-9]/g, ''));
+      setConfirmedValue(initialValue);
+    }
+  }, [initialValue]);
+
+  const handleChange = useCallback((e) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     setInputValue(value);
-  };
+  }, []);
 
-  const formatSalary = (value) => {
+  const formatSalary = useCallback((value) => {
     const numValue = parseInt(value, 10);
     if (numValue >= 10000) {
       const uk = Math.floor(numValue / 10000);
       const man = numValue % 10000;
       if (man === 0) {
-        return `${uk}억 원`;
+        return `${uk.toLocaleString()}억 원`;
       }
-      return `${uk}억 ${man.toLocaleString()}만 원`;
+      return `${uk.toLocaleString()}억 ${man.toLocaleString()}만 원`;
     }
     return `${numValue.toLocaleString()}만 원`;
-  };
+  }, []);
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
     if (inputValue === '') {
       setConfirmedValue('');
       onChange('');
+      onClose();
       return;
     }
     const formattedValue = formatSalary(inputValue);
     setConfirmedValue(formattedValue);
     onChange(formattedValue);
-    setInputValue(''); // 입력 필드 초기화
-  };
+    onClose();
+  }, [inputValue, formatSalary, onChange, onClose]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && inputValue) {
+      e.preventDefault();
+      handleConfirm();
+    }
+  }, [handleConfirm, inputValue]);
+
+  const displayValue = inputValue ? inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
 
   return (
     <div>
-      <label htmlFor="salary" className="block text-sm font-medium text-gray-700">연봉</label>
-      <div className="mt-1 flex rounded-md shadow-sm">
-        <input
-          type="text"
-          id="salary"
-          value={inputValue}
+      <div className="relative mb-4">
+        <BaseInput
+          label="연봉"
+          value={displayValue}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder="0"
-          className="flex-1 rounded-none rounded-l-md border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
         />
-        <span className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-          만원
-        </span>
+        <span className="absolute top-0 right-0 text-sm text-mono-99">단위: 만원</span>
       </div>
-      <button
+      <Button
         onClick={handleConfirm}
-        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        disabled={!inputValue}
+        className="mt-4 w-full"
       >
-        입력 확인
-      </button>
+        확인
+      </Button>
       {confirmedValue && (
         <p className="mt-2 text-sm text-gray-500">
           입력된 연봉: {confirmedValue}

@@ -1,5 +1,8 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
+import PropTypes from 'prop-types';
+import SortableItem from '@/components/common/SortableItem';
 import TagButtons from '@/components/common/TagButtons';
 import ModalComponent from './ModalComponent';
 import UserInfoItem from './UserInfoItem';
@@ -10,7 +13,6 @@ import EmailInput from './inputs/EmailInput';
 import SalaryInput from './inputs/SalaryInput';
 import CustomFieldInput from './inputs/CustomFieldInput';
 import { typeToKorean } from '@/constants/resumeConstants';
-import { useTransitionClasses } from '@/hooks/useTransitionClasses';
 import useUserInfoStore from '@/store/userInfoStore';
 
 const tags = [
@@ -21,17 +23,59 @@ const tags = [
   { type: 'salary', label: '희망연봉' }
 ];
 
+const SortableUserInfoItem = React.memo(function SortableUserInfoItem({ item, onRemove, onEdit, isRemoving, isDragging }) {
+  return (
+    <SortableItem
+      id={item.id}
+      isRemoving={isRemoving}
+      isDragging={isDragging}
+    >
+      {(dragHandleProps) => (
+        <UserInfoItem
+          {...item}
+          displayType={typeToKorean[item.type] || item.type}
+          onRemove={onRemove}
+          onEdit={onEdit}
+          dragHandleProps={dragHandleProps}
+        />
+      )}
+    </SortableItem>
+  );
+});
+
+SortableUserInfoItem.propTypes = {
+  item: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+  }).isRequired,
+  onRemove: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  isRemoving: PropTypes.bool.isRequired,
+  isDragging: PropTypes.bool.isRequired,
+};
+
 const UserInfoForm = () => {
-  const { items, status, loadUserInfo, saveUserInfo, updateItem, removeItem } = useUserInfoStore();
+  const { items, addUserInfo, updateUserInfo, removeUserInfo, reorderUserInfo, loadUserInfo, status } = useUserInfoStore();
+  const [isLoading, setIsLoading] = useState(true);
   const [activeField, setActiveField] = useState(null);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [disabledTags, setDisabledTags] = useState([]);
   const nodeRefs = useRef(new Map());
   const itemRefs = useRef(new Map());
+  const [itemsToRemove, setItemsToRemove] = useState([]);
+  const [draggedItem, setDraggedItem] = useState(null);
 
   useEffect(() => {
-    loadUserInfo();
+    const loadData = async () => {
+      await loadUserInfo();
+      setIsLoading(false);
+    };
+    loadData();
   }, [loadUserInfo]);
+
+  useEffect(() => {
+  }, [items, status]);
 
   useEffect(() => {
     if (Array.isArray(items)) {
@@ -39,41 +83,62 @@ const UserInfoForm = () => {
     }
   }, [items]);
 
-  const handleFieldChange = useCallback((type, value, id) => {
-    let newItem = {
-      type,
-      displayType: type === 'custom' ? value.title : (typeToKorean[type] || '자유 서식'),
-      value: type === 'custom' ? value : value
-    };
-
-    if (id) {
-      const existingItem = items.find(item => item.id === id);
-      if (existingItem) {
-        newItem = {
-          ...existingItem,
-          ...newItem,
-          id
-        };
-      }
-      updateItem(newItem);
+  const handleFieldChange = useCallback((type, value) => {
+    if (activeField && activeField.id) {
+      updateUserInfo({ id: activeField.id, type, value });
     } else {
-      saveUserInfo(newItem);
+      addUserInfo({ type, value });
     }
     setActiveField(null);
-    setIsCustomModalOpen(false);
-  }, [updateItem, saveUserInfo, items]);
+  }, [activeField, addUserInfo, updateUserInfo]);
 
   const handleRemoveItem = useCallback((id) => {
-    removeItem(id);
-  }, [removeItem]);
+    removeUserInfo(id);
+  }, [removeUserInfo]);
 
   const fieldComponents = {
-    address: <AddressInput onChange={(value) => handleFieldChange('address', value, activeField?.id)} />,
-    birthDate: <BirthDateInput onChange={(value) => handleFieldChange('birthDate', value, activeField?.id)} />,
-    phone: <PhoneInput onChange={(value) => handleFieldChange('phone', value, activeField?.id)} />,
-    email: <EmailInput onChange={(value) => handleFieldChange('email', value, activeField?.id)} />,
-    salary: <SalaryInput onChange={(value) => handleFieldChange('salary', value, activeField?.id)} />,
-    custom: <CustomFieldInput onChange={(title, value) => handleFieldChange('custom', { title, value }, activeField?.id)} />
+    address: (initialValue) => (
+      <AddressInput 
+        onChange={(value) => handleFieldChange('address', value)} 
+        onClose={() => setActiveField(null)}
+        initialValue={initialValue}
+      />
+    ),
+    birthDate: (initialValue) => (
+      <BirthDateInput 
+        onChange={(value) => handleFieldChange('birthDate', value)} 
+        onClose={() => setActiveField(null)}
+        initialValue={initialValue}
+      />
+    ),
+    phone: (initialValue) => (
+      <PhoneInput 
+        onChange={(value) => handleFieldChange('phone', value)} 
+        onClose={() => setActiveField(null)}
+        initialValue={initialValue}
+      />
+    ),
+    email: (initialValue) => (
+      <EmailInput 
+        onChange={(value) => handleFieldChange('email', value)} 
+        onClose={() => setActiveField(null)}
+        initialValue={initialValue}
+      />
+    ),
+    salary: (initialValue) => (
+      <SalaryInput 
+        onChange={(value) => handleFieldChange('salary', value)} 
+        onClose={() => setActiveField(null)}
+        initialValue={initialValue}
+      />
+    ),
+    custom: (initialValue) => (
+      <CustomFieldInput 
+        onChange={(title, value) => handleFieldChange('custom', { title, value })} 
+        onClose={() => setActiveField(null)}
+        initialValue={initialValue}
+      />
+    )
   };
 
   const renderAddSection = () => (
@@ -106,7 +171,39 @@ const UserInfoForm = () => {
     </div>
   );
 
-  if (status === 'loading') {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragStart = useCallback((event) => {
+    setDraggedItem(event.active.id);
+  }, []);
+
+  const handleDragEnd = useCallback((event) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      reorderUserInfo(oldIndex, newIndex);
+    }
+    setDraggedItem(null);
+  }, [items, reorderUserInfo]);
+
+  const memoizedItems = useMemo(() => items.map((item) => (
+    <SortableUserInfoItem
+      key={item.id}
+      item={item}
+      onRemove={() => handleRemoveItem(item.id)}
+      onEdit={() => setActiveField({ type: item.type, id: item.id })}
+      isRemoving={false}
+      isDragging={draggedItem === item.id}
+    />
+  )), [items, draggedItem, handleRemoveItem, setActiveField]);
+
+  if (isLoading) {
     return <div className="text-center py-4">로딩 중...</div>;
   }
 
@@ -114,40 +211,34 @@ const UserInfoForm = () => {
     <div className="personal-info-form">
       {renderAddSection()}
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <TransitionGroup component={null}>
-          {items.map((item) => {
-            if (!nodeRefs.current.has(item.id)) {
-              nodeRefs.current.set(item.id, React.createRef());
-            }
-            return (
-              <CSSTransition
-                key={item.id}
-                nodeRef={nodeRefs.current.get(item.id)}
-                timeout={300}
-                classNames="fade"
-              >
-                <div ref={nodeRefs.current.get(item.id)}>
-                  <UserInfoItem
-                    type={item.type}
-                    displayType={item.type === 'custom' ? item.value.title : (typeToKorean[item.type] || '자유 서식')}
-                    value={item.type === 'custom' ? item.value.value : item.value}
-                    onRemove={() => handleRemoveItem(item.id)}
-                    onEdit={() => setActiveField({ type: item.type, id: item.id })}
-                  />
-                </div>
-              </CSSTransition>
-            );
-          })}
-        </TransitionGroup>
-      </div>
+      {items.length > 0 && (
+        <DndContext 
+          sensors={sensors} 
+          collisionDetection={closestCenter} 
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+              {memoizedItems}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
 
       <ModalComponent isOpen={!!activeField} onClose={() => setActiveField(null)}>
-        {activeField && fieldComponents[activeField.type]}
+        {activeField && (() => {
+          const currentItem = items.find(item => item.id === activeField.id);
+          const initialValue = currentItem ? currentItem.value : null;
+          return fieldComponents[activeField.type](initialValue);
+        })()}
       </ModalComponent>
 
       <ModalComponent isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)}>
-        <CustomFieldInput onChange={(title, value) => handleFieldChange('custom', { title, value })} />
+        <CustomFieldInput 
+          onChange={(title, value) => handleFieldChange('custom', { title, value })} 
+          onClose={() => setIsCustomModalOpen(false)}
+        />
       </ModalComponent>
     </div>
   );
