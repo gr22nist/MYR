@@ -1,73 +1,61 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import ActionButtons from './actions/ActionBtns';
 
-const AccordionSection = ({ title, addButtonComponent, children, dragHandleProps }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+const AccordionSection = ({ title, addButtonComponent, children, isExpanded: propIsExpanded, onToggle, dragHandleProps, mode, onDelete }) => {
+  const [isExpanded, setIsExpanded] = useState(propIsExpanded !== undefined ? propIsExpanded : true);
   const contentRef = useRef(null);
-  const observerRef = useRef(null);
-
-  const updateHeight = useCallback(() => {
-    if (contentRef.current) {
-      if (isExpanded) {
-        contentRef.current.style.maxHeight = 'none';
-        const height = contentRef.current.scrollHeight;
-        contentRef.current.style.maxHeight = `${height}px`;
-      } else {
-        contentRef.current.style.maxHeight = '0px';
-      }
-    }
-  }, [isExpanded]);
 
   useEffect(() => {
-    updateHeight();
-
-    observerRef.current = new ResizeObserver(() => {
-      if (isExpanded) {
-        updateHeight();
-      }
-    });
-
-    if (contentRef.current) {
-      observerRef.current.observe(contentRef.current);
+    if (propIsExpanded !== undefined) {
+      setIsExpanded(propIsExpanded);
     }
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [updateHeight, isExpanded]);
-
-  useEffect(() => {
-    updateHeight();
-  }, [children, updateHeight]);
+  }, [propIsExpanded]);
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    const newIsExpanded = !isExpanded;
+    setIsExpanded(newIsExpanded);
+    if (onToggle) {
+      onToggle(newIsExpanded);
+    }
   };
 
   return (
-    <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5 hover:bg-accent-dark hover:text-white duration-300'} transition-colors duration-300 rounded-lg`}>
-      <div className={`flex items-center justify-between p-2 ${isExpanded ? '' : 'h-16'}`}>
-        <div className="flex items-center">
-          <h2 className="text-xl font-extrabold mr-2">{title}</h2>
+    <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5'} transition-all duration-300 rounded-lg`}>
+      <div className="flex items-center justify-between p-2 h-16">
+        <div className="flex items-center overflow-hidden">
+          <h2 className="text-xl font-extrabold mr-2 truncate">{title}</h2>
           {isExpanded && addButtonComponent}
         </div>
         <ActionButtons
           onFold={toggleExpand}
+          onDelete={onDelete}
           isExpanded={isExpanded}
-          dragHandleProps={dragHandleProps}
-          mode="section"
+          mode={mode}
+          dragHandleProps={!isExpanded ? dragHandleProps : null}
         />
       </div>
-      <div 
-        ref={contentRef}
-        className="overflow-hidden transition-all duration-400 ease-in-out"
-      >
-        {children}
-      </div>
+      {isExpanded && (
+        <div 
+          ref={contentRef}
+          className="overflow-hidden transition-all duration-300 ease-in-out"
+        >
+          {children}
+        </div>
+      )}
     </section>
   );
+};
+
+AccordionSection.propTypes = {
+  title: PropTypes.node.isRequired,
+  addButtonComponent: PropTypes.node,
+  children: PropTypes.node,
+  isExpanded: PropTypes.bool,
+  onToggle: PropTypes.func,
+  dragHandleProps: PropTypes.object,
+  mode: PropTypes.oneOf(['item', 'section', 'custom']).isRequired,
+  onDelete: PropTypes.func,
 };
 
 export default AccordionSection;
