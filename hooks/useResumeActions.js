@@ -26,5 +26,5 @@ export const useResumeActions = () => {
     toggleAllSections();
   }, [toggleAllSections]);
 
-  return { handleReset, handlePreview, handleToggleAllSections };
+  return { handleReset, handleToggleAllSections };
 };
