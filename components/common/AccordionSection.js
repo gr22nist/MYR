@@ -2,27 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ActionButtons from './actions/ActionBtns';
 
-const AccordionSection = ({ title, addButtonComponent, children, isExpanded: propIsExpanded, onToggle, dragHandleProps, mode, onDelete }) => {
-  const [isExpanded, setIsExpanded] = useState(propIsExpanded !== undefined ? propIsExpanded : true);
+const AccordionSection = ({ title, addButtonComponent, children, isExpanded, onToggle, dragHandleProps, mode, onDelete }) => {
   const contentRef = useRef(null);
 
-  useEffect(() => {
-    if (propIsExpanded !== undefined) {
-      setIsExpanded(propIsExpanded);
-    }
-  }, [propIsExpanded]);
-
   const toggleExpand = () => {
-    const newIsExpanded = !isExpanded;
-    setIsExpanded(newIsExpanded);
     if (onToggle) {
-      onToggle(newIsExpanded);
+      onToggle();
     }
   };
 
   return (
     <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5'} transition-all duration-300 rounded-lg`}>
-      <div className="flex items-center justify-between p-2 h-16">
+      <div className="flex items-center justify-between p-2 h-16" {...(!isExpanded ? dragHandleProps : {})}>
         <div className="flex items-center overflow-hidden">
           <h2 className="text-xl font-extrabold mr-2 truncate">{title}</h2>
           {isExpanded && addButtonComponent}
@@ -32,7 +23,6 @@ const AccordionSection = ({ title, addButtonComponent, children, isExpanded: pro
           onDelete={onDelete}
           isExpanded={isExpanded}
           mode={mode}
-          dragHandleProps={!isExpanded ? dragHandleProps : null}
         />
       </div>
       {isExpanded && (
