@@ -1,130 +1,68 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import CareerItem from './CareerItem';
-import AccordionSection from '@/components/common/AccordionSection';
+import React, { useEffect, useCallback } from 'react';
 import AddButton from '@/components/common/actions/AddBtn';
 import useCareerStore from '@/store/careerStore';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
-
-const SortableCareerItem = ({ career, ...props }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: career.id });
-
-  const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-  };
-
-  return (
-    <div ref={setNodeRef} style={style}>
-      <CareerItem
-        career={career}
-        dragHandleProps={{ ...attributes, ...listeners }}
-        {...props}
-      />
-    </div>
-  );
-};
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import SortableCareerItem from './SortableCareerItem';
+import { useSortableList } from '@/hooks/useSortableList';
 
 const CareerList = ({ isExpanded, onToggle, section, onSectionChange }) => {
-  const { careers, addCareer, updateCareer, deleteCareer, loadCareers, reorderCareers } = useCareerStore();
-  const [isExpandedState, setIsExpandedState] = useState(true);
+  const { 
+    careers, 
+    addCareer, 
+    updateCareer, 
+    deleteCareer, 
+    loadCareers, 
+    reorderCareers
+  } = useCareerStore();
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(KeyboardSensor)
-  );
+  const { sensors, handleDragEnd } = useSortableList(careers, reorderCareers);
 
   useEffect(() => {
-    if (careers.status === 'idle') {
-      loadCareers();
-    }
-  }, [careers.status, loadCareers]);
+    loadCareers();
+  }, [loadCareers]);
 
   const handleCareerChange = useCallback((updatedCareer) => {
     updateCareer(updatedCareer);
   }, [updateCareer]);
 
+  const handleDeleteCareer = useCallback((careerId) => {
+    deleteCareer(careerId);
+  }, [deleteCareer]);
+
   const handleAddCareer = useCallback(() => {
-    const newCareer = {
-      id: `career-${Date.now()}`,
-      companyName: '',
-      position: '',
-      startDate: '',
-      endDate: '',
-      isCurrent: false,
-      tasks: ''
-    };
-    addCareer(newCareer);
+    addCareer();
   }, [addCareer]);
 
-  const handleDeleteCareer = useCallback((id) => {
-    if (careers.items.length > 1) {
-      deleteCareer(id);
-    }
-  }, [careers.items.length, deleteCareer]);
+  if (careers.status === 'loading') {
+    return <div>경력 정보를 불러오는 중...</div>;
+  }
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    if (active && over && active.id !== over.id) {
-      const oldIndex = careers.items.findIndex((career) => career.id === active.id);
-      const newIndex = careers.items.findIndex((career) => career.id === over.id);
-      if (oldIndex !== -1 && newIndex !== -1) {
-        reorderCareers(oldIndex, newIndex);
-      }
-    }
-  };
-
-  const addButtonComponent = (
-    <AddButton onClick={handleAddCareer} ariaLabel="경력 추가" />
-  );
-
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: 'career-list' });
-
-  const sectionStyle = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    transition,
-  };
-
-  const toggleExpand = useCallback((newIsExpanded) => {
-    setIsExpandedState(newIsExpanded);
-  }, []);
+  if (careers.status === 'failed') {
+    return <div>경력 정보를 불러오는데 실패했습니다: {careers.error}</div>;
+  }
 
   return (
-    <div ref={setNodeRef} style={sectionStyle}>
-      <AccordionSection 
-        title="경력" 
-        addButtonComponent={addButtonComponent}
-        isExpanded={isExpanded}
-        onToggle={onToggle}
-        mode="section"
-      >
-        {isExpanded && (
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={careers.items.map(career => career.id)} strategy={verticalListSortingStrategy}>
-              {careers.items.map((career) => (
-                <SortableCareerItem
-                  key={career.id}
-                  career={career}
-                  onCareerChange={handleCareerChange}
-                  onDelete={handleDeleteCareer}
-                  isDeletable={careers.items.length > 1}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        )}
-      </AccordionSection>
-    </div>
+    <>
+      <AddButton onClick={handleAddCareer} ariaLabel="경력 추가" />
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={careers.map(career => career.id)} strategy={verticalListSortingStrategy}>
+          {careers.map((career) => (
+            <SortableCareerItem
+              key={career.id}
+              career={career}
+              onCareerChange={handleCareerChange}
+              onDelete={handleDeleteCareer}
+              isDeletable={careers.length > 1}
+              isExpanded={isExpanded}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
+      {careers.length === 0 && (
+        <p>경력 정보가 없습니다. 새로운 경력을 추가해 주세요.</p>
+      )}
+    </>
   );
 };
 

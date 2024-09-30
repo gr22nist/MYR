@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { createBaseActions } from '@/utils/storeUtils';
-import { loadCareers, saveCareers } from '@/utils/indexedDB';
+import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDB } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
+import useResumeStore from './resumeStore';
 
 const createInitialCareer = () => ({
   id: generateUUID(),
@@ -15,45 +15,74 @@ const createInitialCareer = () => ({
 });
 
 const useCareerStore = create((set, get) => ({
-  careers: [createInitialCareer()],
+  careers: [],  // 배열로 초기화
   status: 'idle',
   error: null,
-  ...createBaseActions('careers', loadCareers, saveCareers),
-
-  addCareer: (newCareer) => {
-    const { add } = get();
-    add({ ...newCareer, id: generateUUID() });
-  },
-
-  updateCareer: (updatedCareer) => {
-    const { update } = get();
-    update(updatedCareer);
-  },
-
-  deleteCareer: (id) => {
-    const { remove } = get();
-    remove(id);
-  },
-
-  reorderCareers: (oldIndex, newIndex) => {
-    const { reorder } = get();
-    reorder(oldIndex, newIndex);
-  },
-
-  resetCareers: () => {
-    const { reset } = get();
-    reset([createInitialCareer()]);
-  },
 
   loadCareers: async () => {
-    const { load } = get();
-    await load();
+    set({ status: 'loading' });
+    try {
+      const loadedCareers = await loadCareersFromDB();
+      const sortedCareers = loadedCareers
+        .sort((a, b) => a.order - b.order)
+        .map((career, index) => ({ ...career, order: index }));
+      set({ 
+        careers: sortedCareers.length > 0 ? sortedCareers : [createInitialCareer()], 
+        status: 'success' 
+      });
+    } catch (error) {
+      console.error('Error loading careers:', error);
+      set({ error, status: 'error' });
+    }
   },
 
-  saveCareers: () => {
-    const { careers } = get();
-    saveCareers(careers);
+  addCareer: () => {
+    set(state => {
+      const newCareer = createInitialCareer();
+      const newCareers = [newCareer, ...state.careers].map((career, index) => ({
+        ...career,
+        order: index
+      }));
+      saveCareersToDB(newCareers);
+      return { careers: newCareers };
+    });
   },
+  
+  updateCareer: (updatedCareer) => {
+    set(state => {
+      const newCareers = state.careers.map(career => 
+        career.id === updatedCareer.id ? { ...career, ...updatedCareer } : career
+      );
+      if (JSON.stringify(newCareers) !== JSON.stringify(state.careers)) {
+        useResumeStore.getState().updateSection({ id: 'career', type: 'career', items: newCareers });
+        return { careers: newCareers };
+      }
+      return state;
+    });
+  },
+  
+  deleteCareer: (id) => {
+    set(state => {
+      const newCareers = state.careers.filter(career => career.id !== id);
+      saveCareersToDB(newCareers);
+      return { careers: newCareers };
+    });
+  },
+  
+  reorderCareers: (oldIndex, newIndex) => {
+    set(state => {
+      const newCareers = Array.from(state.careers);
+      const [reorderedItem] = newCareers.splice(oldIndex, 1);
+      newCareers.splice(newIndex, 0, reorderedItem);
+      const updatedCareers = newCareers.map((career, index) => ({
+        ...career,
+        order: index
+      }));
+      saveCareersToDB(updatedCareers);
+      return { careers: updatedCareers };
+    });
+  },
+
 }));
 
 export default useCareerStore;

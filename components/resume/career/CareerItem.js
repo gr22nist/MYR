@@ -14,6 +14,7 @@ const CareerItem = ({
   isDeletable, 
   dragHandleProps, 
   isSubItem = false,
+  isExpanded,
   className = ''
 }) => {
   const nodeRef = useRef(null);
@@ -47,7 +48,7 @@ const CareerItem = ({
                 label="회사명"
                 value={career.companyName || ''}
                 onChange={(e) => handleChange('companyName', e.target.value)}
-                placeholder="회사명을 작성해주세요. 예: 네이버 주식회사, Google "
+                placeholder="예: 네이버 주식회사, Google "
                 spellCheck="false"
                 maxLength="100"
                 className="w-full"
@@ -71,26 +72,28 @@ const CareerItem = ({
             dragHandleProps={dragHandleProps}
           />
         </div>
-
-        <div className="flex flex-col gap-2">
-          <FloatingLabelInput
-            label="직위"
-            value={career.position}
-            onChange={(e) => handleChange('position', e.target.value)}
-            placeholder="팀명/직위/포지션을 써주세요"
-            spellCheck="false"
-            maxLength="100"
-          />
-
-          <FloatingLabelTextarea
-            label="담당업무"
-            value={career.tasks}
-            onChange={(e) => handleChange('tasks', e.target.value)}
-            placeholder={PLACEHOLDERS.tasks}
-            spellCheck="false"
-            className={`overflow-hidden resize-none px-4 ${commonStyles.placeholderStyle}`}
-          />
-        </div>
+        {isExpanded && (
+          <>
+            <FloatingLabelInput
+              label="직책"
+              value={career.position || ''}
+              onChange={(e) => handleChange('position', e.target.value)}
+              placeholder="직책을 작성해주세요. 예: 프론트엔드 개발자, UX 디자이너"
+              spellCheck="false"
+              maxLength="100"
+              className="w-full"
+            />
+            <FloatingLabelTextarea
+              label="주요 업무"
+              value={career.mainTask || ''}
+              onChange={(e) => handleChange('mainTask', e.target.value)}
+              placeholder={PLACEHOLDERS.CAREER_MAIN_TASK}
+              spellCheck="false"
+              maxLength="1000"
+              className="w-full"
+            />
+          </>
+        )}
       </div>
     </CSSTransition>
   );
