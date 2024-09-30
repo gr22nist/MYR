@@ -1,8 +1,8 @@
 import React from 'react';
 import { btn } from '@/styles/constLayout';
-import { ResetBtn, ViewBtn, FoldAllBtn, ExpandAllBtn } from '@/components/icons/IconSet';
+import { ResetBtn, FoldAllBtn, ExpandAllBtn } from '@/components/icons/IconSet';
 
-const QuickBtns = ({ onPreview, onReset, onToggleAllSections, areAllSectionsExpanded }) => {
+const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => {
   return (
     <div className="bg-gray-800 bg-opacity-75 p-3 rounded-lg shadow-lg">
       <button 
