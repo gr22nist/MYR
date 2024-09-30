@@ -14,16 +14,6 @@ const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => 
           {areAllSectionsExpanded ? '모두 접기' : '모두 펼치기'}
         </span>
       </button>
-      {/* 미리보기 버튼 주석 처리 */}
-      {/* <button 
-        onClick={onPreview} 
-        className={`${btn.preview} mb-2 w-full group relative overflow-hidden`}
-      >
-        <ViewBtn className="group-hover:opacity-0 transition-opacity duration-200" />
-        <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          미리<br />보기
-        </span>
-      </button> */}
       <button 
         onClick={onReset} 
         className={`${btn.reset} w-full group relative overflow-hidden`}

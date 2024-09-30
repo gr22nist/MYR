@@ -23,7 +23,7 @@ const Resume = () => {
     addSection,
     updateSectionOrder,
     isLoaded,
-    isLoading // 새로 추가된 isLoading 상태
+    isLoading
   } = useResumeSections();
 
   const { loadCustomSections } = useCustomSectionsStore();
@@ -155,7 +155,6 @@ const Resume = () => {
       )}
       <CustomForm onAddSection={handleAddSection} />
       <FloatingControls 
-        // onPreview={handlePreview} 
         onReset={handleResetClick}
         onToggleAllSections={toggleAllSections}
         areAllSectionsExpanded={areAllSectionsExpanded}
