@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import QuickBtns from './QuickBtns';
 
-const FloatingControls = ({ onPreview, onReset }) => {
+const FloatingControls = ({ onPreview, onReset, onToggleAllSections, areAllSectionsExpanded }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -36,7 +36,12 @@ const FloatingControls = ({ onPreview, onReset }) => {
           <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
         </svg>
       </div>
-      <QuickBtns onPreview={onPreview} onReset={onReset} />
+      <QuickBtns 
+        onPreview={onPreview} 
+        onReset={onReset} 
+        onToggleAllSections={onToggleAllSections}
+        areAllSectionsExpanded={areAllSectionsExpanded}
+      />
     </div>
   );
 };
