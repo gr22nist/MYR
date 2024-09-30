@@ -11,7 +11,7 @@ import ResetModal from '@/components/common/actions/ResetModal';
 import useCustomSectionsStore from '@/store/customSectionsStore';
 
 const Resume = () => {
-  const { handleReset, handlePreview } = useResumeActions();
+  const { handleReset } = useResumeActions();
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   
   const { 
