@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 const AnimatedList = ({ items, renderItem, keyExtractor, className = '' }) => {
+  const nodeRefs = useMemo(() => items.map(() => React.createRef()), [items]);
+
   return (
     <TransitionGroup className={className}>
-      {items.map((item) => (
+      {items.map((item, index) => (
         <CSSTransition
           key={keyExtractor(item)}
+          nodeRef={nodeRefs[index]}
           timeout={300}
           classNames={{
             enter: 'item-enter',
@@ -15,7 +18,9 @@ const AnimatedList = ({ items, renderItem, keyExtractor, className = '' }) => {
             exitActive: 'item-exit-active',
           }}
         >
-          {renderItem(item)}
+          <div ref={nodeRefs[index]}>
+            {renderItem(item)}
+          </div>
         </CSSTransition>
       ))}
     </TransitionGroup>
