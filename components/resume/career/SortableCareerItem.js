@@ -3,14 +3,14 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import CareerItem from './CareerItem';
 
-const SortableCareerItem = ({ career, onCareerChange, onDelete, isDeletable, isExpanded }) => {
+const SortableCareerItem = ({ career, onCareerChange, onDelete, isDeletable, isExpanded, isDraggable }) => {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: career.id });
+  } = useSortable({ id: career.id, disabled: !isDraggable });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -24,9 +24,10 @@ const SortableCareerItem = ({ career, onCareerChange, onDelete, isDeletable, isE
         onCareerChange={onCareerChange}
         onDelete={onDelete}
         isDeletable={isDeletable}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragHandleProps={isDraggable ? { ...attributes, ...listeners } : null}
         isSubItem={true}
         isExpanded={isExpanded}
+        isDraggable={isDraggable}
       />
     </div>
   );

@@ -1,10 +1,12 @@
 import React, { useEffect, useCallback } from 'react';
-import AddButton from '@/components/common/actions/AddBtn';
-import useCareerStore from '@/store/careerStore';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import AddBtn from '@/components/common/actions/AddBtn';
+import useCareerStore from '@/store/careerStore';
 import SortableCareerItem from './SortableCareerItem';
 import { useSortableList } from '@/hooks/useSortableList';
+import useGlobalStore from '@/store/globalStore';
+import AnimatedList from '@/components/common/AnimatedList';
 
 const CareerList = ({ isExpanded, onToggle, section, onSectionChange }) => {
   const { 
@@ -16,7 +18,8 @@ const CareerList = ({ isExpanded, onToggle, section, onSectionChange }) => {
     reorderCareers
   } = useCareerStore();
 
-  const { sensors, handleDragEnd } = useSortableList(careers, reorderCareers);
+  const { showToast } = useGlobalStore();
+  const { sensors, handleDragEnd, modifiers } = useSortableList(careers, reorderCareers, true);
 
   useEffect(() => {
     loadCareers();
@@ -34,33 +37,51 @@ const CareerList = ({ isExpanded, onToggle, section, onSectionChange }) => {
     addCareer();
   }, [addCareer]);
 
+  const isDraggable = careers.length > 1;
+
+  const renderCareerItem = useCallback((career) => (
+    <SortableCareerItem
+      key={career.id}
+      career={career}
+      onCareerChange={handleCareerChange}
+      onDelete={handleDeleteCareer}
+      isDeletable={careers.length > 1}
+      isExpanded={isExpanded}
+      isDraggable={isDraggable}
+    />
+  ), [handleCareerChange, handleDeleteCareer, careers.length, isExpanded, isDraggable]);
+
   if (careers.status === 'loading') {
     return <div>경력 정보를 불러오는 중...</div>;
   }
-
-  if (careers.status === 'failed') {
-    return <div>경력 정보를 불러오는데 실패했습니다: {careers.error}</div>;
+  if (careers.status === 'error') {
+    showToast({ message: '경력 정보 로딩 실패.', type: 'error' });
+    return null;
   }
 
   return (
     <>
-      <AddButton onClick={handleAddCareer} ariaLabel="경력 추가" />
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <AddBtn 
+        onClick={handleAddCareer}  // 여기서 handleAddCareer 함수를 전달합니다.
+        label="새로운 경력을 추가해보세요" 
+        ariaLabel="새 경력 항목 추가"
+      />
+      <DndContext 
+        sensors={sensors} 
+        collisionDetection={closestCenter} 
+        onDragEnd={handleDragEnd}
+        modifiers={modifiers}
+      >
         <SortableContext items={careers.map(career => career.id)} strategy={verticalListSortingStrategy}>
-          {careers.map((career) => (
-            <SortableCareerItem
-              key={career.id}
-              career={career}
-              onCareerChange={handleCareerChange}
-              onDelete={handleDeleteCareer}
-              isDeletable={careers.length > 1}
-              isExpanded={isExpanded}
-            />
-          ))}
+          <AnimatedList
+            items={careers}
+            renderItem={renderCareerItem}
+            keyExtractor={(career) => career.id}
+          />
         </SortableContext>
       </DndContext>
       {careers.length === 0 && (
-        <p>경력 정보가 없습니다. 새로운 경력을 추가해 주세요.</p>
+        null
       )}
     </>
   );

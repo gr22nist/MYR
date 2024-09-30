@@ -3,14 +3,14 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import EducationItem from './EducationItem';
 
-const SortableEducationItem = ({ education, onEducationChange, onDelete, isDeletable, isExpanded }) => {
+const SortableEducationItem = ({ education, onEducationChange, onDelete, isDeletable, isExpanded, isDraggable }) => {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: education.id });  // stableId 대신 id 사용
+  } = useSortable({ id: education.id, disabled: !isDraggable });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -24,9 +24,10 @@ const SortableEducationItem = ({ education, onEducationChange, onDelete, isDelet
         onEducationChange={onEducationChange}
         onDelete={onDelete}
         isDeletable={isDeletable}
-        dragHandleProps={{ ...attributes, ...listeners }}
+        dragHandleProps={isDraggable ? { ...attributes, ...listeners } : null}
         isSubItem={true}
         isExpanded={isExpanded}
+        isDraggable={isDraggable}
       />
     </div>
   );

@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { useSensors, useSensor, PointerSensor } from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
-export const useSortableList = (items, reorderItems) => {
+export const useSortableList = (items, reorderItems, restrictVertical = true) => {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = useCallback((event) => {
@@ -13,5 +14,7 @@ export const useSortableList = (items, reorderItems) => {
     }
   }, [items, reorderItems]);
 
-  return { sensors, handleDragEnd };
+  const modifiers = restrictVertical ? [restrictToVerticalAxis] : [];
+
+  return { sensors, handleDragEnd, modifiers };
 };

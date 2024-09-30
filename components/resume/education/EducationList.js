@@ -1,11 +1,12 @@
 import React, { useEffect, useCallback } from 'react';
-import AddButton from '@/components/common/actions/AddBtn';
-import useEducationStore from '@/store/educationStore';
-
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import AddBtn from '@/components/common/actions/AddBtn';
+import useEducationStore from '@/store/educationStore';
 import SortableEducationItem from './SortableEducationItem';
 import { useSortableList } from '@/hooks/useSortableList';
+import useGlobalStore from '@/store/globalStore';
+import AnimatedList from '@/components/common/AnimatedList';
 
 const EducationList = ({ isExpanded, onToggle, section, onSectionChange }) => {
   const { 
@@ -17,7 +18,8 @@ const EducationList = ({ isExpanded, onToggle, section, onSectionChange }) => {
     reorderEducations
   } = useEducationStore();
 
-  const { sensors, handleDragEnd } = useSortableList(educations, reorderEducations);
+  const { showToast } = useGlobalStore();
+  const { sensors, handleDragEnd, modifiers } = useSortableList(educations, reorderEducations, true);
 
   useEffect(() => {
     loadEducations();
@@ -35,33 +37,52 @@ const EducationList = ({ isExpanded, onToggle, section, onSectionChange }) => {
     addEducation();
   }, [addEducation]);
 
+  const isDraggable = educations.length > 1;
+
+  const renderEducationItem = useCallback((education) => (
+    <SortableEducationItem
+      key={education.id}
+      education={education}
+      onEducationChange={handleEducationChange}
+      onDelete={handleDeleteEducation}
+      isDeletable={educations.length > 1}
+      isExpanded={isExpanded}
+      isDraggable={isDraggable}
+    />
+  ), [handleEducationChange, handleDeleteEducation, educations.length, isExpanded, isDraggable]);
+
   if (educations.status === 'loading') {
     return <div>학력 정보를 불러오는 중...</div>;
   }
 
   if (educations.status === 'error') {
-    return <div>학력 정보를 불러오는데 실패했습니다: {educations.error}</div>;
+    showToast({ message: '학력 정보 로딩 실패.', type: 'error' });
+    return null;
   }
 
   return (
     <>
-      <AddButton onClick={handleAddEducation} ariaLabel="학력 추가" />
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <AddBtn
+        onClick={handleAddEducation}
+        label="새로운 학력을 추가해보세요"
+        ariaLabel="새 학력 항목 추가"
+      />
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        modifiers={modifiers}
+      >
         <SortableContext items={educations.map(education => education.id)} strategy={verticalListSortingStrategy}>
-          {educations.map((education) => (
-            <SortableEducationItem
-              key={education.id}
-              education={education}
-              onEducationChange={handleEducationChange}
-              onDelete={handleDeleteEducation}
-              isDeletable={educations.length > 1}
-              isExpanded={isExpanded}
-            />
-          ))}
+          <AnimatedList
+            items={educations}
+            renderItem={renderEducationItem}
+            keyExtractor={(education) => education.id}
+          />
         </SortableContext>
       </DndContext>
       {educations.length === 0 && (
-        <p>학력 정보가 없습니다. 새로운 학력을 추가해 주세요.</p>
+        null
       )}
     </>
   );
