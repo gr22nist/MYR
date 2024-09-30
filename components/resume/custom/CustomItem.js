@@ -10,10 +10,12 @@ const CustomSectionItem = ({ section, onChange }) => {
 
   if (section.type === 'link') {
     return (
-      <LinkItems
-        links={section.links || []}
-        onChange={(newLinks) => handleChange('links', newLinks)}
-      />
+      <div className="bg-white rounded px-8 py-4">
+        <LinkItems
+          links={section.links || []}
+          onChange={(newLinks) => handleChange('links', newLinks)}
+        />
+      </div>
     );
   }
 

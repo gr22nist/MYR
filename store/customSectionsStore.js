@@ -45,7 +45,7 @@ const useCustomSectionsStore = create((set, get) => ({
   },
 
   addCustomSection: (type) => {
-    const { customSections } = get();
+    const { customSections, predefinedSections } = get();
     const updateSectionOrder = useResumeStore.getState().updateSectionOrder;
     const sectionOrder = useResumeStore.getState().sectionOrder;
     const newSection = {
@@ -70,7 +70,7 @@ const useCustomSectionsStore = create((set, get) => ({
     });
 
     saveCustomSections(updatedSections);
-    updateSectionOrder([...sectionOrder, newSection.id]);
+    updateSectionOrder(updatedOrder);
 
     return newSection;
   },
