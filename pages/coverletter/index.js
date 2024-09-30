@@ -1,14 +1,11 @@
-import { Container } from 'postcss';
 import React from 'react';
+import { layout } from '@/styles/constLayout';
 
 const CoverLetter = () => {
-
-  const container = `container max-w-default mx-auto`
-  
   return (
-    <section className={container}>
+    <div className={`${layout.index}`}>
       자기소개서
-    </section>
+    </div>
   );
 };
 

@@ -1,13 +1,12 @@
 import React from 'react';
+import { layout } from '@/styles/constLayout';
 
 const About = () => {
   
-  const container = `container max-w-default mx-auto`
-  
   return (
-    <section className={container}>
+    <div className={`${layout.index}`}>
       서비스소개
-    </section>
+    </div>
   );
 };
 

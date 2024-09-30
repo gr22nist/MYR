@@ -19,7 +19,7 @@ const NavBar = () => {
                 이력서
             </Link>  
           </li>
-          <li>
+          {/* <li>
             <Link href="/coverletter" passHref>
                 자기소개서
             </Link>  
@@ -28,7 +28,7 @@ const NavBar = () => {
             <Link href="/about" passHref>
                 서비스 소개
             </Link>  
-          </li>
+          </li> */}
         </ul>
       </nav>
     </header>

@@ -1,10 +1,11 @@
 import React from 'react';
+import { layout } from '@/styles/constLayout';
 
 const Index = () => {
   return (
-    <section>
+    <div className={`${layout.index}`}>
       index
-    </section>
+    </div>
   );
 };
 
