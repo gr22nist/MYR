@@ -26,6 +26,8 @@ const Profile = () => {
 		return <div>에러 발생: {error}</div>;
 	}
 
+	const imageUrl = profile?.imageUrl || '';
+
 	const textAreaBaseStyle = 'p-4 bg-mono-f5 leading-normal text-mono-11 resize-none border-0 rounded-lg overflow-hidden';
 	const textAreaStyle = `${textAreaBaseStyle} ${commonStyles.focusStyle}`;
 

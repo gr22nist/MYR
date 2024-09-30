@@ -17,9 +17,10 @@ export const useResumeActions = () => {
     }
   }, [resetStore]);
 
-  const handlePreview = useCallback(() => {
-    // 미리보기 로직
-  }, []);
+  // const handlePreview = useCallback(() => {
+  //   console.log('Preview functionality is currently disabled');
+  //   // 미리보기 로직
+  // }, []);
 
   const handleToggleAllSections = useCallback(() => {
     toggleAllSections();

@@ -155,7 +155,7 @@ const Resume = () => {
       )}
       <CustomForm onAddSection={handleAddSection} />
       <FloatingControls 
-        onPreview={handlePreview} 
+        // onPreview={handlePreview} 
         onReset={handleResetClick}
         onToggleAllSections={toggleAllSections}
         areAllSectionsExpanded={areAllSectionsExpanded}
