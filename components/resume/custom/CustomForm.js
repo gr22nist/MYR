@@ -3,8 +3,8 @@ import TagButtons from '@/components/common/TagButtons';
 import { PREDEFINED_SECTIONS, CUSTOM_SECTIONS } from '@/constants/resumeConstants';
 import useResumeStore from '@/store/resumeStore';
 
-const CustomForm = () => {
-  const { addSection, sections } = useResumeStore();
+const CustomForm = ({ onAddSection }) => {
+  const { sections, predefinedSections } = useResumeStore();
 
   const tags = useMemo(() => 
     Object.entries(PREDEFINED_SECTIONS).map(([type, label]) => ({ type, label })), 
@@ -12,24 +12,36 @@ const CustomForm = () => {
   );
 
   const handleAddSection = (type) => {
-    const newSection = addSection(type);
-    if (newSection) {
-      console.log('New section added:', newSection);
-    }
+    console.log('Adding section of type:', type);
+    onAddSection(type);
   };
 
   const disabledTags = useMemo(() => {
     return sections
-      .filter(section => section.type !== CUSTOM_SECTIONS.type)
+      .filter(section => section && section.type !== CUSTOM_SECTIONS.type)
       .map(section => section.type);
   }, [sections]);
+
+  // 유니크한 섹션 타입 목록
+  const uniqueSectionTypes = ['project', 'award', 'certificate', 'language', 'skill', 'link'];
+
+  // 유니크한 섹션 타입인지 확인하는 함수
+  const isUniqueSection = (type) => uniqueSectionTypes.includes(type);
+
+  // 섹션 추가 가능 여부를 확인하는 함수
+  const canAddSection = (type) => {
+    if (isUniqueSection(type)) {
+      return !sections.some(section => section.type === type);
+    }
+    return true;
+  };
 
   return (
     <div className="custom-form mt-4">
       <div className="info-message bg-mono-ee border-l-4 border-mono-33 text-mono-66 font-bold p-4 w-full mb-4">
         <p className="text-sm">
-          추가된 항목이 없으면 작성 완료 시 해당 영역이 보이지 않습니다. 
-          꼭 필요한 개인정보만 작성해주세요.
+          작성하고 싶은 정보가 있는데 작성란이 없으셨나요? 직접 만들어보세요.
+          저서, 논문, 봉사경험 등 무엇이든 간단한 텍스트로 작성 가능합니다.
         </p>
       </div>
       <div className="flex items-center justify-center bg-white rounded-md p-2 min-h-[60px] w-full">
@@ -41,7 +53,14 @@ const CustomForm = () => {
         </button>
         <TagButtons 
           tags={tags}
-          onTagClick={handleAddSection}
+          onTagClick={(type) => {
+            if (canAddSection(type)) {
+              handleAddSection(type);
+            } else {
+              console.log(`Cannot add more than one ${type} section`);
+              // 여기에 사용자에게 알림을 주는 로직을 추가할 수 있습니다.
+            }
+          }}
           className="flex-wrap justify-center"
           disabledTags={disabledTags}
         />

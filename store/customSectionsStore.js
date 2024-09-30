@@ -1,14 +1,19 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';  // uuid 라이브러리에서 v4 함수를 import
-import { loadCustomSections as loadCustomSectionsDB, saveCustomSections, deleteCustomSection, saveSectionOrder, loadSectionOrder } from '@/utils/indexedDB';
+import { saveCustomSections, loadCustomSections as loadCustomSectionsDB, deleteCustomSection, loadSectionOrder, saveSectionOrder } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
 
 const useCustomSectionsStore = create((set, get) => ({
   customSections: [],
   sectionOrder: [],
   predefinedSections: {},
+  isLoading: false,
 
   loadCustomSections: async () => {
+    const { isLoading } = get();
+    if (isLoading) return; // 이미 로딩 중이면 함수 실행을 중단
+
+    set({ isLoading: true });
     try {
       const [savedSections, savedOrder] = await Promise.all([
         loadCustomSectionsDB(),
@@ -21,41 +26,38 @@ const useCustomSectionsStore = create((set, get) => ({
         }
         return acc;
       }, {});
-      
-      const fullOrder = savedOrder || ['career', 'education', ...savedSections.map(s => s.id)];
-      
+
       set({ 
-        customSections: savedSections || [], 
+        customSections: savedSections, 
+        sectionOrder: savedOrder || [],
         predefinedSections,
-        sectionOrder: fullOrder
+        isLoading: false
       });
     } catch (error) {
-      console.error('커스텀 섹션 로드 실패:', error);
+      console.error('Error loading custom sections:', error);
+      set({ isLoading: false });
     }
   },
 
   addCustomSection: (type) => {
-    const { customSections, predefinedSections, sectionOrder } = get();
-
-    if (type !== CUSTOM_SECTIONS.type && (customSections.some(section => section.type === type) || predefinedSections[type])) {
-      console.warn('Section already exists. Skipping addition.');
-      return null;
-    }
-
+    const { customSections, sectionOrder, predefinedSections } = get();
+    
+    console.log('Adding custom section of type:', type);
+    
     const newSection = {
       id: uuidv4(),
       type,
-      title: type === CUSTOM_SECTIONS.type ? '새 자유 서식' : PREDEFINED_SECTIONS[type] || '새 섹션',
+      title: type === CUSTOM_SECTIONS.type ? '' : PREDEFINED_SECTIONS[type] || '새 섹션',
       content: '',
       links: type === 'link' ? [] : undefined,
     };
 
     const updatedSections = [...customSections, newSection];
     const updatedOrder = [...sectionOrder, newSection.id];
-    const updatedPredefinedSections = { ...predefinedSections, [type]: true };
-
-    saveCustomSections(updatedSections);
-    saveSectionOrder(updatedOrder);
+    const updatedPredefinedSections = { ...predefinedSections };
+    if (type !== CUSTOM_SECTIONS.type) {
+      updatedPredefinedSections[type] = true;
+    }
 
     set({ 
       customSections: updatedSections,
@@ -63,6 +65,10 @@ const useCustomSectionsStore = create((set, get) => ({
       predefinedSections: updatedPredefinedSections
     });
 
+    saveCustomSections(updatedSections);
+    saveSectionOrder(updatedOrder);
+
+    console.log('New section added:', newSection);
     return newSection;
   },
 
@@ -82,7 +88,7 @@ const useCustomSectionsStore = create((set, get) => ({
   },
 
   removeCustomSection: (id) => {
-    set((state) => {
+    set(state => {
       const sectionToRemove = state.customSections.find(section => section.id === id);
       const updatedSections = state.customSections.filter(section => section.id !== id);
       const updatedPredefinedSections = { ...state.predefinedSections };

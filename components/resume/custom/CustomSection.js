@@ -4,7 +4,7 @@ import CustomSectionItem from './CustomItem';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import useCustomSections from '@/hooks/useCustomSections';  // 파일명 변경
+import useCustomSections from '@/hooks/useCustomSections';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
 
 const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggle }) => {
@@ -29,7 +29,7 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
   }, [removeCustomSection, onDelete, section.id]);
 
   const handleChange = useCallback((updatedSection) => {
-    updateCustomSection(section.id, updatedSection);  // updateCustomSection 사용
+    updateCustomSection(section.id, updatedSection);
     onSectionChange(updatedSection);
   }, [updateCustomSection, onSectionChange, section.id]);
 

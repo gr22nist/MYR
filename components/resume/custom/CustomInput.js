@@ -1,11 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
 import { commonStyles } from '@/styles/constLayout';
 import LinkItems from './LinkItems';
 
-const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dragHandleProps, className }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dragHandleProps, className, isExpanded, onToggleExpand }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const contentRef = useRef(null);
   const sectionRef = useRef(null);
@@ -15,10 +14,6 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
   };
 
   const isCustomType = type === 'custom';
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
 
   const handleDelete = () => {
     setIsDeleting(true);
@@ -31,6 +26,16 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
       sectionRef.current.style.opacity = '0';
     }
   }, [isDeleting]);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      if (isExpanded) {
+        contentRef.current.style.maxHeight = `${contentRef.current.scrollHeight}px`;
+      } else {
+        contentRef.current.style.maxHeight = '0px';
+      }
+    }
+  }, [isExpanded, section.content]);
 
   const getPlaceholder = () => {
     switch (section.title) {
@@ -77,7 +82,7 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
 
   return (
     <div ref={sectionRef} className={`bg-white rounded-lg shadow-md ${className} ${isDeleting ? 'deleting' : ''}`}>
-      <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center justify-between p-4 border-b section-header" {...dragHandleProps}>
         {isCustomType ? (
           <input
             type="text"
@@ -92,7 +97,7 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
         <ActionButtons 
           onDelete={handleDelete}
           isDeletable={isDeletable}
-          onFold={toggleExpand}
+          onFold={onToggleExpand}
           isExpanded={isExpanded}
           dragHandleProps={dragHandleProps}
           mode="custom"
@@ -100,7 +105,7 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
       </div>
       <div 
         ref={contentRef}
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'opacity-100' : 'opacity-0'}`}
+        className={`overflow-hidden transition-all duration-300 ease-in-out section-content ${isExpanded ? 'expanded' : ''}`}
       >
         <div className="p-4">
           {renderContent()}
