@@ -4,6 +4,7 @@ import { clearDatabase } from '@/utils/indexedDB';
 
 export const useResumeActions = () => {
   const resetStore = useResumeStore(state => state.resetStore);
+  const toggleAllSections = useResumeStore(state => state.toggleAllSections);
   
   const handleReset = useCallback(async () => {
     try {
@@ -20,5 +21,9 @@ export const useResumeActions = () => {
     // 미리보기 로직
   }, []);
 
-  return { handleReset, handlePreview };
+  const handleToggleAllSections = useCallback(() => {
+    toggleAllSections();
+  }, [toggleAllSections]);
+
+  return { handleReset, handlePreview, handleToggleAllSections };
 };
