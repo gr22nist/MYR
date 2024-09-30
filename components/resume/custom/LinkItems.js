@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 
 const LinkItems = ({ links, onChange }) => {
-  const [newSiteName, setNewSiteName] = useState('');
-  const [newLink, setNewLink] = useState('');
+  const [error, setError] = useState('');
+  const [siteName, setSiteName] = useState('');
+  const [link, setLink] = useState('');
+  const siteNameInputRef = useRef(null);
+  const linkInputRef = useRef(null);
 
   const formatUrl = (url) => {
     if (url.startsWith('http://') || url.startsWith('https://')) {
@@ -12,45 +15,71 @@ const LinkItems = ({ links, onChange }) => {
     return `https://${url}`;
   };
 
-  const handleAddLink = () => {
-    if (newSiteName && newLink) {
-      const formattedLink = formatUrl(newLink);
-      onChange([...links, { siteName: newSiteName, link: formattedLink }]);
-      setNewSiteName('');
-      setNewLink('');
-    }
+  const isValidDomain = (url) => {
+    const pattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+([/?].*)?$/;
+    return pattern.test(url);
   };
 
-  const handleRemoveLink = (index) => {
+  const handleAddLink = useCallback(() => {
+    if (siteName && link) {
+      const formattedLink = formatUrl(link);
+      if (isValidDomain(formattedLink)) {
+        const newLinks = [...links, { siteName, link: formattedLink }];
+        onChange(newLinks);
+        setSiteName('');
+        setLink('');
+        setError('');
+        
+        // 입력 필드 초기화
+        if (siteNameInputRef.current) siteNameInputRef.current.value = '';
+        if (linkInputRef.current) linkInputRef.current.value = '';
+      } else {
+        setError('유효하지 않은 도메인 형식입니다.');
+      }
+    } else {
+      setError('사이트명과 링크를 모두 입력해주세요.');
+    }
+  }, [siteName, link, links, onChange]);
+
+  const handleRemoveLink = useCallback((index) => {
     const newLinks = links.filter((_, i) => i !== index);
     onChange(newLinks);
-  };
+  }, [links, onChange]);
 
-  const handleLinkChange = (e) => {
-    setNewLink(e.target.value);
-  };
+  const handleSiteNameChange = useCallback((value) => {
+    setSiteName(value);
+  }, []);
+
+  const handleLinkChange = useCallback((value) => {
+    setLink(value);
+  }, []);
 
   return (
     <div>
-      <div className="flex items-center mb-4">
-        <FloatingLabelInput
-          label="사이트명"
-          value={newSiteName}
-          onChange={(e) => setNewSiteName(e.target.value)}
-          placeholder="사이트 이름을 입력하세요"
-          spellCheck="false"
-          maxLength="100"
-          className="mr-2"
-        />
-        <FloatingLabelInput
-          label="링크"
-          value={newLink}
-          onChange={handleLinkChange}
-          placeholder="https://"
-          spellCheck="false"
-          className="mr-2"
-        />
-        <button onClick={handleAddLink} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">추가</button>
+      <div className="flex flex-col mb-4">
+        <div className="flex items-center mb-2">
+          <FloatingLabelInput
+            onInputRef={(ref) => siteNameInputRef.current = ref}
+            label="사이트명"
+            value={siteName}
+            onChange={handleSiteNameChange}
+            placeholder="사이트 이름을 입력하세요"
+            spellCheck="false"
+            maxLength="100"
+            className="mr-2"
+          />
+          <FloatingLabelInput
+            onInputRef={(ref) => linkInputRef.current = ref}
+            label="링크"
+            value={link}
+            onChange={handleLinkChange}
+            placeholder="https://"
+            spellCheck="false"
+            className="mr-2"
+          />
+          <button onClick={handleAddLink} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">추가</button>
+        </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>
       <div className="flex flex-wrap gap-2">
         {links.map((item, index) => (
@@ -76,4 +105,4 @@ const LinkItems = ({ links, onChange }) => {
   );
 };
 
-export default LinkItems;
+export default React.memo(LinkItems);
