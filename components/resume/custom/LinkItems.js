@@ -59,7 +59,7 @@ const LinkItems = ({ links, onChange }) => {
       <div className="flex flex-col mb-4">
         <div className="flex items-center mb-2">
           <FloatingLabelInput
-            onInputRef={(ref) => siteNameInputRef.current = ref}
+            inputRef={siteNameInputRef}
             label="사이트명"
             value={siteName}
             onChange={handleSiteNameChange}
@@ -69,7 +69,7 @@ const LinkItems = ({ links, onChange }) => {
             className="mr-2"
           />
           <FloatingLabelInput
-            onInputRef={(ref) => linkInputRef.current = ref}
+            inputRef={linkInputRef}
             label="링크"
             value={link}
             onChange={handleLinkChange}

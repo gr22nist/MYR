@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { commonStyles, combineClasses } from '@/styles/constLayout';
 import { useIMEInput } from '@/hooks/useIMEInput';
 import Tooltip from '@/components/common/Tooltip';
@@ -15,10 +15,18 @@ const FloatingLabelInput = ({
   tooltipMessage = '',
   spellCheck = false,
   maxLength = 100,
+  inputRef, // 새로 추가된 prop
   ...props 
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const { value, onChange, onCompositionStart, onCompositionEnd } = useIMEInput(externalValue, externalOnChange);
+  const internalRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef) {
+      inputRef.current = internalRef.current;
+    }
+  }, [inputRef]);
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = () => setIsFocused(false);
