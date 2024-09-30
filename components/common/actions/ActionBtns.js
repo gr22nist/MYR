@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import DeleteButton from './DeleteBtn';
 import FoldButton from './FoldBtn';
-import DragHandleComponent from './DragHandleComponent';
+
+const DragHandleComponent = dynamic(() => import('./DragHandleComponent'), { ssr: false });
 
 const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = 'item', isSubItem = false, dragHandleProps }) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleDelete = () => {
     if (typeof onDelete === 'function') {
@@ -19,13 +26,13 @@ const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = '
         return (
           <>
             {isDeletable && <DeleteButton onClick={handleDelete} isSubItem={isSubItem} />}
-            <DragHandleComponent id={id} isSubItem={isSubItem} dragHandleProps={dragHandleProps} />
+            {isClient && <DragHandleComponent id={id} isSubItem={isSubItem} dragHandleProps={dragHandleProps} />}
           </>
         );
       case 'section':
         return (
           <>
-            {!isExpanded && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
+            {!isExpanded && isClient && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
             <FoldButton onClick={onFold} isExpanded={isExpanded} />
           </>
         );
@@ -33,7 +40,7 @@ const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = '
         return (
           <>
             <DeleteButton onClick={handleDelete} isSubItem={false} />
-            {!isExpanded && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
+            {!isExpanded && isClient && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
             <FoldButton onClick={onFold} isExpanded={isExpanded} />
           </>
         );
