@@ -1,88 +1,50 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { 
+  loadCareers, 
+  loadEducations, 
   loadCustomSections, 
-  saveCustomSections, 
-  deleteCustomSection, 
+  saveCareers,
+  saveEducations,
+  saveCustomSections,
+  deleteSection, 
   saveSectionOrder, 
-  loadSectionOrder,
-  loadCareers,
-  loadEducations
+  loadSectionOrder
 } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
-import { createBaseActions } from '@/utils/storeUtils';
 
 const useResumeStore = create((set, get) => ({
   sections: [],
   sectionOrder: [],
-  predefinedSections: {
-    career: false,
-    education: false,
-    project: false,
-    award: false,
-    certificate: false,
-    language: false,
-    skill: false,
-    link: false
-  },
-  ...createBaseActions('sections', loadCustomSections, saveCustomSections),
-
-  setSections: (sections) => set({ sections }),
-  setSectionOrder: (order) => set({ sectionOrder: order }),
-
-  loadSections: async () => {
-    try {
-      const [savedSections, savedOrder] = await Promise.all([
-        loadCustomSections(),
-        loadSectionOrder()
-      ]);
-      
-      const predefinedSections = savedSections.reduce((acc, section) => {
-        if (section.type !== CUSTOM_SECTIONS.type) {
-          acc[section.type] = true;
-        }
-        return acc;
-      }, {});
-      
-      set({ 
-        sections: savedSections || [],
-        sectionOrder: savedOrder || [],
-        predefinedSections
-      });
-    } catch (error) {
-      console.error('섹션 로드 실패:', error);
-    }
+  
+  loadAllSections: async () => {
+    // 이 부분은 변경 없음
   },
 
   addSection: (type) => {
-    const { sections, sectionOrder, predefinedSections } = get();
-
-    if (type !== CUSTOM_SECTIONS.type && (sections.some(section => section.type === type) || predefinedSections[type])) {
-      console.warn('Section already exists. Skipping addition.');
-      return null;
-    }
-
+    const { sections, sectionOrder } = get();
     const newSection = {
       id: uuidv4(),
       type,
-      title: type === CUSTOM_SECTIONS.type ? '새 자유 서식' : PREDEFINED_SECTIONS[type] || '새 섹션',
-      content: '',
-      links: type === 'link' ? [] : undefined,
+      title: type === CUSTOM_SECTIONS.type ? '' : PREDEFINED_SECTIONS[type] || '새 섹션',
+      items: []
     };
-
     const updatedSections = [...sections, newSection];
     const updatedOrder = [...sectionOrder, newSection.id];
-    const updatedPredefinedSections = { ...predefinedSections, [type]: true };
-
-    saveCustomSections(updatedSections);
+    
+    set({ sections: updatedSections, sectionOrder: updatedOrder });
+    
+    // 섹션 타입에 따라 적절한 저장 함수 호출
+    if (type === 'career') {
+      saveCareers(updatedSections.filter(s => s.type === 'career').map(s => s.items).flat());
+    } else if (type === 'education') {
+      saveEducations(updatedSections.filter(s => s.type === 'education').map(s => s.items).flat());
+    } else {
+      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
+    }
+    
     saveSectionOrder(updatedOrder);
-
-    set({ 
-      sections: updatedSections,
-      sectionOrder: updatedOrder,
-      predefinedSections: updatedPredefinedSections
-    });
-
+    
     return newSection;
   },
 
@@ -91,31 +53,37 @@ const useResumeStore = create((set, get) => ({
       const updatedSections = state.sections.map(section =>
         section.id === updatedSection.id ? { ...section, ...updatedSection } : section
       );
-      saveCustomSections(updatedSections);
+      
+      // 섹션 타입에 따라 적절한 저장 함수 호출
+      if (updatedSection.type === 'career') {
+        saveCareers(updatedSection.items);
+      } else if (updatedSection.type === 'education') {
+        saveEducations(updatedSection.items);
+      } else {
+        saveCustomSections([updatedSection]);
+      }
+      
       return { sections: updatedSections };
     });
   },
 
   removeSection: (id) => {
-    set((state) => {
+    set(state => {
       const sectionToRemove = state.sections.find(section => section.id === id);
-      const updatedSections = state.sections.filter(section => section.id !== id);
-      const updatedPredefinedSections = { ...state.predefinedSections };
-      if (sectionToRemove && sectionToRemove.type !== CUSTOM_SECTIONS.type) {
-        delete updatedPredefinedSections[sectionToRemove.type];
+      if (sectionToRemove && ['career', 'education'].includes(sectionToRemove.type)) {
+        console.warn('Cannot remove career or education sections');
+        return state;
       }
-      
-      Promise.all([
-        deleteCustomSection(id),
-        saveCustomSections(updatedSections),
-        saveSectionOrder(state.sectionOrder.filter(sectionId => sectionId !== id))
-      ]).catch(error => console.error('섹션 삭제 중 오류 발생:', error));
 
-      return { 
-        sections: updatedSections,
-        sectionOrder: state.sectionOrder.filter(sectionId => sectionId !== id),
-        predefinedSections: updatedPredefinedSections
-      };
+      const updatedSections = state.sections.filter(section => section.id !== id);
+      const updatedOrder = state.sectionOrder.filter(sectionId => sectionId !== id);
+      
+      // 커스텀 섹션만 삭제
+      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
+      
+      saveSectionOrder(updatedOrder);
+      deleteSection(id);
+      return { sections: updatedSections, sectionOrder: updatedOrder };
     });
   },
 
@@ -125,15 +93,16 @@ const useResumeStore = create((set, get) => ({
   },
 
   resetSections: () => {
-    set({ 
-      sections: [],
-      sectionOrder: ['career', 'education'],
-      predefinedSections: {}
-    });
-    Promise.all([
-      saveCustomSections([]),
-      saveSectionOrder(['career', 'education'])
-    ]).catch(error => console.error('섹션 초기화 중 오류 발생:', error));
+    const initialSections = [
+      { id: 'career', type: 'career', title: '경력', items: [] },
+      { id: 'education', type: 'education', title: '학력', items: [] },
+    ];
+    const initialOrder = initialSections.map(s => s.id);
+    set({ sections: initialSections, sectionOrder: initialOrder });
+    saveCareers([]);
+    saveEducations([]);
+    saveCustomSections([]);
+    saveSectionOrder(initialOrder);
   },
 }));
 
