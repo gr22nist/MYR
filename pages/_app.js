@@ -21,7 +21,10 @@ ReactModal.setAppElement('#__next');
 
 function MYR ({ Component, pageProps }) {
   useEffect(() => {
-    initializeDB().catch(console.error);
+    initializeDB().catch(error => {
+      console.error('Failed to initialize database:', error);
+      // 여기에 사용자에게 오류를 알리는 로직을 추가할 수 있습니다.
+    });
   }, []);
 
   return (

@@ -12,10 +12,18 @@ import {
   loadSectionOrder
 } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
+import { resetAllStores } from '@/utils/resetStores';
+
+const initialState = {
+  sections: [
+    { id: 'career', type: 'career', title: '경력', items: [] },
+    { id: 'education', type: 'education', title: '학력', items: [] },
+  ],
+  sectionOrder: ['career', 'education'],
+};
 
 const useResumeStore = create((set, get) => ({
-  sections: [],
-  sectionOrder: [],
+  ...initialState,
   
   loadAllSections: async () => {
     // 이 부분은 변경 없음
@@ -78,9 +86,7 @@ const useResumeStore = create((set, get) => ({
       const updatedSections = state.sections.filter(section => section.id !== id);
       const updatedOrder = state.sectionOrder.filter(sectionId => sectionId !== id);
       
-      // 커스텀 섹션만 삭제
       saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
-      
       saveSectionOrder(updatedOrder);
       deleteSection(id);
       return { sections: updatedSections, sectionOrder: updatedOrder };
@@ -93,16 +99,11 @@ const useResumeStore = create((set, get) => ({
   },
 
   resetSections: () => {
-    const initialSections = [
-      { id: 'career', type: 'career', title: '경력', items: [] },
-      { id: 'education', type: 'education', title: '학력', items: [] },
-    ];
-    const initialOrder = initialSections.map(s => s.id);
-    set({ sections: initialSections, sectionOrder: initialOrder });
-    saveCareers([]);
-    saveEducations([]);
-    saveCustomSections([]);
-    saveSectionOrder(initialOrder);
+    const resetResumeStore = () => set(initialState);
+    const resetCustomSectionsStore = () => {
+    };
+
+    resetAllStores(resetResumeStore, resetCustomSectionsStore);
   },
 }));
 

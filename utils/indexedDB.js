@@ -3,198 +3,94 @@ import { encryptData, decryptData } from '@/utils/cryptoUtils';
 
 const saveItems = async (storeName, items) => {
   const db = await getDB();
-  try {
-    await db.transaction('rw', storeName, async () => {
-      await db.table(storeName).clear();
-      if (Array.isArray(items) && items.length > 0) {
-        const encryptedItems = items.map(item => ({
-          id: item.id, // UUID는 이미 고유하므로 그대로 사용
-          value: encryptData({ ...item, id: item.id }) // id를 포함하여 암호화
-        }));
-        await db.table(storeName).bulkAdd(encryptedItems);
-      } else {
-        console.warn(`No items to save for ${storeName}`);
-      }
-    });
-  } catch (error) {
-    console.error(`Transaction failed for ${storeName}:`, error);
-    throw error;
-  }
+  await db.transaction('rw', storeName, async () => {
+    await db.table(storeName).clear();
+    if (Array.isArray(items) && items.length > 0) {
+      const encryptedItems = items.map(item => ({
+        id: item.id,
+        value: encryptData({ ...item, id: item.id })
+      }));
+      await db.table(storeName).bulkAdd(encryptedItems);
+    }
+  });
 };
 
 const loadItems = async (storeName) => {
   const db = await getDB();
-  try {
-    if (!db[storeName]) {
-      console.error(`Store ${storeName} does not exist in the database`);
-      return [];
+  if (!db[storeName]) return [];
+  const encryptedItems = await db[storeName].toArray();
+  return encryptedItems.map(item => {
+    try {
+      const decryptedData = decryptData(item.value);
+      return { ...decryptedData, id: item.id };
+    } catch (error) {
+      console.error(`${storeName} 항목 복호화 중 오류:`, error);
+      return null;
     }
-    const encryptedItems = await db[storeName].toArray();
-    const decryptedItems = encryptedItems.map(item => {
-      try {
-        const decryptedData = decryptData(item.value);
-        return {
-          ...decryptedData,
-          id: item.id
-        };
-      } catch (decryptError) {
-        console.error(`Error decrypting item from ${storeName}:`, decryptError);
-        return null;
-      }
-    }).filter(Boolean);
-    return decryptedItems;
-  } catch (error) {
-    console.error(`Error loading ${storeName}:`, error);
-    return []; // 오류 발생 시 빈 배열 반환
-  }
+  }).filter(Boolean);
 };
 
 const saveEncryptedItem = async (storeName, key, value) => {
   const db = await getDB();
-  await db[storeName].put({ key, value: encryptData(value) });
+  const data = storeName === 'sectionOrder' 
+    ? { id: key, order: encryptData(value) }
+    : { key, value: encryptData(value) };
+  await db[storeName].put(data);
 };
 
 const loadEncryptedItem = async (storeName, key) => {
   const db = await getDB();
-  try {
-    if (!db[storeName]) {
-      console.error(`Store ${storeName} does not exist`);
-      return null;
-    }
-    const data = await db[storeName].get(key);
-    return data ? decryptData(data.value) : null;
-  } catch (error) {
-    console.error(`Error loading from ${storeName}:`, error);
-    return null;
-  }
+  if (!db[storeName]) return null;
+  const data = await db[storeName].get(key);
+  return data ? decryptData(storeName === 'sectionOrder' ? data.order : data.value) : null;
 };
 
 const deleteItem = async (storeName, id) => {
   const db = await getDB();
-  try {
-    await db[storeName].delete(id);
-  } catch (error) {
-    console.error(`Error deleting item from ${storeName}:`, error);
-    throw error;
-  }
+  await db[storeName].delete(id);
 };
 
-export const saveCareers = async (careers) => {
-  if (!careers || careers.length === 0) return;
-  try {
-    await saveItems('careers', careers);
-    console.log(`Successfully saved ${careers.length} items for careers`);
-  } catch (error) {
-    console.error('Error saving careers:', error);
-    throw error;
-  }
-};
-
+export const saveCareers = (careers) => careers?.length ? saveItems('careers', careers) : null;
 export const loadCareers = () => loadItems('careers');
-export const saveEducations = async (educations) => {
-  if (!educations || educations.length === 0) return;
-  try {
-    await saveItems('educations', educations);
-    console.log(`Successfully saved ${educations.length} items for educations`);
-  } catch (error) {
-    console.error('Error saving educations:', error);
-    throw error;
-  }
-};
-export const loadEducations = async () => {
-  const educations = await loadItems('educations');
-  return educations;
-};
+
+export const saveEducations = (educations) => educations?.length ? saveItems('educations', educations) : null;
+export const loadEducations = () => loadItems('educations');
 
 export const saveUserInfo = (userInfo) => saveItems('userInfo', userInfo);
-export const loadUserInfo = async () => {
-  try {
-    const items = await loadItems('userInfo');
-    return items;
-  } catch (error) {
-    console.error('Error loading user info from IndexedDB:', error);
-    return [];
-  }
-};
+export const loadUserInfo = () => loadItems('userInfo');
 
-export const saveProfilePhoto = async (photoData) => {
-  const db = await getDB();
-  await db.profilePhotos.put({ key: 'profilePhoto', value: photoData });
-};
+export const saveProfilePhoto = (photoData) => saveEncryptedItem('profilePhotos', 'profilePhoto', photoData);
+export const loadProfilePhoto = () => loadEncryptedItem('profilePhotos', 'profilePhoto');
 
-export const loadProfilePhoto = async () => {
-  const db = await getDB();
-  try {
-    const photoData = await db.profilePhotos.get('profilePhoto');
-    return photoData ? photoData.value : null;
-  } catch (error) {
-    console.error('프로필 사진 로드 중 오류 발생:', error);
-    return null;
-  }
-};
+export const saveProfileData = (profileData) => saveEncryptedItem('profileData', 'profile', profileData);
+export const loadProfileData = () => loadEncryptedItem('profileData', 'profile');
 
-export const saveProfileData = async (profileData) => {
-  try {
-    await saveEncryptedItem('profileData', 'profile', profileData);
-  } catch (error) {
-    console.error('프로필 데이터 저장 실패:', error);
-    throw error;
-  }
-};
-
-export const loadProfileData = async () => {
-  try {
-    const data = await loadEncryptedItem('profileData', 'profile');
-    return data;
-  } catch (error) {
-    console.error('프로필 데이터 로드 실패:', error);
-    return null;
-  }
-};
-
-export const saveCustomSections = async (sections) => {
-  try {
-    console.log('Saving custom sections:', sections);
-    await saveItems('customSections', sections);
-    console.log('Custom sections saved successfully');
-  } catch (error) {
-    console.error('Error saving custom sections:', error);
-    throw error;
-  }
-};
-
-export const loadCustomSections = async () => {
-  try {
-    const sections = await loadItems('customSections');
-    console.log('Loaded custom sections:', sections);
-    return sections;
-  } catch (error) {
-    console.error('Error loading custom sections:', error);
-    return [];
-  }
-};
+export const saveCustomSections = (sections) => saveItems('customSections', sections);
+export const loadCustomSections = () => loadItems('customSections');
 
 export const deleteCustomSection = (id) => deleteItem('customSections', id);
 
-export const saveSectionOrder = (order) => saveEncryptedItem('resumeData', 'sectionOrder', order);
-export const loadSectionOrder = () => loadEncryptedItem('resumeData', 'sectionOrder');
+export const saveSectionOrder = (order) => saveEncryptedItem('sectionOrder', 'sectionOrder', order);
+export const loadSectionOrder = () => loadEncryptedItem('sectionOrder', 'sectionOrder');
 
 export const clearDatabase = async () => {
   const db = await getDB();
-  try {
-    await db.transaction('rw', ['careers', 'educations', 'customSections', 'userInfo', 'profile', 'sectionOrder'], async () => {
-      await db.careers.clear();
-      await db.educations.clear();
-      await db.customSections.clear();
-      await db.userInfo.clear();
-      await db.profile.clear();
-      await db.sectionOrder.clear();
-    });
-    console.log('Database cleared successfully');
-  } catch (error) {
-    console.error('Error clearing database:', error);
-    throw error;
-  }
+  const stores = ['careers', 'educations', 'customSections', 'userInfo', 'profilePhotos', 'profileData', 'sectionOrder'];
+  
+  await db.transaction('rw', stores, async () => {
+    for (const store of stores) {
+      if (db[store]) {
+        await db[store].clear();
+      }
+    }
+  });
+};
+
+export const clearsectionOrder = async () => {
+  const db = await getDB();
+  await db.transaction('rw', 'sectionOrder', async () => {
+    await db.sectionOrder.clear();
+  });
 };
 
 export const loadSections = async () => {
@@ -216,7 +112,6 @@ export const loadSections = async () => {
       }))
     ];
 
-    console.log('Loaded sections:', sections);
     return sections;
   } catch (error) {
     console.error('Error loading all sections:', error);
@@ -242,3 +137,18 @@ const getSectionTitle = (type) => {
 };
 
 export const deleteSection = (id) => deleteItem('sections', id);
+
+export const checksectionOrderStore = async () => {
+  const db = await getDB();
+  if (db.sectionOrder) {
+    const count = await db.sectionOrder.count();
+    const allData = await db.sectionOrder.toArray();
+    console.log(`sectionOrder store has ${count} items:`, allData);
+  }
+};
+
+export const manualClearsectionOrder = async () => {
+  const db = await getDB();
+  await db.sectionOrder.clear();
+  console.log('sectionOrder manually cleared');
+};

@@ -2,12 +2,17 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';  // uuid 라이브러리에서 v4 함수를 import
 import { saveCustomSections, loadCustomSections as loadCustomSectionsDB, deleteCustomSection, loadSectionOrder, saveSectionOrder } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
+import { resetAllStores } from '@/utils/resetStores';
+import useResumeStore from './resumeStore';
 
-const useCustomSectionsStore = create((set, get) => ({
+const initialState = {
   customSections: [],
   sectionOrder: [],
   predefinedSections: {},
-  isLoading: false,
+};
+
+const useCustomSectionsStore = create((set, get) => ({
+  ...initialState,
 
   loadCustomSections: async () => {
     const { isLoading } = get();
@@ -19,7 +24,7 @@ const useCustomSectionsStore = create((set, get) => ({
         loadCustomSectionsDB(),
         loadSectionOrder()
       ]);
-      
+
       const predefinedSections = savedSections.reduce((acc, section) => {
         if (section.type !== CUSTOM_SECTIONS.type) {
           acc[section.type] = true;
@@ -34,16 +39,15 @@ const useCustomSectionsStore = create((set, get) => ({
         isLoading: false
       });
     } catch (error) {
-      console.error('Error loading custom sections:', error);
+      console.error('커스텀 섹션 로딩 중 오류:', error);
       set({ isLoading: false });
     }
   },
 
   addCustomSection: (type) => {
-    const { customSections, sectionOrder, predefinedSections } = get();
-    
-    console.log('Adding custom section of type:', type);
-    
+    const { customSections } = get();
+    const updateSectionOrder = useResumeStore.getState().updateSectionOrder;
+    const sectionOrder = useResumeStore.getState().sectionOrder;
     const newSection = {
       id: uuidv4(),
       type,
@@ -66,9 +70,8 @@ const useCustomSectionsStore = create((set, get) => ({
     });
 
     saveCustomSections(updatedSections);
-    saveSectionOrder(updatedOrder);
+    updateSectionOrder([...sectionOrder, newSection.id]);
 
-    console.log('New section added:', newSection);
     return newSection;
   },
 
@@ -111,15 +114,11 @@ const useCustomSectionsStore = create((set, get) => ({
   },
 
   resetCustomSections: () => {
-    set({ 
-      customSections: [],
-      sectionOrder: ['career', 'education'],
-      predefinedSections: {}
-    });
-    Promise.all([
-      saveCustomSections([]),
-      saveSectionOrder(['career', 'education'])
-    ]).catch(error => console.error('섹션 초기화 중 오류 발생:', error));
+    const resetCustomSectionsStore = () => set(initialState);
+    const resetResumeStore = () => {
+    };
+
+    resetAllStores(resetResumeStore, resetCustomSectionsStore);
   },
 }));
 

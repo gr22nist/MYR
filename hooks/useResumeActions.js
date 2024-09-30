@@ -1,21 +1,34 @@
 import { useCallback } from 'react';
 import useResumeStore from '@/store/resumeStore';
-import { clearDatabase } from '@/utils/indexedDB';
+import useCustomSectionsStore from '@/store/customSectionsStore';
+import useGlobalStore from '@/store/globalStore';
+import { clearDatabase, clearsectionOrder, checksectionOrderStore, manualClearsectionOrder } from '@/utils/indexedDB';
 
 export const useResumeActions = () => {
-  const resetStore = useResumeStore(state => state.resetStore);
+  const resetSections = useResumeStore(state => state.resetSections);
+  const resetCustomSections = useCustomSectionsStore(state => state.resetCustomSections);
   const toggleAllSections = useResumeStore(state => state.toggleAllSections);
+  const { showToast } = useGlobalStore();
   
   const handleReset = useCallback(async () => {
     try {
       await clearDatabase();
-      resetStore();
-      console.log('Database and store reset successfully');
+      await Promise.all([resetSections(), resetCustomSections()]);
+      
+      showToast({ message: '초기화 완료! 페이지가 새로고침 됩니다.', type: 'success' });
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error('초기화 중 오류 발생:', error);
-      throw error;
+      showToast({ message: '초기화 오류, 페이지가 새로고침 됩니다.', type: 'error' });
+      
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
-  }, [resetStore]);
+  }, [resetSections, resetCustomSections, showToast]);
 
   const handleToggleAllSections = useCallback(() => {
     toggleAllSections();
