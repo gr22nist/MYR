@@ -1,7 +1,8 @@
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { DragHandleBtn, DragHandleLineBtn } from '@/components/icons/IconSet'
+import { DragHandleBtn, DragHandleLineBtn } from '@/components/icons/IconSet';
+import IconButton from '../IconButton';
 
 const DragHandleComponent = ({ id, isSubItem, dragHandleProps }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -15,8 +16,17 @@ const DragHandleComponent = ({ id, isSubItem, dragHandleProps }) => {
   const handleProps = dragHandleProps || { ...listeners, ...attributes };
 
   return (
-    <div ref={setNodeRef} style={style} {...handleProps} className="cursor-grab active:cursor-grabbing">
-      {isSubItem ? <DragHandleBtn /> : <DragHandleLineBtn />}
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      {...handleProps} 
+      className="cursor-grab active:cursor-grabbing"
+    >
+      <IconButton 
+        icon={isSubItem ? DragHandleBtn : DragHandleLineBtn}
+        size="small"
+        aria-hidden="true"
+      />
     </div>
   );
 };

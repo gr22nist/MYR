@@ -34,3 +34,26 @@ body {
   z-index: 50;
 }
 
+.item-enter {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.item-enter-active {
+  opacity: 1;
+  max-height: 1000px; /* 적절한 최대 높이 설정 */
+  transition: opacity 300ms ease-in, max-height 300ms ease-in;
+}
+
+.item-exit {
+  opacity: 1;
+  max-height: 1000px;
+}
+
+.item-exit-active {
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 300ms ease-in, max-height 300ms ease-in;
+}
+

@@ -5,7 +5,7 @@ import FoldButton from './FoldBtn';
 
 const DragHandleComponent = dynamic(() => import('./DragHandleComponent'), { ssr: false });
 
-const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = 'item', isSubItem = false, dragHandleProps }) => {
+const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = 'item', isSubItem = false, dragHandleProps, isDraggable = true }) => {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -26,13 +26,13 @@ const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = '
         return (
           <>
             {isDeletable && <DeleteButton onClick={handleDelete} isSubItem={isSubItem} />}
-            {isClient && <DragHandleComponent id={id} isSubItem={isSubItem} dragHandleProps={dragHandleProps} />}
+            {isClient && isDraggable && isDeletable && <DragHandleComponent id={id} isSubItem={isSubItem} dragHandleProps={dragHandleProps} />}
           </>
         );
       case 'section':
         return (
           <>
-            {!isExpanded && isClient && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
+            {!isExpanded && isClient && isDraggable && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
             <FoldButton onClick={onFold} isExpanded={isExpanded} />
           </>
         );
@@ -40,7 +40,7 @@ const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = '
         return (
           <>
             <DeleteButton onClick={handleDelete} isSubItem={false} />
-            {!isExpanded && isClient && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
+            {!isExpanded && isClient && isDraggable && <DragHandleComponent id={id} isSubItem={false} dragHandleProps={dragHandleProps} />}
             <FoldButton onClick={onFold} isExpanded={isExpanded} />
           </>
         );

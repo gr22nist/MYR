@@ -14,18 +14,15 @@ const IconButton = ({
     large: 'p-3'
   };
 
+  // handleClick 함수 제거
+
   return (
-    <button 
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        onClick();
-      }} 
-      className={`rounded-full ${sizeClasses[size]} ${className}`}
+    <span 
+      className={`inline-block rounded-full ${sizeClasses[size]} ${className}`}
       {...props}
     >
       <Icon className={`hover:${hoverFill} hover:scale-110 duration-300`} />
-    </button>
+    </span>
   );
 };
 
