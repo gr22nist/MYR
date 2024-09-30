@@ -56,8 +56,18 @@ export const loadCareers = () => loadItems('careers');
 export const saveEducations = (educations) => educations?.length ? saveItems('educations', educations) : null;
 export const loadEducations = () => loadItems('educations');
 
-export const saveUserInfo = (userInfo) => saveItems('userInfo', userInfo);
-export const loadUserInfo = () => loadItems('userInfo');
+export const saveUserInfo = (userInfo) => {
+  const itemsWithOrder = userInfo.map((item, index) => ({
+    ...item,
+    order: item.order !== undefined ? item.order : index
+  }));
+  return saveItems('userInfo', itemsWithOrder);
+};
+
+export const loadUserInfo = async () => {
+  const items = await loadItems('userInfo');
+  return items.sort((a, b) => a.order - b.order);
+};
 
 export const saveProfilePhoto = (photoData) => saveEncryptedItem('profilePhotos', 'profilePhoto', photoData);
 export const loadProfilePhoto = () => loadEncryptedItem('profilePhotos', 'profilePhoto');

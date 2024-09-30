@@ -11,13 +11,16 @@ const useUserInfoStore = create((set, get) => ({
   ...createBaseActions('items', loadUserInfoFromDB, saveUserInfoToDB),
 
   addUserInfo: (newItem) => {
-    const newItemWithId = { 
-      ...newItem, 
-      id: generateUUID(),
-      displayType: newItem.type === 'custom' ? newItem.value.title : typeToKorean[newItem.type]
-    };
     set(state => {
-      const updatedItems = [...state.items, newItemWithId];
+      const updatedItems = [
+        ...state.items, 
+        { 
+          ...newItem, 
+          id: generateUUID(), 
+          order: state.items.length,
+          displayType: newItem.type === 'custom' ? newItem.value.title : (newItem.displayType || typeToKorean[newItem.type])
+        }
+      ];
       saveUserInfoToDB(updatedItems);
       return { items: updatedItems };
     });
@@ -26,12 +29,7 @@ const useUserInfoStore = create((set, get) => ({
   updateUserInfo: (updatedItem) => {
     set(state => {
       const updatedItems = state.items.map(item => 
-        item.id === updatedItem.id 
-          ? {
-              ...updatedItem,
-              displayType: updatedItem.type === 'custom' ? updatedItem.value.title : typeToKorean[updatedItem.type]
-            }
-          : item
+        item.id === updatedItem.id ? { ...item, ...updatedItem } : item
       );
       saveUserInfoToDB(updatedItems);
       return { items: updatedItems };
@@ -51,8 +49,9 @@ const useUserInfoStore = create((set, get) => ({
       const updatedItems = [...state.items];
       const [reorderedItem] = updatedItems.splice(oldIndex, 1);
       updatedItems.splice(newIndex, 0, reorderedItem);
-      saveUserInfoToDB(updatedItems);
-      return { items: updatedItems };
+      const reorderedItems = updatedItems.map((item, index) => ({ ...item, order: index }));
+      saveUserInfoToDB(reorderedItems);
+      return { items: reorderedItems };
     });
   },
 
@@ -67,7 +66,8 @@ const useUserInfoStore = create((set, get) => ({
     set({ status: 'loading' });
     try {
       const loadedItems = await loadUserInfoFromDB();
-      set({ items: loadedItems, status: 'success' });
+      const sortedItems = loadedItems.sort((a, b) => a.order - b.order);
+      set({ items: sortedItems, status: 'success' });
     } catch (error) {
       console.error('Error loading user info in store:', error);
       set({ error: error.message, status: 'error' });

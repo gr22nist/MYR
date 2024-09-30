@@ -33,7 +33,7 @@ const SortableUserInfoItem = React.memo(function SortableUserInfoItem({ item, on
       {(dragHandleProps) => (
         <UserInfoItem
           {...item}
-          displayType={typeToKorean[item.type] || item.type}
+          displayType={item.displayType || typeToKorean[item.type] || item.type}
           onRemove={onRemove}
           onEdit={onEdit}
           dragHandleProps={dragHandleProps}
@@ -85,9 +85,20 @@ const UserInfoForm = () => {
 
   const handleFieldChange = useCallback((type, value) => {
     if (activeField && activeField.id) {
-      updateUserInfo({ id: activeField.id, type, value });
+      const updatedItem = { 
+        id: activeField.id, 
+        type, 
+        value,
+        displayType: type === 'custom' ? value.title : typeToKorean[type]
+      };
+      updateUserInfo(updatedItem);
     } else {
-      addUserInfo({ type, value });
+      const newItem = { 
+        type, 
+        value,
+        displayType: type === 'custom' ? value.title : typeToKorean[type]
+      };
+      addUserInfo(newItem);
     }
     setActiveField(null);
   }, [activeField, addUserInfo, updateUserInfo]);
