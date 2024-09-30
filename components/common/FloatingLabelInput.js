@@ -13,6 +13,8 @@ const FloatingLabelInput = ({
   isTitle = false,
   isCore = false,
   tooltipMessage = '',
+  spellCheck = false,
+  maxLength = 100,
   ...props 
 }) => {
   const [isFocused, setIsFocused] = useState(false);

@@ -47,7 +47,7 @@ const CareerItem = ({
                 label="회사명"
                 value={career.companyName || ''}
                 onChange={(e) => handleChange('companyName', e.target.value)}
-                placeholder="예: 네이버 주식회사, Google "
+                placeholder={PLACEHOLDERS.career.companyName}
                 spellCheck="false"
                 maxLength="100"
                 className="w-full"
@@ -74,10 +74,10 @@ const CareerItem = ({
         {isExpanded && (
           <>
             <FloatingLabelInput
-              label="직책"
+              label="포지션"
               value={career.position || ''}
               onChange={(e) => handleChange('position', e.target.value)}
-              placeholder="직책을 작성해주세요. 예: 프론트엔드 개발자, UX 디자이너"
+              placeholder={PLACEHOLDERS.career.position}
               spellCheck="false"
               maxLength="100"
               className="w-full"
@@ -86,7 +86,7 @@ const CareerItem = ({
               label="주요 업무"
               value={career.mainTask || ''}
               onChange={(e) => handleChange('mainTask', e.target.value)}
-              placeholder={PLACEHOLDERS.CAREER_MAIN_TASK}
+              placeholder={PLACEHOLDERS.career.tasks}
               spellCheck="false"
               maxLength="1000"
               className="w-full"

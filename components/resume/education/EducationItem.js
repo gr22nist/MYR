@@ -41,7 +41,7 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
                 label="학교명"
                 value={education.schoolName || ''}
                 onChange={(e) => handleChange('schoolName', e.target.value)}
-                placeholder="예: 서울대학교, Harvard University"
+                placeholder={PLACEHOLDERS.education.schoolName}
                 spellCheck="false"
                 maxLength="100"
                 className="w-full"
@@ -84,7 +84,7 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
               label="전공"
               value={education.major || ''}
               onChange={(e) => handleChange('major', e.target.value)}
-              placeholder="전공을 작성해주세요. 예: 컴퓨터공학, 경영학"
+              placeholder={PLACEHOLDERS.education.majors}
               spellCheck="false"
               maxLength="100"
               className="w-full"

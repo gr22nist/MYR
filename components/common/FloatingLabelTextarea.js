@@ -9,6 +9,8 @@ const FloatingLabelTextarea = ({
   placeholder, 
   className = '', 
   isTitle = false,
+  spellCheck = false,
+  maxLength = 1000,
   ...props 
 }) => {
   const [isFocused, setIsFocused] = useState(false);
