@@ -4,14 +4,14 @@ import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } fro
 import PropTypes from 'prop-types';
 import SortableItem from '@/components/common/SortableItem';
 import TagButtons from '@/components/common/TagButtons';
-import ModalComponent from './ModalComponent';
+import ModalComponent from '@/components/common/ModalComponent';
 import UserInfoItem from './UserInfoItem';
 import AddressInput from './inputs/AddressInput';
 import BirthDateInput from './inputs/BirthDateInput';
 import PhoneInput from './inputs/PhoneInput';
 import EmailInput from './inputs/EmailInput';
 import SalaryInput from './inputs/SalaryInput';
-import CustomFieldInput from './inputs/CustomFieldInput';
+import CustomInput from './inputs/CustomInput';
 import { typeToKorean } from '@/constants/resumeConstants';
 import useUserInfoStore from '@/store/userInfoStore';
 
@@ -133,7 +133,7 @@ const UserInfoForm = () => {
       />
     ),
     custom: (initialValue) => (
-      <CustomFieldInput 
+      <CustomInput 
         onChange={(title, value) => handleFieldChange('custom', { title, value })} 
         onClose={() => setActiveField(null)}
         initialValue={initialValue}
@@ -235,7 +235,7 @@ const UserInfoForm = () => {
       </ModalComponent>
 
       <ModalComponent isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)}>
-        <CustomFieldInput 
+        <CustomInput 
           onChange={(title, value) => handleFieldChange('custom', { title, value })} 
           onClose={() => setIsCustomModalOpen(false)}
         />

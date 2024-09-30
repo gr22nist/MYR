@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import BaseInput from '@/components/common/BaseInput';
 import Button from '@/components/common/Button';
 
-const CustomFieldInput = ({ onChange, onClose, initialValue }) => {
+const CustomInput = ({ onChange, onClose, initialValue }) => {
   const [title, setTitle] = useState('');
   const [value, setValue] = useState('');
 
@@ -62,4 +62,4 @@ const CustomFieldInput = ({ onChange, onClose, initialValue }) => {
   );
 };
 
-export default CustomFieldInput;
+export default CustomInput;
