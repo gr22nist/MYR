@@ -8,8 +8,8 @@ const saveItems = async (storeName, items) => {
       await db.table(storeName).clear();
       if (Array.isArray(items) && items.length > 0) {
         const encryptedItems = items.map(item => ({
-          id: item.id,
-          value: encryptData({ ...item, id: undefined })
+          id: item.id, // UUID는 이미 고유하므로 그대로 사용
+          value: encryptData({ ...item, id: item.id }) // id를 포함하여 암호화
         }));
         await db.table(storeName).bulkAdd(encryptedItems);
       } else {

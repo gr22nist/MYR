@@ -3,7 +3,6 @@ import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
-import { commonStyles } from '@/styles/constLayout';
 import { CSSTransition } from 'react-transition-group';
 import { PLACEHOLDERS } from '@/constants/placeHolders';
 
