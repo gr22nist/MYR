@@ -10,3 +10,27 @@ body {
   font-family: var(--font-nanum);
 }
 
+.section-header {
+  background-color: white;
+  z-index: 10;
+}
+
+.section-content {
+  transition: max-height 0.3s ease-in-out;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.section-content.expanded {
+  max-height: 1000px; /* 적절한 최대 높이 설정 */
+}
+
+.dragging-section-header {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-weight: bold;
+  z-index: 50;
+}
+
