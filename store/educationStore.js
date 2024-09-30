@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import { createBaseActions } from '@/utils/storeUtils';
-import { loadEducations, saveEducations } from '@/utils/indexedDB';
+import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDB} from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
+import useResumeStore from './resumeStore';
 
 const createInitialEducation = () => ({
   id: generateUUID(),
@@ -16,45 +16,74 @@ const createInitialEducation = () => ({
 });
 
 const useEducationStore = create((set, get) => ({
-  educations: [createInitialEducation()],
+  educations: [],
   status: 'idle',
   error: null,
-  ...createBaseActions('educations', loadEducations, saveEducations),
-
-  addEducation: (newEducation) => {
-    const { add } = get();
-    add({ ...newEducation, id: generateUUID() });
-  },
-
-  updateEducation: (updatedEducation) => {
-    const { update } = get();
-    update(updatedEducation);
-  },
-
-  deleteEducation: (id) => {
-    const { remove } = get();
-    remove(id);
-  },
-
-  reorderEducations: (oldIndex, newIndex) => {
-    const { reorder } = get();
-    reorder(oldIndex, newIndex);
-  },
-
-  resetEducations: () => {
-    const { reset } = get();
-    reset([createInitialEducation()]);
-  },
 
   loadEducations: async () => {
-    const { load } = get();
-    await load();
+    set({ status: 'loading' });
+    try {
+      const loadedEducations = await loadEducationsFromDB();
+      const sortedEducations = loadedEducations
+        .sort((a, b) => a.order - b.order)
+        .map((education, index) => ({ ...education, order: index }));
+      set({
+        educations: sortedEducations.length > 0 ? sortedEducations : [createInitialEducation()],
+        status: 'seccess'
+      });
+    } catch (error) {
+      console.log('Error loading educations', error);
+      set({ error, status: 'error'});
+    }
   },
 
-  saveEducations: () => {
-    const { educations } = get();
-    saveEducations(educations);
+  addEducation: () => {
+    set(state => {
+      const newEducation = createInitialEducation();
+      const newEducations = [newEducation, ...state.educations].map((edu, index) => ({
+        ...edu,
+        order: index
+      }));
+      saveEducationsToDB(newEducations);
+      return { educations: newEducations };
+    });
   },
+  
+  updateEducation: (updatedEducation) => {
+    set(state => {
+      const newEducations = state.educations.map(edu => 
+        edu.id === updatedEducation.id ? { ...edu, ...updatedEducation } : edu
+      );
+      if(JSON.stringify(newEducations) !== JSON.stringify(state.educations)) {
+        useResumeStore.getState().updateSection({ id: 'education', type: 'education', items: newEducations });
+        return { educations: newEducations };
+      }
+      return state;
+    });
+  },
+  
+  deleteEducation: (id) => {
+    set(state => {
+      const newEducations = state.educations.filter(edu => edu.id !== id);
+      saveEducationsToDB(newEducations);
+      return { educations: newEducations };
+    });
+  },
+  
+  reorderEducations: (oldIndex, newIndex) => {
+    set(state => {
+      const newEducations = Array.from(state.educations);
+      const [reorderedItem] = newEducations.splice(oldIndex, 1);
+      newEducations.splice(newIndex, 0, reorderedItem);
+      const updatedEducations = newEducations.map((edu, index) => ({
+        ...edu,
+        order: index
+      }));
+      saveEducationsToDB(updatedEducations);
+      return { educations: updatedEducations };
+    });
+  },
+
 }));
 
 export default useEducationStore;

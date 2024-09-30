@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useMemo } from 'react';
 import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
@@ -7,8 +7,10 @@ import { commonStyles } from '@/styles/constLayout';
 import { CSSTransition } from 'react-transition-group';
 import { PLACEHOLDERS } from '@/constants/placeHolders';
 
-const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDeletable, dragHandleProps, className }) => {
+const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDeletable, dragHandleProps, isSubItem = false, isExpanded, className }) => {
   const nodeRef = useRef(null);
+  
+  const radioGroupName = useMemo(() => `graduationStatus-${education.id}`, [education.id]);
 
   const handleChange = useCallback((field, value) => {
     onEducationChange({ ...education, [field]: value });
@@ -33,16 +35,16 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
     >
       <div ref={nodeRef} className={`education-item my-4 relative flex flex-col gap-2 ${className}`}>
         <div className="flex items-center justify-between">
-          <div className="flex gap-4">
+          <div className="flex items-center">
             <div className="w-label">
               <FloatingLabelInput
                 label="학교명"
-                value={education.schoolName}
+                value={education.schoolName || ''}
                 onChange={(e) => handleChange('schoolName', e.target.value)}
-                placeholder="학교명을 작성해주세요. 예: 서울대학교, 한양대학교"
+                placeholder="예: 서울대학교, Harvard University"
                 spellCheck="false"
-                maxLength="30"
-                className="w-[520px]"
+                maxLength="100"
+                className="w-full"
                 isCore={true}
                 isTitle={true}
                 tooltipMessage="학교명을 꼭 입력해 주세요."
@@ -53,48 +55,42 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
                 <label key={status} className="text-sm">
                   <input
                     type="radio"
-                    name={`graduationStatus-${education.id}`}
+                    name={radioGroupName}
                     value={status}
                     checked={education.graduationStatus === status}
                     onChange={() => handleChange('graduationStatus', status)}
                   /> {status}
                 </label>
               ))}
-              <DateRangeInput
-                onChange={handleDateChange}
-                initialStartDate={education.startDate || ''}
-                initialEndDate={education.endDate || ''}
-                initialIsCurrent={education.isCurrent || false}
-              />
             </div>
+            <DateRangeInput
+              onChange={handleDateChange}
+              initialStartDate={education.startDate || ''}
+              initialEndDate={education.endDate || ''}
+              initialIsCurrent={education.isCurrent || false}
+            />
           </div>
           <ActionButtons 
             onDelete={() => onDelete(education.id)} 
             isDeletable={isDeletable} 
+            mode="item"
+            isSubItem={isSubItem}
             dragHandleProps={dragHandleProps}
-            isSubItem={true}
           />
         </div>
-
-        <div className="flex flex-col gap-4">
-          <FloatingLabelInput
-            label="학과"
-            value={education.department}
-            onChange={(e) => handleChange('department', e.target.value)}
-            placeholder="학부/학과명을 작성해주세요. 예: 전산학부 컴퓨터공학과"
-            spellCheck="false"
-            maxLength="100"
-            className=""
-          />
-          <FloatingLabelTextarea
-            label="전공"
-            value={education.major}
-            onChange={(e) => handleChange('major', e.target.value)}
-            placeholder={PLACEHOLDERS.education.majors}
-            spellCheck="false"
-            className={`overflow-hidden resize-none px-4 ${commonStyles.placeholderStyle}`}
-          />
-        </div>
+        {isExpanded && (
+          <>
+            <FloatingLabelTextarea
+              label="전공"
+              value={education.major || ''}
+              onChange={(e) => handleChange('major', e.target.value)}
+              placeholder="전공을 작성해주세요. 예: 컴퓨터공학, 경영학"
+              spellCheck="false"
+              maxLength="100"
+              className="w-full"
+            />
+          </>
+        )}
       </div>
     </CSSTransition>
   );
