@@ -1,5 +1,5 @@
 import React from 'react';
-import ModalComponent from '@/components/resume/userInfo/ModalComponent';
+import ModalComponent from '@/components/common/ModalComponent';
 
 const ResetModal = ({ isOpen, onClose, onConfirm }) => {
   return (
