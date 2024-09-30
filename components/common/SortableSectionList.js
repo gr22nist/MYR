@@ -1,19 +1,27 @@
 import React, { useMemo } from 'react';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import CareerList from '../resume/career/CareerList';
 import EducationList from '../resume/education/EducationList';
 import CustomSection from '../resume/custom/CustomSection';
 import { CUSTOM_SECTIONS } from '@/constants/resumeConstants';
 import SortableItem from './SortableItem';
+import AccordionSection from '@/components/common/AccordionSection';
 
 const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, expandedSections, onToggleExpand }) => {
+  const [activeId, setActiveId] = React.useState(null);
+  
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor)
   );
 
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
   const handleDragEnd = (event) => {
+    setActiveId(null);
     const { active, over } = event;
     if (active.id !== over.id) {
       const oldIndex = sections.findIndex((section) => section.id === active.id);
@@ -37,22 +45,49 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
   const renderSection = (section) => {
     const SectionComponent = sectionComponents[section.type];
     if (!SectionComponent) return null;
-
-    const commonProps = {
-      isExpanded: expandedSections[section.id],
-      onToggle: () => onToggleExpand(section.id),
-      section: section,
-      onSectionChange: (updatedSection) => onSectionChange(updatedSection),
-      onDelete: () => onDelete(section.id),
-    };
-
+  
+    const isExpanded = expandedSections[section.id];
+    const isCustom = section.type === CUSTOM_SECTIONS.type || ['project', 'award', 'certificate', 'language', 'skill', 'link'].includes(section.type);
+  
+    if (isCustom) {
+      return (
+        <SectionComponent
+          key={section.id}
+          section={section}
+          onSectionChange={(updatedSection) => onSectionChange(updatedSection)}
+          isExpanded={isExpanded}
+          onToggle={() => onToggleExpand(section.id)}
+          onDelete={() => onDelete(section.id)}
+        />
+      );
+    }
+  
     return (
-      <SectionComponent {...commonProps} />
+      <AccordionSection
+        key={section.id}
+        title={section.title}
+        isExpanded={isExpanded}
+        onToggle={() => onToggleExpand(section.id)}
+        onDelete={() => onDelete(section.id)}
+        mode="section"
+        dragHandleProps={!isExpanded ? { 'data-drag-handle': true } : {}}
+      >
+        <SectionComponent
+          section={section}
+          onSectionChange={(updatedSection) => onSectionChange(updatedSection)}
+          isExpanded={isExpanded}
+        />
+      </AccordionSection>
     );
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+    <DndContext 
+      sensors={sensors} 
+      collisionDetection={closestCenter} 
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
         {sections.map((section) => (
           <SortableItem key={section.id} id={section.id}>
@@ -60,6 +95,13 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
           </SortableItem>
         ))}
       </SortableContext>
+      <DragOverlay>
+        {activeId ? (
+          <div className="dragging-section-header">
+            {sections.find(section => section.id === activeId)?.title}
+          </div>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   );
 };
