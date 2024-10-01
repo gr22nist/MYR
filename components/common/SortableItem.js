@@ -15,8 +15,8 @@ const SortableItem = ({ id, children, isDragging, sectionType, isRemoving, dragH
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: isDragging ? 'none' : transition,
-    opacity: isRemoving ? 0 : 1,
-    scale: isRemoving ? 0.95 : 1,
+    opacity: isRemoving ? 0 : isDragging ? 0.5 : 1, // 드래그 중일 때 투명도를 0.5로 설정
+    scale: isRemoving ? 0.95 : isDragging ? 1.05 : 1, // 드래그 중일 때 약간 확대
   };
 
   const dragHandleProps = { ...attributes, ...listeners };

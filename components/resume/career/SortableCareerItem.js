@@ -10,22 +10,36 @@ const SortableCareerItem = ({ career, onCareerChange, onDelete, isDeletable, isE
     listeners,
     setNodeRef,
     transform,
-    transition,
-  } = useSortable({ id: career.id, disabled: !isDraggable });
+    isDragging,
+  } = useSortable({ 
+    id: career.id, 
+    disabled: !isDraggable,
+  });
 
   const nodeRef = useRef(null);
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    zIndex: isDragging ? 1000 : 1,
+    willChange: 'transform',
+    transition: isDragging ? 'none' : 'transform 150ms ease',
   };
 
+  const maskStyle = isDragging ? {
+    WebkitMask: 'linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 100%)',
+    mask: 'linear-gradient(135deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%)',
+  } : {};
+
   return (
-    <CSSTransition nodeRef={nodeRef} timeout={300} classNames="item">
-      <div ref={(node) => {
-        setNodeRef(node);
-        nodeRef.current = node;
-      }} style={style}>
+    <CSSTransition nodeRef={nodeRef} timeout={150} classNames="item">
+      <div 
+        ref={(node) => {
+          setNodeRef(node);
+          nodeRef.current = node;
+        }} 
+        style={{...style, ...maskStyle}}
+        className={`${isDragging ? 'touch-none' : ''} transition-all duration-150`}
+      >
         <CareerItem
           career={career}
           onCareerChange={onCareerChange}
