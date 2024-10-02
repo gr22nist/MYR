@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { layout } from '@/styles/constLayout';
 import Profile from '@/components/resume/profile/Profile';
 import UserInfoForm from '@/components/resume/userInfo/UserInfoForm';
@@ -9,6 +10,10 @@ import useResumeSections from '@/hooks/useResumeSections';
 import SortableSectionList from '@/components/common/SortableSectionList';
 import ResetModal from '@/components/common/actions/ResetModal';
 import useCustomSectionsStore from '@/store/customSectionsStore';
+
+const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
+  ssr: false,
+});
 
 const Resume = () => {
   const { handleReset } = useResumeActions();
@@ -143,7 +148,7 @@ const Resume = () => {
       <Profile />
       <UserInfoForm />
       {orderedSections.length > 0 && (
-        <SortableSectionList
+        <DynamicSortableSectionList
           sections={orderedSections}
           onSectionChange={updateSection}
           onDelete={handleDeleteSection}

@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import PropTypes from 'prop-types';
 import CareerList from '../resume/career/CareerList';
 import EducationList from '../resume/education/EducationList';
 import CustomSection from '../resume/custom/CustomSection';
@@ -9,7 +10,7 @@ import SortableItem from './SortableItem';
 import AccordionSection from '@/components/common/AccordionSection';
 
 const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, expandedSections, onToggleExpand }) => {
-  const [activeId, setActiveId] = React.useState(null);
+  const [activeId, setActiveId] = useState(null);
   
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -89,11 +90,15 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-        {sections.map((section) => (
-          <SortableItem key={section.id} id={section.id}>
-            {renderSection(section)}
-          </SortableItem>
-        ))}
+        {sections.map((section) => {
+          const renderedSection = renderSection(section);
+          if (!renderedSection) return null; // null인 경우 렌더링하지 않음
+          return (
+            <SortableItem key={section.id} id={section.id}>
+              {renderedSection}
+            </SortableItem>
+          );
+        })}
       </SortableContext>
       <DragOverlay>
         {activeId ? (
