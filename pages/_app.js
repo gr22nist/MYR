@@ -5,6 +5,7 @@ import '../styles/globals.css';
 import '../styles/modal.css';
 import ReactModal from 'react-modal';
 import localFont from 'next/font/local';
+import { Analytics } from '@vercel/analytics/react';
 
 const myFont = localFont({
   src: [
@@ -23,13 +24,13 @@ function MYR ({ Component, pageProps }) {
   useEffect(() => {
     initializeDB().catch(error => {
       console.error('Failed to initialize database:', error);
-      // 여기에 사용자에게 오류를 알리는 로직을 추가할 수 있습니다.
     });
   }, []);
 
   return (
     <Layout className={`${myFont.variable} font-sans`}>
       <Component {...pageProps} />
+      <Analytics />
     </Layout>
   );
 }
