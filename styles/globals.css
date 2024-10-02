@@ -11,22 +11,15 @@ body {
 }
 
 .section-header {
-  background-color: white;
   z-index: 10;
 }
 
 .section-content {
-  transition: max-height 0.3s ease-in-out;
-  max-height: 0;
+  transition: 0.3s ease-in-out;
   overflow: hidden;
 }
 
-.section-content.expanded {
-  max-height: 1000px; /* 적절한 최대 높이 설정 */
-}
-
 .dragging-section-header {
-  background-color: white;
   padding: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -36,24 +29,20 @@ body {
 
 .item-enter {
   opacity: 0;
-  max-height: 0;
   overflow: hidden;
 }
 
 .item-enter-active {
   opacity: 1;
-  max-height: 1000px; /* 적절한 최대 높이 설정 */
-  transition: opacity 300ms ease-in, max-height 300ms ease-in;
+  transition: opacity 300ms ease-in, 300ms ease-in;
 }
 
 .item-exit {
   opacity: 1;
-  max-height: 1000px;
 }
 
 .item-exit-active {
   opacity: 0;
-  max-height: 0;
-  transition: opacity 300ms ease-in, max-height 300ms ease-in;
+  transition: opacity 300ms ease-in, 300ms ease-in;
 }
 

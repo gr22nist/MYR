@@ -11,6 +11,7 @@ const Layout = ({ children }) => {
     <div className={`${nanum.variable} font-sans`}>
       <Head>
         <title>마이력서</title>
+        <meta http-equiv="Content-Security-Policy" content="script-src 'none'" />
         <meta name="description" content="누구나 간단하게 작성하는 나의 역사, My력서" />
         <meta property="og:title" content="마이력서" />
         <meta property="og:description" content="누구나 간단하게 작성하는 나의 역사, My력서" />
