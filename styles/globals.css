@@ -46,3 +46,33 @@ body {
   transition: opacity 300ms ease-in, 300ms ease-in;
 }
 
+.radioText::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+
+.radioInput:checked + .radioText::before {
+  border-color: #3b82f6;
+  background-color: #3b82f6;
+}
+
+.radioInput:checked + .radioText::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #fff;
+}

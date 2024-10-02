@@ -3,7 +3,7 @@ import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
-import { commonStyles } from '@/styles/constLayout';
+import { radio } from '@/styles/constLayout';
 import { CSSTransition } from 'react-transition-group';
 import { PLACEHOLDERS } from '@/constants/placeHolders';
 
@@ -52,14 +52,16 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
             </div>
             <div className="flex items-center space-x-2 mt-2 text-sm">
               {['졸업', '졸업 예정', '재학중'].map((status) => (
-                <label key={status} className="text-sm">
+                <label key={status} className={radio.radioLabel}>
                   <input
                     type="radio"
                     name={radioGroupName}
                     value={status}
                     checked={education.graduationStatus === status}
                     onChange={() => handleChange('graduationStatus', status)}
-                  /> {status}
+                    className={radio.radioInput}
+                  />
+                  <span className={radio.radioText}>{status}</span>
                 </label>
               ))}
             </div>
