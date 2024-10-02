@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import CareerList from '../resume/career/CareerList';
@@ -9,46 +9,51 @@ import SortableItem from './SortableItem';
 import AccordionSection from '@/components/common/AccordionSection';
 
 const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, expandedSections, onToggleExpand }) => {
-  const [activeId, setActiveId] = React.useState(null);
-  
+  const [activeId, setActiveId] = useState(null);
+
+  // sensors 정의
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(PointerSensor),
     useSensor(KeyboardSensor)
   );
+
+  // sectionComponents 정의
+  const sectionComponents = {
+    career: CareerList,
+    education: EducationList,
+    custom: CustomSection,
+    // 다른 섹션 타입에 대한 컴포넌트도 여기에 추가
+  };
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
   };
 
   const handleDragEnd = (event) => {
-    setActiveId(null);
     const { active, over } = event;
+
     if (active.id !== over.id) {
       const oldIndex = sections.findIndex((section) => section.id === active.id);
       const newIndex = sections.findIndex((section) => section.id === over.id);
       onReorder(oldIndex, newIndex);
     }
+
+    setActiveId(null);
   };
 
-  const sectionComponents = useMemo(() => ({
-    career: CareerList,
-    education: EducationList,
-    [CUSTOM_SECTIONS.type]: CustomSection,
-    project: CustomSection,
-    award: CustomSection,
-    certificate: CustomSection,
-    language: CustomSection,
-    skill: CustomSection,
-    link: CustomSection,
-  }), []);
-
   const renderSection = (section) => {
+    if (!section || typeof section !== 'object') {
+      return <div>Invalid section data</div>;
+    }
+
     const SectionComponent = sectionComponents[section.type];
-    if (!SectionComponent) return null;
-  
+    if (!SectionComponent) {
+      return <div>Unknown section type: {section.type}</div>;
+    }
+
     const isExpanded = expandedSections[section.id];
     const isCustom = section.type === CUSTOM_SECTIONS.type || ['project', 'award', 'certificate', 'language', 'skill', 'link'].includes(section.type);
-  
+
     if (isCustom) {
       return (
         <SectionComponent
@@ -61,7 +66,7 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
         />
       );
     }
-  
+
     return (
       <AccordionSection
         key={section.id}

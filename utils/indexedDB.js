@@ -153,12 +153,10 @@ export const checksectionOrderStore = async () => {
   if (db.sectionOrder) {
     const count = await db.sectionOrder.count();
     const allData = await db.sectionOrder.toArray();
-    console.log(`sectionOrder store has ${count} items:`, allData);
   }
 };
 
 export const manualClearsectionOrder = async () => {
   const db = await getDB();
   await db.sectionOrder.clear();
-  console.log('sectionOrder manually cleared');
 };

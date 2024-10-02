@@ -45,7 +45,6 @@ const useProfileStore = create((set, get) => ({
         console.error('프로필 데이터 저장 실패:', error);
         set({ error: error.message });
       });
-      console.log('프로필 업데이트:', newProfile);
       return { profile: newProfile };
     });
   },
@@ -57,7 +56,6 @@ const useProfileStore = create((set, get) => ({
     if (imageData) {
       try {
         await saveProfilePhoto(imageData);
-        console.log('프로필 이미지 저장 성공');
       } catch (error) {
         console.error('이미지 저장 실패:', error);
         set({ error: error.message });
@@ -70,7 +68,6 @@ const useProfileStore = create((set, get) => ({
     try {
       await saveProfileData(resetProfile);
       set({ profile: resetProfile, error: null });
-      console.log('프로필 리셋 완료');
     } catch (error) {
       console.error('프로필 리셋 실패:', error);
       set({ error: error.message });

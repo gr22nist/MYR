@@ -32,7 +32,6 @@ const useEducationStore = create((set, get) => ({
         status: 'seccess'
       });
     } catch (error) {
-      console.log('Error loading educations', error);
       set({ error, status: 'error'});
     }
   },

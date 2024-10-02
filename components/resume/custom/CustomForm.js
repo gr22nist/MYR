@@ -12,7 +12,6 @@ const CustomForm = ({ onAddSection }) => {
   );
 
   const handleAddSection = (type) => {
-    console.log('Adding section of type:', type);
     onAddSection(type);
   };
 
@@ -57,8 +56,6 @@ const CustomForm = ({ onAddSection }) => {
             if (canAddSection(type)) {
               handleAddSection(type);
             } else {
-              console.log(`Cannot add more than one ${type} section`);
-              // 여기에 사용자에게 알림을 주는 로직을 추가할 수 있습니다.
             }
           }}
           className="flex-wrap justify-center"

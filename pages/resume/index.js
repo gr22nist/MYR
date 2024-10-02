@@ -116,7 +116,6 @@ const Resume = () => {
   const handleAddSection = useCallback((type) => {
     const newSection = addSection(type);
     if (newSection) {
-      console.log('New section added:', newSection);
       setExpandedSections(prev => ({ ...prev, [newSection.id]: true }));
       // 새로운 섹션이 추가된 후 상태 업데이트
       loadAllSections();

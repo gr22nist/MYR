@@ -23,14 +23,20 @@ const SortableItem = ({ id, children, isDragging, sectionType, isRemoving, dragH
 
   return (
     <div ref={setNodeRef} style={style} className="transition-all duration-300">
-      {typeof children === 'function' ? children(dragHandleProps) : children}
+      {dragHandleRender ? (
+        dragHandleRender(dragHandleProps, children)
+      ) : (
+        React.isValidElement(children) ? 
+          React.cloneElement(children, dragHandleProps) : 
+          <div {...dragHandleProps}>Invalid content</div>
+      )}
     </div>
   );
 };
 
 SortableItem.propTypes = {
   id: PropTypes.string.isRequired,
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.func]).isRequired,
   isDragging: PropTypes.bool,
   sectionType: PropTypes.string,
   isRemoving: PropTypes.bool,
