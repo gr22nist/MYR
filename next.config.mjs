@@ -2,9 +2,10 @@ const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' data:;
+  img-src 'self' data: blob:;
   font-src 'self';
   connect-src 'self' https://va.vercel-scripts.com;
+  worker-src 'self' blob:;
 `;
 
 const securityHeaders = [
