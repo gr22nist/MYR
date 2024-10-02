@@ -38,10 +38,15 @@ export const theme = {
         '0%': { opacity: '1', transform: 'translateY(0)' },
         '100%': { opacity: '0', transform: 'translateY(-20px)' },
       },
+      skeleton: {
+        '0%': { backgroundPosition: '200% 0' },
+        '100%': { backgroundPosition: '-200% 0' },
+      },
     },
     animation: {
       'item-enter': 'itemEnter 300ms ease-out',
       'item-exit': 'itemExit 300ms ease-in',
+      skeleton: 'skeleton 1.5s infinite',
     },
   },
 };

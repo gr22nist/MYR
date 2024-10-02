@@ -47,3 +47,11 @@ export const radio = {
   `,
   inputCheckedBefore: 'border-blue-500 bg-blue-500',
 };
+
+export const skeleton = {
+  container: 'w-full max-w-myr mx-auto',
+  base: 'mb-5 rounded animate-skeleton bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%]',
+  profile: 'h-[200px]',
+  userInfo: 'h-[100px]',
+  section: 'h-[150px]',
+};

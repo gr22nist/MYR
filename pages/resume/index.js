@@ -7,7 +7,7 @@ import { useResumeActions } from '@/hooks/useResumeActions';
 import FloatingControls from '@/components/common/actions/FloatingControls';
 import CustomForm from '@/components/resume/custom/CustomForm';
 import useResumeSections from '@/hooks/useResumeSections';
-import SortableSectionList from '@/components/common/SortableSectionList';
+import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
 import useCustomSectionsStore from '@/store/customSectionsStore';
 
@@ -140,14 +140,14 @@ const Resume = () => {
   }, [areAllSectionsExpanded]);
 
   if (isLoading) {
-    return <div className={`${layout.container}`}>Loading...</div>;
+    return <SkeletonLoader />; // 스켈레톤 로더로 변경
   }
 
   return (
     <div className={`${layout.container}`}>
       <Profile />
       <UserInfoForm />
-      {orderedSections.length > 0 && (
+      {orderedSections.length > 0 ? (
         <DynamicSortableSectionList
           sections={orderedSections}
           onSectionChange={updateSection}
@@ -156,6 +156,8 @@ const Resume = () => {
           expandedSections={expandedSections}
           onToggleExpand={toggleExpand}
         />
+      ) : (
+        <SkeletonLoader /> // 섹션이 없을 때 스켈레톤 표시
       )}
       <CustomForm onAddSection={handleAddSection} />
       <FloatingControls 
