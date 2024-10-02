@@ -6,21 +6,21 @@ import '../styles/modal.css';
 import ReactModal from 'react-modal';
 import localFont from 'next/font/local';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const myFont = localFont({
-  src: [
-    {
-      path: '../public/fonts/NanumSquareNeo-Variable.woff2',
-      weight: '300 400 700 800 900',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-nanum'
+  src: '../public/fonts/NanumSquareNeo-Variable.woff2',
+  weight: '400 700 900',
+  variable: '--font-nanum',
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],  // 폰트 로딩 실패 시 대체 폰트
+  adjustFontFallback: 'Arial',  // 폰트 메트릭 조정을 위한 대체 폰트
 });
 
 ReactModal.setAppElement('#__next');
 
-function MYR ({ Component, pageProps }) {
+function MYR({ Component, pageProps }) {
   useEffect(() => {
     initializeDB().catch(error => {
       console.error('Failed to initialize database:', error);
@@ -31,6 +31,7 @@ function MYR ({ Component, pageProps }) {
     <Layout className={`${myFont.variable} font-sans`}>
       <Component {...pageProps} />
       <Analytics />
+      <SpeedInsights/>
     </Layout>
   );
 }
