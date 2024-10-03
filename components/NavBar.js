@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { Logo } from "@/components/icons/IconSet";
 
 const NavBar = () => {
 
@@ -11,7 +12,7 @@ const NavBar = () => {
     <header className={container}>
       <nav className={navWrap}>
         <Link href="/" passHref>
-            마이력서
+            <Logo className="fill-mono-33 hover:fill-[#EB4354]" />
         </Link> 
         <ul className={navList}>
           <li>
