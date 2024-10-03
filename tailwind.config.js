@@ -6,6 +6,7 @@ export const content = [
   "./pages/**/*.{js,ts,jsx,tsx,mdx}",
   "./components/**/*.{js,ts,jsx,tsx,mdx}",
   "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  "./src/**/*.{js,ts,jsx,tsx,mdx}",
   './styles/**/*.js',
 ];
 export const theme = {
@@ -16,7 +17,8 @@ export const theme = {
       foreground: "var(--foreground)",
     },
     fontFamily: {
-      sans: ['var(--font-nanum)', 'system-ui', 'sans-serif'],
+      suit: ["var(--font-suit)"],
+      // nanum: ["var(--font-nanum)"],
     },
     width: {
       "myr": "1144px",

@@ -4,12 +4,11 @@ import Navbar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import ToastComponent from '@/components/common/ToastComponent';
 import MobileWarning from '@/components/MobileWarning';
-import { nanum } from '../utils/fonts'
 
 const Layout = ({ children }) => {
   
   return (
-    <div className={`${nanum.variable} font-sans`}>
+    <div>
       <Head>
         <title>마이력서</title>
         <meta name="description" content="누구나 간단하게 작성하는 나의 역사, My력서" />

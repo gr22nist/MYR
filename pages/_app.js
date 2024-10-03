@@ -8,15 +8,21 @@ import localFont from 'next/font/local';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-const myFont = localFont({
-  src: '../public/fonts/NanumSquareNeo-Variable.woff2',
-  weight: '400 700 900',
-  variable: '--font-nanum',
+const suit = localFont({
+  src: '../public/fonts/SUIT-Variable.woff2',
+  weight: '100 900',
+  variable: "--font-suit",
   display: 'swap',
   preload: true,
-  fallback: ['system-ui', 'arial'],  // 폰트 로딩 실패 시 대체 폰트
-  adjustFontFallback: 'Arial',  // 폰트 메트릭 조정을 위한 대체 폰트
 });
+
+// const nanum = localFont({
+//   src: '../public/fonts/NanumSquareNeo-Variable.woff2',
+//   weight: '300 400 700 900',
+//   variable: "--font-nanum",
+//   display: 'swap',
+//   preload: true,
+// });
 
 ReactModal.setAppElement('#__next');
 
@@ -28,11 +34,13 @@ function MYR({ Component, pageProps }) {
   }, []);
 
   return (
-    <Layout className={`${myFont.variable} font-sans`}>
-      <Component {...pageProps} />
-      <Analytics />
-      <SpeedInsights/>
-    </Layout>
+    <main className={`${suit.variable} font-suit`}>
+      <Layout>
+        <Component {...pageProps} />
+        <Analytics />
+        <SpeedInsights/>
+      </Layout>
+    </main>
   );
 }
 
