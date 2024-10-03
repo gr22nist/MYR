@@ -24,18 +24,10 @@ const FloatingControls = ({ onReset, onToggleAllSections, areAllSectionsExpanded
     return () => clearInterval(saveInterval);
   }, []);
 
-  const positionClass = isMobile ? 'bottom-4 right-4' : 'top-4 right-4';
+  const positionClass = isMobile ? 'bottom-4 right-4' : 'bottom-4 right-56';
 
   return (
-    <div className={`fixed ${positionClass} flex items-center space-x-2`}>
-      <div className="transition-opacity duration-300" 
-           style={{ opacity: isSaving ? 1 : 0.3 }}>
-        <svg className={`w-5 h-5 text-gray-500 ${isSaving ? 'animate-pulse' : ''}`} 
-             fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-             viewBox="0 0 24 24" stroke="currentColor">
-          <path d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-        </svg>
-      </div>
+    <div className={`${positionClass} fixed bottom-8 right-4 z-50`}>
       <QuickBtns 
         // onPreview={onPreview} 
         onReset={onReset} 

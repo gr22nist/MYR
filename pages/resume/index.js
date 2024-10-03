@@ -10,6 +10,7 @@ import useResumeSections from '@/hooks/useResumeSections';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
 import useCustomSectionsStore from '@/store/customSectionsStore';
+import AutoSaveIndicator from '@/components/common/AutoSaveIndicator'; // 추가
 
 const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
   ssr: false,
@@ -144,7 +145,8 @@ const Resume = () => {
   }
 
   return (
-    <div className={`${layout.container}`}>
+    <div className={`${layout.container} relative`}>
+      <AutoSaveIndicator />
       <Profile />
       <UserInfoForm />
       {orderedSections.length > 0 ? (
@@ -157,18 +159,18 @@ const Resume = () => {
           onToggleExpand={toggleExpand}
         />
       ) : (
-        <SkeletonLoader /> // 섹션이 없을 때 스켈레톤 표시
+        <SkeletonLoader />
       )}
       <CustomForm onAddSection={handleAddSection} />
-      <FloatingControls 
-        onReset={handleResetClick}
-        onToggleAllSections={toggleAllSections}
-        areAllSectionsExpanded={areAllSectionsExpanded}
-      />
       <ResetModal
         isOpen={isResetModalOpen}
         onClose={() => setIsResetModalOpen(false)}
         onConfirm={handleConfirmReset}
+      />
+      <FloatingControls 
+        onReset={handleResetClick}
+        onToggleAllSections={toggleAllSections}
+        areAllSectionsExpanded={areAllSectionsExpanded}
       />
     </div>
   );

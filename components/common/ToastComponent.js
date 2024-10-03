@@ -27,7 +27,7 @@ const ToastComponent = () => {
       case 'info':
         return 'bg-blue-500/90';
       default:
-        return 'bg-gray-800/90';
+        return 'bg-mono-33/90';
     }
   };
 

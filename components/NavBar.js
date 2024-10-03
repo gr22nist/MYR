@@ -3,9 +3,9 @@ import Link from "next/link";
 
 const NavBar = () => {
 
-  const container = `border-b`;
+  const container = `w-full fixed bg-white z-50 shadow-md opacity-90`;
   const navWrap = `container max-w-myr mx-auto flex justify-between py-4`;
-  const navList = `flex gap-6`;
+  const navList = `flex gap-6 font-extrabold text-lg text-mono-11 hover:text-accent-dark duration-300`;
 
   return (
     <header className={container}>

@@ -13,8 +13,9 @@ const AutoSaveIndicator = () => {
   }, []);
 
   return (
-    <div className="fixed top-4 right-4 transition-opacity duration-300" 
+    <div className="flex items-center justify-end text-mono-66 gap-1 transition-opacity duration-300" 
          style={{ opacity: isSaving ? 1 : 0.3 }}>
+      <span>데이터 실시간 저장 중</span>
       <svg className={`w-5 h-5 text-gray-500 ${isSaving ? 'animate-pulse' : ''}`} 
            fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
            viewBox="0 0 24 24" stroke="currentColor">

@@ -20,16 +20,16 @@ export const getColorClass = (color, type = 'text') => {
 
 // 레이아웃 관련 상수
 export const layout = {
-  container: 'container max-w-myr mx-auto px-12 py-16 flex flex-col gap-4 justify-center bg-white',
+  container: 'container max-w-myr mx-auto px-12 py-16 pb-20 flex flex-col gap-4 justify-center bg-white',
   index: 'container max-w-myr mx-auto',
 };
 
 
 export const btn = {
   base: 'container max-w-default mx-auto',
-  preview: 'flex bg-blue-500 text-white px-4 py-2 rounded',
-  reset: 'flex  bg-red-500 text-white px-4 py-2 rounded',
-  fold: 'flex bg-green-500 text-white px-4 py-2 rounded',
+  preview: 'flex bg-mono-99 hover:bg-blue-500 text-white px-4 py-2 rounded',
+  reset: 'flex bg-mono-99 hover:bg-red-500 text-white px-4 py-2 rounded',
+  fold: 'flex bg-mono-99 hover:bg-green-500 text-white px-4 py-2 rounded',
 };
 
 export const radio = {
