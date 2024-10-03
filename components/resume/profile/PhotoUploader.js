@@ -117,7 +117,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
               style={{ objectFit: 'cover' }}
             />
             {isHovered && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity">
+              <div className="absolute inset-0 bg-extrabold bg-opacity-50 flex items-center justify-center transition-opacity">
                 <button onClick={handlePhotoDelete}>
                   <PhotoRemove className="w-8 h-8 text-white" />
                 </button>

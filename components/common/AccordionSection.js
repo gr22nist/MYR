@@ -15,7 +15,7 @@ const AccordionSection = ({ title, addButtonComponent, children, isExpanded, onT
     <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5'} transition-all duration-300 rounded-lg`}>
       <div className="flex items-center justify-between p-2 h-16" {...(!isExpanded ? dragHandleProps : {})}>
         <div className="flex items-center overflow-hidden">
-          <h2 className="text-xl font-extrabold mr-2 truncate">{title}</h2>
+          <h2 className="text-xl font-bold mr-2 truncate">{title}</h2>
           {isExpanded && addButtonComponent}
         </div>
         <ActionButtons
