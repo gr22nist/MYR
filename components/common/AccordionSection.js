@@ -12,10 +12,10 @@ const AccordionSection = ({ title, addButtonComponent, children, isExpanded, onT
   };
 
   return (
-    <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5'} transition-all duration-300 rounded-lg`}>
-      <div className="flex items-center justify-between p-2 h-16" {...(!isExpanded ? dragHandleProps : {})}>
+    <section className={`accordion-section ${isExpanded ? '' : 'bg-mono-f5'} space-y-2 transition-all duration-300 rounded-lg`}>
+      <div className="flex items-center justify-between h-16 px-4" {...(!isExpanded ? dragHandleProps : {})}>
         <div className="flex items-center overflow-hidden">
-          <h2 className="text-xl font-bold mr-2 truncate">{title}</h2>
+          <h2 className="text-xl font-bold truncate">{title}</h2>
           {isExpanded && addButtonComponent}
         </div>
         <ActionButtons

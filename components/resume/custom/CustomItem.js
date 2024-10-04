@@ -10,7 +10,7 @@ const CustomSectionItem = ({ section, onChange }) => {
 
   if (section.type === 'link') {
     return (
-      <div className="bg-white rounded px-8 py-4">
+      <div>
         <LinkItems
           links={section.links || []}
           onChange={(newLinks) => handleChange('links', newLinks)}
@@ -20,7 +20,7 @@ const CustomSectionItem = ({ section, onChange }) => {
   }
 
   return (
-    <div className="bg-white rounded px-8 py-4">
+    <div>
       <FloatingLabelTextarea
         label="내용"
         value={section.content || ''}

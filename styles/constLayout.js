@@ -1,6 +1,6 @@
 // 공통 스타일
 export const commonStyles = {
-  inputBase: 'text-sm rounded-lg px-2',
+  inputBase: 'text-sm rounded-lg',
   focusStyle: 'focus:border-1 focus:border-mono-cc focus:ring-0 focus:outline-none',
   placeholderStyle: '[&::placeholder]:whitespace-pre-wrap [&::placeholder]:leading-normal [&::placeholder]:text-mono-99'
 };

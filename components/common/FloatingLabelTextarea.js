@@ -34,7 +34,7 @@ const FloatingLabelTextarea = ({
   const textareaClasses = combineClasses(
     commonStyles.inputBase,
     commonStyles.focusStyle,
-    'w-full py-2 px-2 transition-colors duration-200 resize-none',
+    'w-full p-4 transition-colors duration-200 resize-none',
     isFocused ? 'bg-blue-50' : 'bg-mono-f5',
     isTitle ? 'text-xl font-bold' : '',
     className

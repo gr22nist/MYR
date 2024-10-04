@@ -13,7 +13,7 @@ const AddBtn = ({ onClick, label, ariaLabel = '추가' }) => {
   return (
     <button
       onClick={handleClick}
-      className="w-full py-2 px-4 mb-2 text-left text-gray-600 hover:bg-gray-100 rounded-md transition-colors duration-200 flex items-center justify-between"
+      className="w-full p-4 text-mono-66 hover:bg-mono-f5 rounded-md transition-colors duration-200 flex items-center justify-between"
       aria-label={ariaLabel}
     >
       <div className="flex items-center">

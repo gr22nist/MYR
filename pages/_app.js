@@ -16,14 +16,6 @@ const suit = localFont({
   preload: true,
 });
 
-// const nanum = localFont({
-//   src: '../public/fonts/NanumSquareNeo-Variable.woff2',
-//   weight: '300 400 700 900',
-//   variable: "--font-nanum",
-//   display: 'swap',
-//   preload: true,
-// });
-
 ReactModal.setAppElement('#__next');
 
 function MYR({ Component, pageProps }) {

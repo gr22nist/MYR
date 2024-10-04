@@ -41,7 +41,7 @@ const CareerItem = ({
     >
       <div ref={nodeRef} className={`career-item my-4 relative flex flex-col gap-2 ${className}`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex gap-4 items-center">
             <div className="w-label">
               <FloatingLabelInput
                 label="회사명"

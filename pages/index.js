@@ -8,10 +8,9 @@ export default function Home() {
     router.push('/resume');
   }, [router]);
 
-  return null; // 또는 로딩 인디케이터를 표시할 수 있습니다.
+  return null;
 }
 
-// 서버 사이드 리다이렉트를 위한 getServerSideProps
 export async function getServerSideProps(context) {
   return {
     redirect: {
