@@ -36,7 +36,7 @@ const CustomInput = ({ onChange, onClose, initialValue }) => {
   }, [handleConfirm, title, value]);
 
   return (
-    <div>
+    <div className='custom-container'>
       <BaseInput
         label="제목"
         value={title}

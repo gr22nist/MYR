@@ -6,7 +6,6 @@ const BaseInput = ({ label, id, value, onChange, placeholder, error, type = 'tex
   return (
     <div className="mb-6">
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <div className="relative">
         <InputComponent
           type={multiline ? undefined : type}
           id={id}
@@ -24,7 +23,6 @@ const BaseInput = ({ label, id, value, onChange, placeholder, error, type = 'tex
         {error && (
           <p className="mt-1 text-sm text-red-500 absolute">{error}</p>
         )}
-      </div>
     </div>
   );
 };

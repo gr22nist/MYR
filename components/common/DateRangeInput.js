@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { commonStyles, combineClasses } from '@/styles/constLayout';
+import { common, combineClasses } from '@/styles/constLayout';
 import { useDateRange } from '@/hooks/useDateRange';
 
 const DateRangeInput = ({ 
@@ -20,9 +20,9 @@ const DateRangeInput = ({
   } = useDateRange(initialStartDate, initialEndDate, initialIsCurrent);
 
   const inputClasses = useMemo(() => combineClasses(
-    commonStyles.inputBase,
-    commonStyles.focusStyle,
-    'w-24'
+    common.inputBase,
+    common.focusStyle,
+    'w-[88px]'
   ), []);
 
   const endDateInputClasses = useMemo(() => combineClasses(
@@ -42,7 +42,7 @@ const DateRangeInput = ({
             onChange({ startDate: e.target.value, endDate, isCurrent });
           }}
           onBlur={validateDates}
-          placeholder="예: 202401"
+          placeholder="202401"
           maxLength="7"
         />
         <span className="text-gray-500">~</span>
@@ -55,7 +55,7 @@ const DateRangeInput = ({
             onChange({ startDate, endDate: e.target.value, isCurrent });
           }}
           onBlur={validateDates}
-          placeholder="예: 202401"
+          placeholder="202401"
           disabled={isCurrent}
           maxLength="7"
         />

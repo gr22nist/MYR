@@ -1,12 +1,10 @@
-import React from "react";
+import React from 'react';
 
 const Footer = () => {
 
-  const container = `flex justify-center items-center`;
-
   return (
     <footer>
-      <section className={container}>
+      <section className='flex-center'>
         <p>© 2024 My력서</p>
       </section>
     </footer>

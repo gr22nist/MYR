@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
-import { commonStyles } from '@/styles/constLayout';
+import { common } from '@/styles/constLayout';
 import LinkItems from './LinkItems';
 
 const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dragHandleProps, className, isExpanded, onToggleExpand }) => {
@@ -74,7 +74,7 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
           onChange={(e) => handleChange('content', e.target.value)}
           placeholder={getPlaceholder()}
           spellCheck="false"
-          className={`overflow-hidden resize-none px-4 ${commonStyles.placeholderStyle}`}
+          className={`overflow-hidden resize-none px-4 ${common.placeholderStyle}`}
         />
       );
     }
@@ -82,7 +82,7 @@ const CustomInput = ({ type, section, onSectionChange, onDelete, isDeletable, dr
 
   return (
     <div ref={sectionRef} className={`bg-white rounded-lg shadow-md ${className} ${isDeleting ? 'deleting' : ''}`}>
-      <div className="flex items-center justify-between p-4 border-b section-header" {...dragHandleProps}>
+      <div className="flex items-center justify-between p-4 border-b z-50" {...dragHandleProps}>
         {isCustomType ? (
           <input
             type="text"

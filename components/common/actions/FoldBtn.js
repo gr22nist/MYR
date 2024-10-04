@@ -13,7 +13,7 @@ const FoldButton = ({ onClick, isExpanded, ariaLabel = '접기/펼치기' }) => 
   return (
     <button
       onClick={handleClick}
-      className="rounded-full hover:bg-gray-100 transition-colors duration-200"
+      className="rounded-full hover:bg-gray-100 transition-colors duration-300"
       aria-label={ariaLabel}
     >
       <IconButton 

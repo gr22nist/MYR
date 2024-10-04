@@ -3,31 +3,26 @@ import Link from "next/link";
 import { Logo } from "@/components/icons/IconSet";
 
 const NavBar = () => {
-
-  const container = `w-full fixed bg-white z-50 shadow-md opacity-90`;
-  const navWrap = `container max-w-myr mx-auto flex justify-between py-4`;
-  const navList = `flex gap-6 font-extrabold text-lg text-mono-11 hover:text-accent-dark duration-300`;
-
   return (
-    <header className={container}>
-      <nav className={navWrap}>
+    <header className='nav-container'>
+      <nav className='nav-wrap'>
         <Link href="/" passHref>
-            <Logo className="fill-mono-33 hover:fill-[#EB4354]" />
+          <Logo className='nav-logo' />
         </Link> 
-        <ul className={navList}>
-          <li>
+        <ul className='nav-list'>
+          <li className='nav-item'>
             <Link href="/resume" passHref>
-                이력서
+              이력서
             </Link>  
           </li>
-          {/* <li>
+          {/* <li className={navBar.navItem}>
             <Link href="/coverletter" passHref>
-                자기소개서
+              자기소개서
             </Link>  
           </li>
-          <li>
+          <li className={navBar.navItem}>
             <Link href="/about" passHref>
-                서비스 소개
+              서비스 소개
             </Link>  
           </li> */}
         </ul>

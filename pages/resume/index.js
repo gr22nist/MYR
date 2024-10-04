@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { layout } from '@/styles/constLayout';
 import Profile from '@/components/resume/profile/Profile';
 import UserInfoForm from '@/components/resume/userInfo/UserInfoForm';
 import { useResumeActions } from '@/hooks/useResumeActions';
@@ -145,7 +144,7 @@ const Resume = () => {
   }
 
   return (
-    <div className={`${layout.container} relative`}>
+    <div className='layout-container'>
       <AutoSaveIndicator />
       <Profile />
       <UserInfoForm />

@@ -1,10 +1,9 @@
 import React from 'react';
-import { layout } from '@/styles/constLayout';
 
 const About = () => {
   
   return (
-    <div className={`${layout.index}`}>
+    <div className='layout-container'>
       서비스소개
     </div>
   );

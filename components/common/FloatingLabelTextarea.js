@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { commonStyles, combineClasses } from '@/styles/constLayout';
+import { floatingLabel } from '@/styles/constLayout';
 import { useIMEInput } from '@/hooks/useIMEInput';
 
 const FloatingLabelTextarea = ({ 
@@ -31,24 +31,11 @@ const FloatingLabelTextarea = ({
     autoResize();
   }, [value]);
 
-  const textareaClasses = combineClasses(
-    commonStyles.inputBase,
-    commonStyles.focusStyle,
-    'w-full p-4 transition-colors duration-200 resize-none',
-    isFocused ? 'bg-blue-50' : 'bg-mono-f5',
-    isTitle ? 'text-xl font-bold' : '',
-    className
-  );
-
-  const labelClasses = combineClasses(
-    'absolute right-2 transition-all duration-200',
-    (isFocused || value !== '')
-      ? `top-1 text-xs ${isTitle ? 'text-base font-semibold' : 'text-sm'}` 
-      : 'top-3 text-gray-400 opacity-0'
-  );
+  const textareaClasses = floatingLabel.textarea(isFocused, isTitle);
+  const labelClasses = floatingLabel.textareaLabel(isFocused, value, isTitle);
 
   return (
-    <div className="relative">
+    <div className={floatingLabel.container}>
       <textarea
         ref={textareaRef}
         className={textareaClasses}

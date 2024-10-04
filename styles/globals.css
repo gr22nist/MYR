@@ -8,40 +8,29 @@
   }
 }
 
-.section-header {
-  z-index: 10;
-}
 
 .section-content {
-  transition: 0.3s ease-in-out;
-  overflow: hidden;
+  @apply duration-300 ease-in-out overflow-hidden
 }
 
 .dragging-section-header {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-  font-weight: bold;
-  z-index: 50;
+  @apply p-4 rounded-lg font-bold z-50 shadow-lg
 }
 
 .item-enter {
-  opacity: 0;
-  overflow: hidden;
+  @apply opacity-0 overflow-hidden
 }
 
 .item-enter-active {
-  opacity: 1;
-  transition: opacity 300ms ease-in, 300ms ease-in;
+  @apply opacity-100 transition-opacity duration-300 ease-in;
 }
 
 .item-exit {
-  opacity: 1;
+  @apply opacity-100
 }
 
 .item-exit-active {
-  opacity: 0;
-  transition: opacity 300ms ease-in, 300ms ease-in;
+  @apply opacity-0 transition-opacity duration-300 ease-in;
 }
 
 .radioText::before {
@@ -74,3 +63,172 @@
   border-radius: 50%;
   background-color: #fff;
 }
+
+@layer components {
+  /* 기본 레이아웃 */
+  .base-layout {
+    @apply container max-w-myr mx-auto;
+  }
+
+  /* Flex 유틸리티 */
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  /* 레이아웃 컨테이너 */
+  .layout-container {
+    @apply base-layout px-12 py-16 pb-20 flex flex-col gap-4 justify-center bg-white relative;
+  }
+
+  /* 입력 필드 기본 스타일 */
+  .input-base {
+    @apply w-full p-4 transition-colors duration-300 text-sm rounded-lg;
+  }
+
+  /* 포커스 스타일 */
+  .focus-style {
+    @apply focus:border-1 focus:border-mono-cc focus:ring-0 focus:outline-none;
+  }
+
+  /* 플레이스홀더 스타일 */
+  .placeholder-style {
+    @apply [&::placeholder]:whitespace-pre-wrap [&::placeholder]:leading-normal [&::placeholder]:text-mono-99;
+  }
+
+  /* 버튼 기본 스타일 */
+  .btn-base {
+    @apply flex bg-mono-99 text-white px-4 py-2 rounded w-full group relative overflow-hidden text-sm;
+  }
+
+  /* 버튼 변형 */
+  .btn-preview {
+    @apply btn-base hover:bg-blue-500;
+  }
+
+  .btn-reset {
+    @apply btn-base hover:bg-red-500;
+  }
+
+  .btn-fold {
+    @apply btn-base hover:bg-green-500;
+  }
+
+  /* 버튼 아이콘 */
+  .btn-icon {
+    @apply group-hover:opacity-0 transition-opacity duration-300;
+  }
+
+  /* 버튼 텍스트 */
+  .btn-text {
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center text-sm;
+  }
+
+  /* 라디오 버튼 스타일 */
+  
+  .radio-group {
+    @apply flex items-center space-x-2 mt-2 text-sm;
+  }
+
+  .radio-label {
+    @apply flex items-center cursor-pointer select-none;
+  }
+
+  .radio-input {
+    @apply absolute opacity-0 cursor-pointer;
+  }
+
+  .radio-text {
+    @apply relative pl-6;
+  }
+
+  /* 스켈레톤 로딩 기본 스타일 */
+  .skeleton-base {
+    @apply mb-5 rounded animate-skeleton bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%];
+  }
+
+  .skeleton-profile {
+    @apply h-[200px];
+  }
+
+  .skeleton-userinfo {
+    @apply h-[100px];
+  }
+  .skeleton-section {
+    @apply h-[150px];
+  }
+
+
+
+  /* 날짜 범위 입력 스타일 */
+  .date-range-container {
+    @apply flex items-center space-x-2;
+  }
+
+  .date-range-input {
+    @apply input-base focus-style w-24;
+  }
+
+  /* 프로필 스타일 */
+  .profile-container {
+    @apply flex flex-col gap-2;
+  }
+
+  .profile-title {
+    @apply relative w-full flex flex-row justify-between items-center gap-4;
+  }
+
+  .profile-text-area {
+    @apply p-4 bg-mono-f5 leading-normal text-mono-11 border-0 rounded-lg overflow-hidden w-full resize-none;
+  }
+
+  .profile-text-area-title {
+    @apply profile-text-area text-4xl font-extrabold h-36 flex-grow;
+  }
+
+  .profile-text-area-paragraph {
+    @apply profile-text-area text-lg h-auto;
+  }
+}
+
+  /* 이력서 항목 공통 스타일 */
+  .resume-item-container {
+    @apply my-4 flex gap-2;
+  }
+
+  .resume-item-header {
+    @apply flex flex-col items-center justify-between;
+  }
+
+  .resume-input {
+    @apply resume-item-container flex flex-col gap-4 items-center;
+  }
+
+  .resume-label {
+    @apply resume-item-container w-label;
+  }
+
+  /* 네비게이션 바 스타일 */
+  .nav-container {
+    @apply w-full fixed bg-white z-50 shadow-md opacity-90;
+  }
+
+  .nav-wrap {
+    @apply base-layout flex justify-between py-4 items-center;
+  }
+
+  .nav-list {
+    @apply flex gap-6 font-extrabold text-lg text-mono-11;
+  }
+
+  .nav-item {
+    @apply hover:text-accent-dark duration-300;
+  }
+
+  .nav-logo {
+    @apply fill-mono-33 hover:fill-[#EB4354];
+  }
+  
+  .custom-container {
+    @apply w-full flex flex-col gap-2
+  }
+

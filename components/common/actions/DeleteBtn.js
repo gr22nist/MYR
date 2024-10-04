@@ -14,7 +14,7 @@ const DeleteButton = ({ onClick, isSubItem, ariaLabel = '삭제' }) => {
   return (
     <button
       onClick={handleClick}
-      className="rounded-full hover:bg-gray-200 transition-colors duration-200"
+      className="rounded-full hover:bg-gray-200 transition-colors duration-300"
       aria-label={ariaLabel}
     >
       <IconButton 
