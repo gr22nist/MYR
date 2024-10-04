@@ -46,7 +46,7 @@ const CustomForm = ({ onAddSection }) => {
       <div className="flex items-center justify-center bg-white rounded-md p-2 min-h-[60px] w-full">
         <button 
           onClick={() => handleAddSection(CUSTOM_SECTIONS.type)}
-          className="bg-secondary-dark text-white px-6 py-4 rounded-md hover:bg-accent-dark transition-colors text-base font-bold flex-shrink-0 mr-2"
+          className="bg-secondary-dark text-white px-6 py-4 rounded-md hover:bg-primary-light transition-colors text-base font-bold flex-shrink-0 mr-2"
         >
           + 자유 서식 추가하기
         </button>

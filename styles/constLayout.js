@@ -158,6 +158,6 @@ export const navBar = {
   container: 'w-full fixed bg-white z-50 shadow-md opacity-90',
   navWrap: combineClasses(common.baseLayout, 'flex justify-between py-4 items-center'),
   navList: 'flex gap-6 font-extrabold text-lg text-mono-11',
-  navItem: 'hover:text-accent-dark duration-300',
-  logo: 'fill-mono-33 hover:fill-[#EB4354]',
+  navItem: 'hover:text-primary-light duration-300',
+  logo: 'fill-mono-33 hover:fill-primary-light',
 };

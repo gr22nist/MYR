@@ -221,11 +221,11 @@
   }
 
   .nav-item {
-    @apply hover:text-accent-dark duration-300;
+    @apply hover:text-primary-light duration-300;
   }
 
   .nav-logo {
-    @apply fill-mono-33 hover:fill-[#EB4354];
+    @apply fill-mono-33 hover:fill-primary-light;
   }
   
   .custom-container {

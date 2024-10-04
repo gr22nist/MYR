@@ -14,7 +14,7 @@ const AddSection = ({ tags, activeField, setActiveField, setIsCustomModalOpen, d
       <div className="flex flex-wrap items-center justify-center gap-4 w-full">
         <button 
           onClick={() => setIsCustomModalOpen(true)}
-          className="bg-secondary-dark text-white px-6 py-4 rounded-md hover:bg-accent-dark transition-colors text-base font-bold flex-shrink-0"
+          className="bg-secondary-dark text-white px-6 py-4 rounded-md hover:bg-primary-light transition-colors text-base font-bold flex-shrink-0"
         >
           + 개인정보 자유 서식
         </button>

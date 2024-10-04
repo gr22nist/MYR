@@ -53,7 +53,7 @@ const Tooltip = ({ children, content, disabled }) => {
       </div>
       {isVisible && content && typeof document !== 'undefined' && ReactDOM.createPortal(
         <div 
-          className="fixed z-[9999] px-3 py-2 text-sm font-medium text-white bg-accent-dark rounded-lg shadow-sm opacity-90"
+          className="fixed z-[9999] px-3 py-2 text-sm font-medium text-white bg-primary-light rounded-lg shadow-sm opacity-90"
           style={{
             left: `${position.x}px`,
             top: `${position.y}px`,
