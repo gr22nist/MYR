@@ -50,7 +50,7 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
                 tooltipMessage="학교명을 꼭 입력해 주세요."
               />
             </div>
-            <div className="flex items-center space-x-2 mt-2 text-sm">
+            <div className="flex items-center gap-4 mt-2 lg:text-sm text-xs">
               {['졸업', '졸업 예정', '재학중'].map((status) => (
                 <label key={status} className={radio.radioLabel}>
                   <input

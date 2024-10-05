@@ -19,7 +19,7 @@ const CreatePreview = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">미리보기</h2>
+      <h2 className="lg:text-2xl text-lg font-bold mb-4">미리보기</h2>
 
       {/* 프로필 섹션 */}
       <div className="mb-4">

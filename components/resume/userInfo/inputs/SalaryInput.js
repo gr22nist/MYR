@@ -63,7 +63,7 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
           onKeyDown={handleKeyDown}
           placeholder="0"
         />
-        <span className="absolute top-0 right-0 text-sm text-mono-99">단위: 만원</span>
+        <span className="absolute top-0 right-0 lg:text-sm text-xs text-mono-99">단위: 만원</span>
       </div>
       <Button
         onClick={handleConfirm}
@@ -73,7 +73,7 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
         확인
       </Button>
       {confirmedValue && (
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 lg:text-sm text-xs text-gray-500">
           입력된 연봉: {confirmedValue}
         </p>
       )}

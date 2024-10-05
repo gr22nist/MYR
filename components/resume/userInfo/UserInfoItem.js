@@ -9,7 +9,7 @@ const UserInfoItem = ({ type, displayType, value, onRemove, onEdit, dragHandlePr
   return (
     <div className="personal-info-item p-4 relative rounded-lg bg-mono-f5 hover:shadow-md transition-shadow duration-300">
       <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
-        <div className="text-sm font-bold mb-2 text-mono-99">{finalDisplayType}</div>
+        <div className="lg:text-sm text-xs font-bold mb-2 text-mono-99">{finalDisplayType}</div>
         <div className="text-mono-11 text-lg font-bold">{displayValue}</div>
       </div>
       <div className="absolute top-2 right-2 flex space-x-2">

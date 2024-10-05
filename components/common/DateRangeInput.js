@@ -22,7 +22,7 @@ const DateRangeInput = ({
   const inputClasses = useMemo(() => combineClasses(
     common.inputBase,
     common.focusStyle,
-    'w-[88px]'
+    'max-w-[88px]'
   ), []);
 
   const endDateInputClasses = useMemo(() => combineClasses(
@@ -69,7 +69,7 @@ const DateRangeInput = ({
               onChange({ startDate, endDate, isCurrent: e.target.checked });
             }}
           />
-          <span className="text-sm">현재</span>
+          <span className="lg:text-sm text-xs">현재</span>
         </label>
       </div>
       {errorMessage && (

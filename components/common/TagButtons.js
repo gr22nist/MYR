@@ -2,7 +2,7 @@ import React from 'react';
 
 const TagButtons = ({ tags, activeTag, onTagClick, disabledTags = [] }) => {
   return (
-    <div className="tags-container flex flex-wrap gap-2 font-bold text-sm">
+    <div className="tags-container flex flex-row flex-wrap gap-2 font-bold lg:text-sm text-xs">
       <span className='tag px-3 py-2 text-mono-99'>추천태그: </span>
       {tags.map(({ type, label }) => {
         const isDisabled = disabledTags.includes(type);

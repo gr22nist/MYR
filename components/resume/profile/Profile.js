@@ -47,7 +47,7 @@ const Profile = () => {
 		<section className="flex flex-col gap-2">
 			<div className="relative w-full flex flex-row justify-between items-center gap-4">
 				<textarea
-					className={`${textAreaStyle} text-4xl font-extrabold h-36 flex-grow`}
+					className={`${textAreaStyle} lg:text-4xl text-3xl font-extrabold h-36 flex-grow`}
 					value={profile.title || ''}
 					onChange={(e) => handleChange('title', e.target.value)}
 					placeholder={`간단한 제목을 쓰거나 인사를 해주세요.\n두 줄로 쓰는 것이 가장 보기에 좋습니다.`}
