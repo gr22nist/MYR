@@ -82,7 +82,7 @@
 
   /* 입력 필드 기본 스타일 */
   .input-base {
-    @apply w-full p-4 transition-colors duration-300 text-sm rounded-lg;
+    @apply p-4 transition-colors duration-300 lg:text-sm text-xs rounded-lg;
   }
 
   /* 포커스 스타일 */
@@ -97,7 +97,7 @@
 
   /* 버튼 기본 스타일 */
   .btn-base {
-    @apply flex bg-mono-99 text-white px-4 py-2 rounded w-full group relative overflow-hidden text-sm;
+    @apply flex bg-mono-99 text-white px-4 py-2 rounded w-full group relative overflow-hidden lg:text-sm text-xs;
   }
 
   /* 버튼 변형 */
@@ -120,7 +120,7 @@
 
   /* 버튼 텍스트 */
   .btn-text {
-    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center text-sm;
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center lg:text-sm text-xs;
   }
 
   /* 라디오 버튼 스타일 */
@@ -182,11 +182,11 @@
   }
 
   .profile-text-area-title {
-    @apply profile-text-area text-4xl font-extrabold h-36 flex-grow;
+    @apply profile-text-area lg:text-4xl text-3xl font-extrabold h-36 flex-grow;
   }
 
   .profile-text-area-paragraph {
-    @apply profile-text-area text-lg h-auto;
+    @apply profile-text-area lg:text-lg text-base h-auto;
   }
 }
 
