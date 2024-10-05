@@ -1,10 +1,14 @@
 // 공통 스타일
 export const common = {
   baseLayout: 'container max-w-myr mx-auto',
-  inputBase: 'w-full p-4 transition-colors duration-300 lg:text-sm text-xs rounded-lg',
+  inputBase: 'w-full p-4 transition-colors duration-300 text-sm rounded-lg',
   focusStyle: 'focus:border-1 focus:border-mono-cc focus:ring-0 focus:outline-none',
   placeholderStyle: '[&::placeholder]:whitespace-pre-wrap [&::placeholder]:leading-normal [&::placeholder]:text-mono-99',
   flexCenter: 'flex items-center justify-center',
+  textSm: 'text-sm',
+  textXs: 'text-xs',
+  mt4: 'mt-4',
+  wFull: 'w-full',
 };
 
 // 유틸리티 함수
@@ -125,7 +129,7 @@ export const profile = {
     profile.textAreaBase,
     common.focusStyle,
     'resize-none',
-    isTitle ? 'lg:text-4xl text-3xl font-extrabold h-36 flex-grow' : 'text-lg h-auto'
+    isTitle ? 'text-4xl font-extrabold h-36 flex-grow' : 'text-lg h-auto'
   ),
 };
 
