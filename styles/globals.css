@@ -178,11 +178,11 @@
   }
 
   .profile-text-area {
-    @apply p-4 bg-mono-f5 leading-normal text-mono-11 border-0 rounded-lg overflow-hidden w-full resize-none;
+    @apply p-4 bg-mono-f5 text-mono-11 border-0 rounded-lg overflow-hidden w-full resize-none;
   }
 
   .profile-text-area-title {
-    @apply profile-text-area lg:text-4xl text-3xl font-extrabold h-36 flex-grow;
+    @apply profile-text-area lg:text-4xl text-3xl font-extrabold h-36 leading-normal;
   }
 
   .profile-text-area-paragraph {
