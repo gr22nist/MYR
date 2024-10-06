@@ -9,21 +9,34 @@ const LinkItems = ({ links, onChange }) => {
   const linkInputRef = useRef(null);
 
   const formatUrl = (url) => {
+    console.log('formatUrl 입력값:', url);
+    if (typeof url !== 'string') {
+      console.log('url이 문자열이 아님');
+      return '';
+    }
     if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log('이미 http:// 또는 https://로 시작함');
       return url;
     }
-    return `https://${url}`;
+    const formattedUrl = `https://${url.startsWith('www.') ? '' : 'www.'}${url}`;
+    console.log('formatUrl 결과:', formattedUrl);
+    return formattedUrl;
   };
 
   const isValidDomain = (url) => {
-    const pattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+([/?].*)?$/;
-    return pattern.test(url);
+    console.log('isValidDomain 검사 중:', url);
+    const pattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    const isValid = pattern.test(url);
+    console.log('도메인 유효성:', isValid);
+    return isValid;
   };
 
   const handleAddLink = useCallback(() => {
+    console.log('handleAddLink 시작 - siteName:', siteName, 'link:', link);
     if (siteName && link) {
       const formattedLink = formatUrl(link);
-      if (isValidDomain(formattedLink)) {
+      console.log('포맷된 링크:', formattedLink);
+      if (formattedLink && isValidDomain(formattedLink)) {
         const newLinks = [...links, { siteName, link: formattedLink }];
         onChange(newLinks);
         setSiteName('');
@@ -46,18 +59,18 @@ const LinkItems = ({ links, onChange }) => {
     onChange(newLinks);
   }, [links, onChange]);
 
-  const handleSiteNameChange = useCallback((value) => {
-    setSiteName(value);
+  const handleSiteNameChange = useCallback((e) => {
+    setSiteName(e.target.value);
   }, []);
 
-  const handleLinkChange = useCallback((value) => {
-    setLink(value);
+  const handleLinkChange = useCallback((e) => {
+    setLink(e.target.value);
   }, []);
 
   return (
     <div>
-      <div className="flex flex-col mb-4">
-        <div className="flex items-center mb-2">
+      <div className="flex flex-col">
+        <div className="flex items-center gap-2">
           <FloatingLabelInput
             inputRef={siteNameInputRef}
             label="사이트명"
