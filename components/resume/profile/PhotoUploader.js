@@ -1,8 +1,9 @@
-import React, { useCallback, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
 import imageCompression from 'browser-image-compression';
 import useGlobalStore from '@/store/globalStore';
+import { saveProfilePhoto, deleteProfilePhoto } from '@/utils/indexedDB'; // 추가
 
 // 컴포넌트 외부로 이동
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -77,8 +78,9 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
       const resizedBlob = await resizeImage(compressedFile, 110, 144);
       
       const reader = new FileReader();
-      reader.onloadend = () => {
+      reader.onloadend = async () => {
         const imageData = reader.result;
+        await saveProfilePhoto(imageData); // IndexedDB에 저장
         onImageChange(imageData);
         showToast({ message: '이미지가 성공적으로 업로드되었습니다.', type: 'success' });
       };
@@ -93,12 +95,22 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
     }
   }, [onImageChange, showToast, compressImage, resizeImage]);
 
-  const handlePhotoDelete = useCallback(() => {
-    onImageChange(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  const handlePhotoDelete = useCallback(async () => {
+    try {
+      const isDeleted = await deleteProfilePhoto();
+      if (isDeleted) {
+        onImageChange(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        showToast({ message: '이미지가 삭제되었습니다.', type: 'info' });
+      } else {
+        throw new Error('이미지 삭제 실패');
+      }
+    } catch (error) {
+      console.error('이미지 삭제 중 오류 발생:', error);
+      showToast({ message: '이미지 삭제 중 오류가 발생했습니다.', type: 'error' });
     }
-    showToast({ message: '이미지가 삭제되었습니다.', type: 'info' });
   }, [onImageChange, showToast]);
 
   return (

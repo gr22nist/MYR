@@ -160,3 +160,14 @@ export const manualClearsectionOrder = async () => {
   const db = await getDB();
   await db.sectionOrder.clear();
 };
+
+export const deleteProfilePhoto = async () => {
+  const db = await getDB();
+  try {
+    await db.profilePhotos.delete('profilePhoto');
+    return true;
+  } catch (error) {
+    console.error('프로필 사진 삭제 중 오류 발생:', error);
+    return false;
+  }
+};

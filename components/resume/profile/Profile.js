@@ -26,9 +26,9 @@ const Profile = () => {
 		updateProfile(field, value);
 	}, [updateProfile]);
 
-	const handleImageChange = useCallback((imageData) => {
-		updateProfileImage(imageData);
-	}, [updateProfileImage]);
+  const handleImageChange = useCallback((imageData) => {
+    updateProfileImage(imageData);
+  }, [updateProfileImage]);
 
 	if (isLoading) {
 		return <div>프로필 로딩 중...</div>;
