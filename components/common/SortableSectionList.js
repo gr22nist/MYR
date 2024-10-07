@@ -52,24 +52,14 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
   
     if (isCustom) {
       return (
-        <AccordionSection
+        <SectionComponent
           key={section.id}
-          title={section.title}
+          section={section}
+          onSectionChange={(updatedSection) => onSectionChange(updatedSection)}
           isExpanded={isExpanded}
           onToggle={() => onToggleExpand(section.id)}
           onDelete={() => onDelete(section.id)}
-          mode="custom"
-          isCustomType={true}
-          dragHandleProps={!isExpanded ? { 'data-drag-handle': true } : {}}
-        >
-          <SectionComponent
-            section={section}
-            onSectionChange={(updatedSection) => onSectionChange(updatedSection)}
-            isExpanded={isExpanded}
-            onToggle={() => onToggleExpand(section.id)}
-            onDelete={() => onDelete(section.id)}
-          />
-        </AccordionSection>
+        />
       );
     }
   
