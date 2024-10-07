@@ -64,6 +64,7 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
         dragHandleProps={{ ...attributes, ...listeners }}
         mode="custom"
         onDelete={handleDelete}
+        isCustomTitle={isCustomType}
       >
         <CustomSectionItem
           section={section}
