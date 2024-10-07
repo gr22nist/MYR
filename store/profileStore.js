@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { loadProfileData, saveProfileData, loadProfilePhoto, saveProfilePhoto } from '@/utils/indexedDB';
+import { loadEncryptedProfileData, loadEncryptedProfilePhoto, saveProfileData, saveProfilePhoto } from '@/utils/indexedDB';
 import { getDB } from '@/hooks/dbConfig';
+import { decryptData } from '@/utils/cryptoUtils';
 
 const useProfileStore = create((set, get) => ({
   profile: {
@@ -14,18 +15,32 @@ const useProfileStore = create((set, get) => ({
   loadProfile: async () => {
     set({ isLoading: true, error: null });
     try {
-      // 데이터베이스 초기화 확인
       await getDB();
       
-      const storedProfile = await loadProfileData();
-      const storedImage = await loadProfilePhoto();
+      const profileData = await loadEncryptedProfileData();
+      const profilePhoto = await loadEncryptedProfilePhoto();
       
-      set({
-        profile: {
-          title: storedProfile?.title || '',
-          paragraph: storedProfile?.paragraph || '',
-          imageUrl: storedImage || null,
-        },
+      console.log('Loaded encrypted profile data:', profileData);
+      console.log('Loaded encrypted profile photo:', profilePhoto);
+
+      const decryptedProfile = profileData ? decryptData(profileData.value) : null;
+      const decryptedPhoto = profilePhoto ? decryptData(profilePhoto.value) : null;
+
+      console.log('Decrypted profile:', decryptedProfile);
+      console.log('Decrypted photo:', decryptedPhoto);
+
+      if (!decryptedProfile) {
+        set({ 
+          profile: { title: '', paragraph: '' },
+          profilePhoto: null,
+          isLoading: false,
+        });
+        return;
+      }
+
+      set({ 
+        profile: decryptedProfile, 
+        profilePhoto: decryptedPhoto,
         isLoading: false,
       });
     } catch (error) {
@@ -33,7 +48,8 @@ const useProfileStore = create((set, get) => ({
       set({ 
         error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
         isLoading: false,
-        profile: { title: '', paragraph: '', imageUrl: null } // 기본값 설정
+        profile: { title: '', paragraph: '' },
+        profilePhoto: null
       });
     }
   },
@@ -72,6 +88,14 @@ const useProfileStore = create((set, get) => ({
       console.error('프로필 리셋 실패:', error);
       set({ error: error.message });
     }
+  },
+
+  exportProfile: async () => {
+    const [profileData, profilePhoto] = await Promise.all([
+      loadEncryptedProfileData(),
+      loadEncryptedProfilePhoto()
+    ]);
+    return { profileData, profilePhoto };
   },
 }));
 

@@ -61,8 +61,10 @@ const useResumeSections = () => {
   }, [careerSection, educationSection, customSections]);
 
   const sectionOrder = useMemo(() => {
+    // customSectionOrder가 배열인지 확인하고, 아니면 빈 배열 사용
+    const customOrder = Array.isArray(customSectionOrder) ? customSectionOrder : [];
     // 중복 제거
-    return Array.from(new Set([...resumeSectionOrder, ...customSectionOrder]));
+    return Array.from(new Set([...resumeSectionOrder, ...customOrder]));
   }, [resumeSectionOrder, customSectionOrder]);
 
   const updateSection = useCallback((id, updatedSection) => {

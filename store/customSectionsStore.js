@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';  // uuid 라이브러리에서 v4 함수를 import
-import { saveCustomSections, loadCustomSections as loadCustomSectionsDB, deleteCustomSection, loadSectionOrder, saveSectionOrder } from '@/utils/indexedDB';
+import { 
+  saveCustomSections, 
+  loadCustomSections as loadCustomSectionsDB, 
+  deleteCustomSection, 
+  loadSectionOrder, 
+  saveSectionOrder,
+  loadEncryptedItems, 
+  loadEncryptedSectionOrder 
+} from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
 import { resetAllStores } from '@/utils/resetStores';
 import useResumeStore from './resumeStore';
@@ -25,6 +33,9 @@ const useCustomSectionsStore = create((set, get) => ({
         loadSectionOrder()
       ]);
 
+      // savedOrder가 배열인지 확인하고, 아니면 빈 배열 사용
+      const order = Array.isArray(savedOrder) ? savedOrder : [];
+
       const predefinedSections = savedSections.reduce((acc, section) => {
         if (section.type !== CUSTOM_SECTIONS.type) {
           acc[section.type] = true;
@@ -34,7 +45,7 @@ const useCustomSectionsStore = create((set, get) => ({
 
       set({ 
         customSections: savedSections, 
-        sectionOrder: savedOrder || [],
+        sectionOrder: order,
         predefinedSections,
         isLoading: false
       });
@@ -119,6 +130,18 @@ const useCustomSectionsStore = create((set, get) => ({
     };
 
     resetAllStores(resetResumeStore, resetCustomSectionsStore);
+  },
+
+  exportCustomSections: async () => {
+    const [customSections, sectionOrder] = await Promise.all([
+      loadEncryptedItems('customSections'),
+      loadEncryptedSectionOrder()
+    ]);
+    console.log('Exporting custom sections:', customSections, 'Section order:', sectionOrder);
+    return {
+      customSections,
+      sectionOrder
+    };
   },
 }));
 

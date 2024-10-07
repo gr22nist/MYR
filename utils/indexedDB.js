@@ -171,3 +171,104 @@ export const deleteProfilePhoto = async () => {
     return false;
   }
 };
+
+export const loadEncryptedItems = async (storeName) => {
+  const db = await getDB();
+  if (!db[storeName]) return [];
+  const encryptedItems = await db[storeName].toArray();
+  return encryptedItems.map(item => ({
+    id: item.id,
+    value: item.value // 암호화된 상태 그대로 반환
+  }));
+};
+
+export const loadEncryptedProfileData = async () => {
+  try {
+    const db = await getDB();
+    const result = await db.profileData.get('profile');
+    console.log('Loaded encrypted profile data:', result);
+    return result;
+  } catch (error) {
+    console.error('Error loading encrypted profile data:', error);
+    return null;
+  }
+};
+
+export const loadEncryptedProfilePhoto = async () => {
+  try {
+    const db = await getDB();
+    const result = await db.profilePhotos.get('profilePhoto');
+    console.log('Loaded encrypted profile photo:', result);
+    return result;
+  } catch (error) {
+    console.error('Error loading encrypted profile photo:', error);
+    return null;
+  }
+};
+
+export const loadEncryptedSectionOrder = async () => {
+  try {
+    const db = await getDB();
+    const data = await db.sectionOrder.get('sectionOrder');
+    return data ? { key: 'sectionOrder', value: data.order } : null;
+  } catch (error) {
+    console.error('Error loading encrypted section order:', error);
+    return null;
+  }
+};
+
+export const loadEncryptedUserInfo = async () => {
+  try {
+    const db = await getDB();
+    const encryptedItems = await db.userInfo.toArray();
+    return encryptedItems.map(item => ({
+      id: item.id,
+      value: item.value // 암호화된 상태 그대로 반환
+    }));
+  } catch (error) {
+    console.error('Error loading encrypted user info:', error);
+    return [];
+  }
+};
+
+export const loadEncryptedCustomSections = async () => {
+  try {
+    const db = await getDB();
+    const encryptedItems = await db.customSections.toArray();
+    return encryptedItems.map(item => ({
+      id: item.id,
+      value: item.value // 암호화된 상태 그대로 반환
+    }));
+  } catch (error) {
+    console.error('Error loading encrypted custom sections:', error);
+    return [];
+  }
+};
+
+export const loadEncryptedCareers = async () => {
+  try {
+    const db = await getDB();
+    const encryptedItems = await db.careers.toArray();
+    return encryptedItems.map(item => ({
+      id: item.id,
+      value: item.value // 암호화된 상태 그대로 반환
+    }));
+  } catch (error) {
+    console.error('Error loading encrypted careers:', error);
+    return [];
+  }
+};
+
+export const loadEncryptedEducations = async () => {
+  try {
+    const db = await getDB();
+    const encryptedItems = await db.educations.toArray();
+    return encryptedItems.map(item => ({
+      id: item.id,
+      value: item.value // 암호화된 상태 그대로 반환
+    }));
+  } catch (error) {
+    console.error('Error loading encrypted educations:', error);
+    return [];
+  }
+};

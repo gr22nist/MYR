@@ -9,7 +9,29 @@ import useResumeSections from '@/hooks/useResumeSections';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
 import useCustomSectionsStore from '@/store/customSectionsStore';
-import AutoSaveIndicator from '@/components/common/AutoSaveIndicator'; // 추가
+import DataActions from '@/components/common/actions/DataActions';
+import useResumeStore from '@/store/resumeStore';
+import { getDB } from '@/hooks/dbConfig';
+import {
+  loadCareers,
+  loadEducations,
+  loadUserInfo,
+  loadProfilePhoto,
+  loadProfileData,
+  loadCustomSections,
+  loadSectionOrder,
+  saveCareers,
+  saveEducations,
+  saveUserInfo,
+  saveProfilePhoto,
+  saveProfileData,
+  saveCustomSections,
+  saveSectionOrder
+} from '@/utils/indexedDB';
+import useProfileStore from '@/store/profileStore';
+import useCareerStore from '@/store/careerStore';
+import useEducationStore from '@/store/educationStore';
+import useUserInfoStore from '@/store/userInfoStore';
 
 const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
   ssr: false,
@@ -32,6 +54,8 @@ const Resume = () => {
   } = useResumeSections();
 
   const { loadCustomSections } = useCustomSectionsStore();
+
+  const { careerSection, educationSection } = useResumeStore();
 
   const [expandedSections, setExpandedSections] = useState({});
   const [areAllSectionsExpanded, setAreAllSectionsExpanded] = useState(true);
@@ -132,13 +156,76 @@ const Resume = () => {
     setAreAllSectionsExpanded(newExpandedState);
   }, [areAllSectionsExpanded, orderedSections]);
 
+  const { exportProfile, loadProfile } = useProfileStore();
+  const { exportCareers } = useCareerStore();
+  const { exportEducations } = useEducationStore();
+  const { exportCustomSections } = useCustomSectionsStore();
+  const { exportUserInfo } = useUserInfoStore();
+
+  const handleExport = async () => {
+    try {
+      console.log('내보내기 함수 시작');
+      const profileData = await exportProfile();
+      const careersData = await exportCareers();
+      const educationsData = await exportEducations();
+      const customSectionsData = await exportCustomSections();
+      const userInfoData = await exportUserInfo();
+
+      const exportData = {
+        profile: profileData,
+        careers: careersData,
+        educations: educationsData,
+        customSections: customSectionsData,
+        userInfo: userInfoData,
+      };
+
+      console.log('내보내기 데이터:', exportData);
+
+      if (Object.keys(exportData).length === 0) {
+        throw new Error('내보낼 데이터가 없습니다.');
+      }
+
+      return exportData;
+    } catch (error) {
+      console.error('데이터 내보내기 준비 중 오류 발생:', error);
+      console.error('오류 스택:', error.stack);
+      throw error;
+    }
+  };
+
+  const handleImport = async (importedData) => {
+    try {
+      await saveProfileData(importedData.profile);
+      await saveProfilePhoto(importedData.profilePhoto);
+      await saveCareers(importedData.careers);
+      await saveEducations(importedData.educations);
+      if (importedData.customSections) {
+        await saveCustomSections(importedData.customSections.customSections);
+        await saveSectionOrder(importedData.customSections.sectionOrder);
+      }
+      await saveUserInfo(importedData.userInfo);
+
+      // 데이터 다시 로드
+      loadAllSections();
+      // loadProfile 함수가 없다면 이 줄을 제거하거나 적절한 함수로 대체하세요
+      // loadProfile();
+    } catch (error) {
+      console.error('데이터 가져오기 실패:', error);
+      throw error;
+    }
+  };
+
   if (isLoading) {
     return <SkeletonLoader />;
   }
 
   return (
     <div className='layout-container'>
-      <AutoSaveIndicator />
+      <DataActions 
+        onExport={handleExport} 
+        onImport={handleImport}
+        dataType="이력서"
+      />
       <Profile />
       <UserInfoForm />
       {orderedSections.length > 0 ? (

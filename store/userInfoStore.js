@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createBaseActions } from '@/utils/storeUtils';
-import { loadUserInfo as loadUserInfoFromDB, saveUserInfo as saveUserInfoToDB } from '@/utils/indexedDB';
+import { loadUserInfo as loadUserInfoFromDB, saveUserInfo as saveUserInfoToDB, loadEncryptedItems } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import { typeToKorean } from '@/constants/resumeConstants';
 
@@ -66,7 +66,19 @@ const useUserInfoStore = create((set, get) => ({
     set({ status: 'loading' });
     try {
       const loadedItems = await loadUserInfoFromDB();
-      const sortedItems = loadedItems.sort((a, b) => a.order - b.order);
+      console.log('Loaded encrypted user info:', loadedItems);
+      const decryptedItems = loadedItems.map(item => {
+        const decrypted = decryptData(item.value);
+        console.log('Decrypted item:', decrypted);
+        return {
+          ...decrypted,
+          id: item.id,
+          type: decrypted.type || 'text',
+          displayType: decrypted.displayType || decrypted.type || 'text'
+        };
+      });
+      const sortedItems = decryptedItems.sort((a, b) => a.order - b.order);
+      console.log('Sorted and processed items:', sortedItems);
       set({ items: sortedItems, status: 'success' });
     } catch (error) {
       console.error('Error loading user info in store:', error);
@@ -77,6 +89,10 @@ const useUserInfoStore = create((set, get) => ({
   saveUserInfo: () => {
     const { items } = get();
     saveUserInfoToDB(items);
+  },
+
+  exportUserInfo: async () => {
+    return await loadEncryptedItems('userInfo');
   },
 }));
 

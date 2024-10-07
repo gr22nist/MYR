@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDB } from '@/utils/indexedDB';
+import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDB, loadEncryptedItems } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import useResumeStore from './resumeStore';
 
@@ -83,6 +83,9 @@ const useCareerStore = create((set, get) => ({
     });
   },
 
+  exportCareers: async () => {
+    return await loadEncryptedItems('careers');
+  },
 }));
 
 export default useCareerStore;

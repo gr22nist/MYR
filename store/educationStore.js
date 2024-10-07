@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDB} from '@/utils/indexedDB';
+import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDB, loadEncryptedItems } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import useResumeStore from './resumeStore';
 
@@ -83,6 +83,9 @@ const useEducationStore = create((set, get) => ({
     });
   },
 
+  exportEducations: async () => {
+    return await loadEncryptedItems('educations');
+  },
 }));
 
 export default useEducationStore;

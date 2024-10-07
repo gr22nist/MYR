@@ -38,8 +38,6 @@ const Profile = () => {
 		return <div>에러 발생: {error}</div>;
 	}
 
-	const imageUrl = profile?.imageUrl || '';
-
 	return (
 		<section className="profile-container">
 			<div className="profile-title">
@@ -49,7 +47,10 @@ const Profile = () => {
 					onChange={(e) => handleChange('title', e.target.value)}
 					placeholder={`간단한 제목을 쓰거나 인사를 해주세요.\n두 줄로 쓰는 것이 가장 보기에 좋습니다.`}
 				/>
-				<PhotoUploader onImageChange={handleImageChange} currentImage={profile.imageUrl} />
+				<PhotoUploader 
+					onImageChange={handleImageChange} 
+					currentImage={profile.imageUrl} 
+				/>
 			</div>
 			<textarea
         ref={textareaRef}
