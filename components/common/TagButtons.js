@@ -12,7 +12,7 @@ const TagButtons = ({ tags, activeTag, onTagClick, disabledTags = [] }) => {
             onClick={() => !isDisabled && onTagClick(type)}
             className={`tag px-3 py-2 rounded-md transition-colors ${
               isDisabled ? 'bg-transparent border text-mono-cc cursor-not-allowed' :
-              activeTag === type ? 'bg-blue-500 text-white' : 'bg-mono-dd text-mono-33 hover:bg-primary-light hover:text-white duration-300'
+              activeTag === type ? 'bg-blue-500 text-white' : 'bg-mono-ee text-mono-33 hover:bg-primary-light hover:text-white duration-300'
             }`}
             disabled={isDisabled}
           >
