@@ -84,17 +84,10 @@ const Resume = () => {
   }, [removeSection]);
 
   const toggleExpand = useCallback((id) => {
-    setExpandedSections(prev => {
-      const newState = { ...prev };
-      newState[id] = !prev[id];
-      // 펼칠 때는 해당 섹션만 펼치고, 나머지는 접습니다.
-      if (newState[id]) {
-        Object.keys(newState).forEach(key => {
-          if (key !== id) newState[key] = false;
-        });
-      }
-      return newState;
-    });
+    setExpandedSections(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   }, []);
 
   const handleResetClick = () => setIsResetModalOpen(true);
@@ -131,16 +124,16 @@ const Resume = () => {
     const newExpandedState = !areAllSectionsExpanded;
     setExpandedSections(prev => {
       const newState = {};
-      Object.keys(prev).forEach(key => {
-        newState[key] = newExpandedState;
+      orderedSections.forEach(section => {
+        newState[section.id] = newExpandedState;
       });
       return newState;
     });
     setAreAllSectionsExpanded(newExpandedState);
-  }, [areAllSectionsExpanded]);
+  }, [areAllSectionsExpanded, orderedSections]);
 
   if (isLoading) {
-    return <SkeletonLoader />; // 스켈레톤 로더로 변경
+    return <SkeletonLoader />;
   }
 
   return (
