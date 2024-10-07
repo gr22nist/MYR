@@ -1,39 +1,36 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import TagButtons from '@/components/common/TagButtons';
 import { PREDEFINED_SECTIONS, CUSTOM_SECTIONS } from '@/constants/resumeConstants';
 import useResumeStore from '@/store/resumeStore';
+import useCustomSectionsStore from '@/store/customSectionsStore';
+
+const UNIQUE_SECTION_TYPES = ['project', 'award', 'certificate', 'language', 'skill', 'link'];
 
 const CustomForm = ({ onAddSection }) => {
-  const { sections, predefinedSections } = useResumeStore();
+  const { sections } = useResumeStore();
+  const { addCustomSection, predefinedSections } = useCustomSectionsStore();
 
   const tags = useMemo(() => 
     Object.entries(PREDEFINED_SECTIONS).map(([type, label]) => ({ type, label })), 
     []
   );
 
-  const handleAddSection = (type) => {
-    onAddSection(type);
-  };
-
   const disabledTags = useMemo(() => {
-    return sections
-      .filter(section => section && section.type !== CUSTOM_SECTIONS.type)
-      .map(section => section.type);
-  }, [sections]);
+    return Object.keys(predefinedSections);
+  }, [predefinedSections]);
 
-  // 유니크한 섹션 타입 목록
-  const uniqueSectionTypes = ['project', 'award', 'certificate', 'language', 'skill', 'link'];
-
-  // 유니크한 섹션 타입인지 확인하는 함수
-  const isUniqueSection = (type) => uniqueSectionTypes.includes(type);
-
-  // 섹션 추가 가능 여부를 확인하는 함수
-  const canAddSection = (type) => {
-    if (isUniqueSection(type)) {
-      return !sections.some(section => section.type === type);
+  const canAddSection = useCallback((type) => {
+    return !UNIQUE_SECTION_TYPES.includes(type) || !predefinedSections[type];
+  }, [predefinedSections]);
+  
+  const handleAddSection = useCallback((type) => {
+    if (!canAddSection(type)) {
+      alert('이 섹션은 이미 추가되어 있습니다.');
+      return;
     }
-    return true;
-  };
+    const newSection = addCustomSection(type);
+    onAddSection(newSection);
+  }, [canAddSection, addCustomSection, onAddSection]);
 
   return (
     <div className="custom-form mt-4">
@@ -52,12 +49,7 @@ const CustomForm = ({ onAddSection }) => {
         </button>
         <TagButtons 
           tags={tags}
-          onTagClick={(type) => {
-            if (canAddSection(type)) {
-              handleAddSection(type);
-            } else {
-            }
-          }}
+          onTagClick={handleAddSection}
           className="flex-wrap justify-center"
           disabledTags={disabledTags}
         />
