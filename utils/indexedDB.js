@@ -65,8 +65,29 @@ export const saveUserInfo = (userInfo) => {
 };
 
 export const loadUserInfo = async () => {
-  const items = await loadItems('userInfo');
-  return items.sort((a, b) => a.order - b.order);
+  const db = await getDB();
+  if (!db.userInfo) return [];
+  const encryptedItems = await db.userInfo.toArray();
+  const decryptedItems = encryptedItems.map(item => {
+    try {
+      const decryptedData = decryptData(item.value);
+      if (!decryptedData) {
+        console.warn(`Failed to decrypt item: ${item.id}`);
+        return null;
+      }
+      return {
+        ...decryptedData,
+        id: item.id,
+        type: decryptedData.type || 'text',
+        displayType: decryptedData.displayType || decryptedData.type || 'text'
+      };
+    } catch (error) {
+      console.error(`Error decrypting item ${item.id}:`, error);
+      return null;
+    }
+  }).filter(Boolean);
+
+  return decryptedItems.sort((a, b) => a.order - b.order);
 };
 
 export const saveProfilePhoto = (photoData) => saveEncryptedItem('profilePhotos', 'profilePhoto', photoData);
@@ -80,10 +101,35 @@ export const loadCustomSections = () => loadItems('customSections');
 
 export const deleteCustomSection = (id) => deleteItem('customSections', id);
 
-export const saveSectionOrder = (order) => saveEncryptedItem('sectionOrder', 'sectionOrder', order);
-export const loadSectionOrder = () => loadEncryptedItem('sectionOrder', 'sectionOrder');
+export const saveSectionOrder = async (order) => {
+  const db = await getDB();
+  if (order.length === 0) {
+    await db.sectionOrder.where('id').equals('sectionOrder').delete();
+    // console.log('빈 sectionOrder 삭제 완료');
+  } else {
+    const encryptedOrder = encryptData(order);
+    await db.sectionOrder.put({ id: 'sectionOrder', order: encryptedOrder });
+    // console.log('sectionOrder 저장 완료:', order);
+  }
+};
+
+export const loadSectionOrder = async () => {
+  const db = await getDB();
+  const encryptedOrder = await db.sectionOrder.get('sectionOrder');
+  // console.log('로드된 암호화된 sectionOrder:', encryptedOrder);
+  
+  if (encryptedOrder && encryptedOrder.order) {
+    const decryptedOrder = decryptData(encryptedOrder.order);
+    // console.log('복호화된 sectionOrder:', decryptedOrder);
+    return decryptedOrder;
+  }
+  
+  // console.log('sectionOrder가 없거나 빈 배열임');
+  return [];
+};
 
 export const clearDatabase = async () => {
+  // console.log('clearDatabase 시작');
   const db = await getDB();
   const stores = ['careers', 'educations', 'customSections', 'userInfo', 'profilePhotos', 'profileData', 'sectionOrder'];
   
@@ -91,9 +137,19 @@ export const clearDatabase = async () => {
     for (const store of stores) {
       if (db[store]) {
         await db[store].clear();
+        // console.log(`${store} 스토어 초기화 완료`);
       }
     }
   });
+
+  try {
+    await db.sectionOrder.where('id').equals('sectionOrder').delete();
+    // console.log('sectionOrder 완전히 삭제 완료');
+  } catch (error) {
+    console.error('sectionOrder 삭제 중 오류:', error);
+  }
+  
+  // console.log('clearDatabase 완료');
 };
 
 export const clearsectionOrder = async () => {
@@ -186,7 +242,7 @@ export const loadEncryptedProfileData = async () => {
   try {
     const db = await getDB();
     const result = await db.profileData.get('profile');
-    console.log('Loaded encrypted profile data:', result);
+    // console.log('Loaded encrypted profile data:', result);
     return result;
   } catch (error) {
     console.error('Error loading encrypted profile data:', error);
@@ -198,7 +254,7 @@ export const loadEncryptedProfilePhoto = async () => {
   try {
     const db = await getDB();
     const result = await db.profilePhotos.get('profilePhoto');
-    console.log('Loaded encrypted profile photo:', result);
+    // console.log('Loaded encrypted profile photo:', result);
     return result;
   } catch (error) {
     console.error('Error loading encrypted profile photo:', error);
