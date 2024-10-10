@@ -9,8 +9,11 @@ const useUserInfo = () => {
     error, 
     loadUserInfo,
     addUserInfo,
-    updateUserInfo, 
-    removeUserInfo 
+    updateUserInfo,
+    removeUserInfo,
+    reorderUserInfo,
+    resetUserInfo,
+    exportUserInfo
   } = useUserInfoStore();
 
   useEffect(() => {
@@ -20,7 +23,7 @@ const useUserInfo = () => {
   const handleFieldChange = useCallback((field, value, itemId = null) => {
     const newItem = {
       type: field,
-      value: field === 'custom' ? value.value : value,
+      value: field === 'custom' ? { title: value.title, value: value.value } : value,
       displayType: field === 'custom' ? value.title : typeToKorean[field]
     };
 
@@ -40,8 +43,11 @@ const useUserInfo = () => {
     status, 
     error, 
     handleFieldChange, 
-    handleRemoveItem: removeUserInfo, 
-    retryLoading: loadUserInfo
+    handleRemoveItem: removeUserInfo,
+    reorderUserInfo,
+    retryLoading: loadUserInfo,
+    resetUserInfo,
+    exportUserInfo
   };
 };
 

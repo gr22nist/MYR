@@ -5,7 +5,7 @@ import { generateUUID } from '@/utils/uuid';
 import { typeToKorean } from '@/constants/resumeConstants';
 
 const useUserInfoStore = create((set, get) => ({
-  items: [], // 초기 상태를 빈 배열로 변경
+  items: [],
   status: 'idle',
   error: null,
   ...createBaseActions('items', loadUserInfoFromDB, saveUserInfoToDB),
@@ -66,20 +66,7 @@ const useUserInfoStore = create((set, get) => ({
     set({ status: 'loading' });
     try {
       const loadedItems = await loadUserInfoFromDB();
-      console.log('Loaded encrypted user info:', loadedItems);
-      const decryptedItems = loadedItems.map(item => {
-        const decrypted = decryptData(item.value);
-        console.log('Decrypted item:', decrypted);
-        return {
-          ...decrypted,
-          id: item.id,
-          type: decrypted.type || 'text',
-          displayType: decrypted.displayType || decrypted.type || 'text'
-        };
-      });
-      const sortedItems = decryptedItems.sort((a, b) => a.order - b.order);
-      console.log('Sorted and processed items:', sortedItems);
-      set({ items: sortedItems, status: 'success' });
+      set({ items: loadedItems, status: 'success' });
     } catch (error) {
       console.error('Error loading user info in store:', error);
       set({ error: error.message, status: 'error' });

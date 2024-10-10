@@ -13,7 +13,7 @@ import EmailInput from './inputs/EmailInput';
 import SalaryInput from './inputs/SalaryInput';
 import CustomInput from './inputs/CustomInput';
 import { typeToKorean } from '@/constants/resumeConstants';
-import useUserInfoStore from '@/store/userInfoStore';
+import useUserInfo from '@/hooks/useUserInfo';
 
 const tags = [
   { type: 'address', label: '주소' },
@@ -24,6 +24,9 @@ const tags = [
 ];
 
 const SortableUserInfoItem = React.memo(function SortableUserInfoItem({ item, onRemove, onEdit, isRemoving, isDragging }) {
+  const handleRemove = useCallback(() => onRemove(item.id), [onRemove, item.id]);
+  const handleEdit = useCallback(() => onEdit({ type: item.type, id: item.id }), [onEdit, item.type, item.id]);
+
   return (
     <SortableItem
       id={item.id}
@@ -34,13 +37,17 @@ const SortableUserInfoItem = React.memo(function SortableUserInfoItem({ item, on
         <UserInfoItem
           {...item}
           displayType={item.displayType || typeToKorean[item.type] || item.type}
-          onRemove={onRemove}
-          onEdit={onEdit}
+          onRemove={handleRemove}
+          onEdit={handleEdit}
           dragHandleProps={dragHandleProps}
         />
       )}
     </SortableItem>
   );
+}, (prevProps, nextProps) => {
+  return prevProps.item === nextProps.item &&
+         prevProps.isRemoving === nextProps.isRemoving &&
+         prevProps.isDragging === nextProps.isDragging;
 });
 
 SortableUserInfoItem.propTypes = {
@@ -56,7 +63,16 @@ SortableUserInfoItem.propTypes = {
 };
 
 const UserInfoForm = () => {
-  const { items, addUserInfo, updateUserInfo, removeUserInfo, reorderUserInfo, loadUserInfo, status } = useUserInfoStore();
+  const { 
+    items, 
+    status, 
+    error, 
+    handleFieldChange, 
+    handleRemoveItem, 
+    reorderUserInfo,
+    retryLoading
+  } = useUserInfo();
+
   const [isLoading, setIsLoading] = useState(true);
   const [activeField, setActiveField] = useState(null);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
@@ -67,45 +83,10 @@ const UserInfoForm = () => {
   const [draggedItem, setDraggedItem] = useState(null);
 
   useEffect(() => {
-    const loadData = async () => {
-      await loadUserInfo();
-      setIsLoading(false);
-    };
-    loadData();
-  }, [loadUserInfo]);
-
-  useEffect(() => {
-  }, [items, status]);
-
-  useEffect(() => {
     if (Array.isArray(items)) {
       setDisabledTags(items.map(item => item.type));
     }
   }, [items]);
-
-  const handleFieldChange = useCallback((type, value) => {
-    if (activeField && activeField.id) {
-      const updatedItem = { 
-        id: activeField.id, 
-        type, 
-        value,
-        displayType: type === 'custom' ? value.title : typeToKorean[type]
-      };
-      updateUserInfo(updatedItem);
-    } else {
-      const newItem = { 
-        type, 
-        value,
-        displayType: type === 'custom' ? value.title : typeToKorean[type]
-      };
-      addUserInfo(newItem);
-    }
-    setActiveField(null);
-  }, [activeField, addUserInfo, updateUserInfo]);
-
-  const handleRemoveItem = useCallback((id) => {
-    removeUserInfo(id);
-  }, [removeUserInfo]);
 
   const fieldComponents = {
     address: (initialValue) => (
@@ -207,12 +188,29 @@ const UserInfoForm = () => {
     <SortableUserInfoItem
       key={item.id}
       item={item}
-      onRemove={() => handleRemoveItem(item.id)}
-      onEdit={() => setActiveField({ type: item.type, id: item.id })}
+      onRemove={handleRemoveItem}
+      onEdit={setActiveField}
       isRemoving={false}
       isDragging={draggedItem === item.id}
     />
   )), [items, draggedItem, handleRemoveItem, setActiveField]);
+
+  useEffect(() => {
+    if (status !== 'loading') {
+      setIsLoading(false);
+    }
+  }, [status]);
+
+  if (status === 'error') {
+    return (
+      <div className="text-center py-4 text-red-500">
+        오류 발생: {error}
+        <button onClick={retryLoading} className="ml-2 text-blue-500 underline">
+          다시 시도
+        </button>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return <div className="text-center py-4">로딩 중...</div>;
