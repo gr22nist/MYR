@@ -13,6 +13,8 @@ import {
 } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
 import { resetAllStores } from '@/utils/resetStores';
+import useCustomSectionsStore from './customStore';
+import { clearDatabase } from '@/utils/indexedDB';  // 이 줄을 추가합니다.
 
 const initialState = {
   sections: [
@@ -98,12 +100,50 @@ const useResumeStore = create((set, get) => ({
     saveSectionOrder(newOrder);
   },
 
-  resetSections: () => {
-    const resetResumeStore = () => set(initialState);
-    const resetCustomSectionsStore = () => {
+  resetSections: async () => {
+    console.log('resetSections 시작');
+    
+    const resetResumeStore = () => {
+      console.log('resetResumeStore 실행');
+      set(state => ({
+        ...initialState,
+        sectionOrder: [] // 명시적으로 빈 배열로 설정
+      }));
+      console.log('Resume store state after reset:', get());
     };
-
-    resetAllStores(resetResumeStore, resetCustomSectionsStore);
+    
+    console.log('clearDatabase 호출');
+    await clearDatabase();
+    
+    console.log('resetAllStores 호출');
+    await resetAllStores(resetResumeStore);
+    
+    console.log('customSections 초기화');
+    await useCustomSectionsStore.getState().resetCustomSections();
+    console.log('Custom sections after reset:', useCustomSectionsStore.getState().customSections);
+    
+    console.log('sectionOrder 초기화');
+    set(state => ({ ...state, sectionOrder: [] })); // 빈 배열로 설정
+    
+    console.log('saveSectionOrder 호출');
+    await saveSectionOrder([]);
+    
+    // 저장 후 다시 로드하여 확인
+    const loadedSectionOrder = await loadSectionOrder();
+    console.log('저장 후 로드된 sectionOrder:', loadedSectionOrder);
+    
+    if (loadedSectionOrder.length > 0) {
+      console.error('sectionOrder가 여전히 존재합니다. 강제로 삭제를 시도합니다.');
+      const db = await getDB();
+      await db.sectionOrder.where('id').equals('sectionOrder').delete();
+      console.log('sectionOrder 강제 삭제 완료');
+    }
+    
+    // 최종 확인
+    const finalSectionOrder = await loadSectionOrder();
+    console.log('최종 sectionOrder:', finalSectionOrder);
+    
+    console.log('resetSections 완료');
   },
 }));
 
