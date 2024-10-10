@@ -8,7 +8,7 @@ import CustomForm from '@/components/resume/custom/CustomForm';
 import useResumeSections from '@/hooks/useResumeSections';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import useCustomSectionsStore from '@/store/customStore';
 import DataActions from '@/components/common/actions/DataActions';
 import useResumeStore from '@/store/resumeStore';
 import { getDB } from '@/hooks/dbConfig';

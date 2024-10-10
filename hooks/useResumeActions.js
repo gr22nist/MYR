@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import useResumeStore from '@/store/resumeStore';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import useCustomSectionsStore from '@/store/customStore';
 import useGlobalStore from '@/store/globalStore';
 import { clearDatabase, clearsectionOrder, checksectionOrderStore, manualClearsectionOrder } from '@/utils/indexedDB';
 

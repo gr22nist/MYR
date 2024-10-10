@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import TagButtons from '@/components/common/TagButtons';
 import { PREDEFINED_SECTIONS, CUSTOM_SECTIONS } from '@/constants/resumeConstants';
 import useResumeStore from '@/store/resumeStore';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import useCustomSectionsStore from '@/store/customStore';
 
 const UNIQUE_SECTION_TYPES = ['project', 'award', 'certificate', 'language', 'skill', 'link'];
 
