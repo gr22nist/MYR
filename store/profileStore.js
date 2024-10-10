@@ -19,15 +19,9 @@ const useProfileStore = create((set, get) => ({
       
       const profileData = await loadEncryptedProfileData();
       const profilePhoto = await loadEncryptedProfilePhoto();
-      
-      console.log('Loaded encrypted profile data:', profileData);
-      console.log('Loaded encrypted profile photo:', profilePhoto);
 
       const decryptedProfile = profileData ? decryptData(profileData.value) : null;
       const decryptedPhoto = profilePhoto ? decryptData(profilePhoto.value) : null;
-
-      console.log('Decrypted profile:', decryptedProfile);
-      console.log('Decrypted photo:', decryptedPhoto);
 
       if (!decryptedProfile) {
         set({ 
