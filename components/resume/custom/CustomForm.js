@@ -20,15 +20,18 @@ const CustomForm = ({ onAddSection }) => {
   }, [predefinedSections]);
 
   const canAddSection = useCallback((type) => {
-    return !UNIQUE_SECTION_TYPES.includes(type) || !predefinedSections[type];
+    return type === CUSTOM_SECTIONS.type || !UNIQUE_SECTION_TYPES.includes(type) || !predefinedSections[type];
   }, [predefinedSections]);
   
   const handleAddSection = useCallback((type) => {
+    console.log('handleAddSection 호출됨:', type);
     if (!canAddSection(type)) {
+      console.log('이미 추가된 섹션:', type);
       alert('이 섹션은 이미 추가되어 있습니다.');
       return;
     }
     const newSection = addCustomSection(type);
+    console.log('새로 추가된 섹션:', newSection);
     onAddSection(newSection);
   }, [canAddSection, addCustomSection, onAddSection]);
 

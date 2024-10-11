@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { v4 as uuidv4 } from 'uuid';
 import { 
   loadCareers, 
   loadEducations, 
@@ -15,6 +14,7 @@ import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstant
 import { resetAllStores } from '@/utils/resetStores';
 import useCustomSectionsStore from './customStore';
 import { clearDatabase } from '@/utils/indexedDB';  // 이 줄을 추가합니다.
+import { generateUUID } from '@/utils/uuid';
 
 const initialState = {
   sections: [
@@ -34,7 +34,7 @@ const useResumeStore = create((set, get) => ({
   addSection: (type) => {
     const { sections, sectionOrder } = get();
     const newSection = {
-      id: uuidv4(),
+      id: generateUUID(),
       type,
       title: type === CUSTOM_SECTIONS.type ? '' : PREDEFINED_SECTIONS[type] || '새 섹션',
       items: []
@@ -49,15 +49,13 @@ const useResumeStore = create((set, get) => ({
       saveCareers(updatedSections.filter(s => s.type === 'career').map(s => s.items).flat());
     } else if (type === 'education') {
       saveEducations(updatedSections.filter(s => s.type === 'education').map(s => s.items).flat());
-    } else {
-      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
     }
+    // 커스텀 섹션은 여기서 저장하지 않음
     
     saveSectionOrder(updatedOrder);
     
     return newSection;
   },
-
   updateSection: (updatedSection) => {
     set(state => {
       const updatedSections = state.sections.map(section =>

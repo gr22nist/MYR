@@ -56,8 +56,24 @@ const useCustomSectionsStore = create((set, get) => ({
   },
 
   addCustomSection: (type) => {
-    const { customSections, predefinedSections, sectionOrder } = get();
+    console.log('addCustomSection 호출됨:', type);
+    const { customSections, sectionOrder } = get();
     const updateSectionOrder = useResumeStore.getState().updateSectionOrder;
+
+    // type이 객체인 경우 (이미 생성된 섹션이 전달된 경우)
+    if (typeof type === 'object' && type.id) {
+      console.log('이미 생성된 섹션이 전달됨:', type);
+      return type;
+    }
+
+    // custom 타입이 아닌 경우에만 중복 체크
+    if (type !== CUSTOM_SECTIONS.type) {
+      const existingSection = customSections.find(section => section.type === type);
+      if (existingSection) {
+        console.log('이미 존재하는 섹션:', type);
+        return existingSection;
+      }
+    }
 
     const newSection = {
       id: generateUUID(),
@@ -67,18 +83,18 @@ const useCustomSectionsStore = create((set, get) => ({
       links: type === 'link' ? [] : undefined,
     };
 
+    console.log('새 섹션 생성:', newSection);
+
     const updatedSections = [...customSections, newSection];
     const updatedOrder = [...sectionOrder, newSection.id];
-    const updatedPredefinedSections = { ...predefinedSections };
-    if (type !== CUSTOM_SECTIONS.type) {
-      updatedPredefinedSections[type] = true;
-    }
 
     set({
       customSections: updatedSections,
-      sectionOrder: updatedOrder,
-      predefinedSections: updatedPredefinedSections
+      sectionOrder: updatedOrder
     });
+
+    console.log('상태 업데이트 후 customSections:', updatedSections);
+    console.log('상태 업데이트 후 sectionOrder:', updatedOrder);
 
     saveCustomSections(updatedSections);
     updateSectionOrder(updatedOrder);

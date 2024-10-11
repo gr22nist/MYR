@@ -25,6 +25,7 @@ import useProfileStore from '@/store/profileStore';
 import useCareerStore from '@/store/careerStore';
 import useEducationStore from '@/store/educationStore';
 import useUserInfoStore from '@/store/userInfoStore';
+import CustomSection from '@/components/resume/custom/CustomSection';
 
 const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
   ssr: false,
@@ -133,13 +134,13 @@ const Resume = () => {
   }, [orderedSections, updateSectionOrder]);
 
   const handleAddSection = useCallback((type) => {
+    console.log('Resume handleAddSection 호출됨:', type);
     const newSection = addSection(type);
     if (newSection) {
+      console.log('새로 추가된 섹션:', newSection);
       setExpandedSections(prev => ({ ...prev, [newSection.id]: true }));
-      // 새로운 섹션이 추가된 후 상태 업데이트
-      loadAllSections();
     }
-  }, [addSection, loadAllSections]);
+  }, [addSection]);
 
   const toggleAllSections = useCallback(() => {
     const newExpandedState = !areAllSectionsExpanded;
@@ -205,9 +206,23 @@ const Resume = () => {
     }
   };
 
-  if (isLoading) {
-    return <SkeletonLoader />;
-  }
+  const renderSectionContent = useCallback((section) => {
+    if (section.type === 'career' || section.type === 'education') {
+      // 기존 Career 또는 Education 섹션 내용 렌더링
+      return null; // 여기에 기존 Career/Education 컴포넌트를 렌더링하는 로직 추가
+    } else {
+      return (
+        <CustomSection
+          key={section.id}
+          section={section}
+          onSectionChange={updateSection}
+          onDelete={handleDeleteSection}
+          isExpanded={expandedSections[section.id]}
+          onToggle={() => toggleExpand(section.id)}
+        />
+      );
+    }
+  }, [updateSection, handleDeleteSection, expandedSections, toggleExpand]);
 
   return (
     <div className='layout-container'>
@@ -226,6 +241,7 @@ const Resume = () => {
           onReorder={handleReorder}
           expandedSections={expandedSections}
           onToggleExpand={toggleExpand}
+          renderSectionContent={renderSectionContent}
         />
       ) : (
         <SkeletonLoader />
