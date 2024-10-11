@@ -1,75 +1,51 @@
 import { create } from 'zustand';
-import { loadEncryptedProfileData, loadEncryptedProfilePhoto, saveProfileData, saveProfilePhoto } from '@/utils/indexedDB';
-import { getDB } from '@/hooks/dbConfig';
-import { decryptData } from '@/utils/cryptoUtils';
+import { encryptData, decryptData } from '@/utils/cryptoUtils';
+import { saveProfileData, loadProfileData, saveProfilePhoto, loadProfilePhoto } from '@/utils/indexedDB';
 
-const useProfileStore = create((set, get) => ({
-  profile: {
-    title: '',
-    paragraph: '',
-    imageUrl: null,
-  },
-  isLoading: true,
+const useProfileStore = create((set) => ({
+  profile: { title: '', paragraph: '', imageUrl: null },
+  isLoading: false,
   error: null,
 
   loadProfile: async () => {
     set({ isLoading: true, error: null });
     try {
-      await getDB();
+      const [encryptedProfileData, profilePhoto] = await Promise.all([
+        loadProfileData(),
+        loadProfilePhoto()
+      ]);
       
-      const profileData = await loadEncryptedProfileData();
-      const profilePhoto = await loadEncryptedProfilePhoto();
-
-      const decryptedProfile = profileData ? decryptData(profileData.value) : null;
-      const decryptedPhoto = profilePhoto ? decryptData(profilePhoto.value) : null;
-
-      if (!decryptedProfile) {
-        set({ 
-          profile: { title: '', paragraph: '' },
-          profilePhoto: null,
-          isLoading: false,
-        });
-        return;
-      }
-
+      const decryptedProfile = encryptedProfileData ? decryptData(encryptedProfileData) : { title: '', paragraph: '' };
       set({ 
-        profile: decryptedProfile, 
-        profilePhoto: decryptedPhoto,
-        isLoading: false,
+        profile: { ...decryptedProfile, imageUrl: profilePhoto },
+        isLoading: false 
       });
     } catch (error) {
-      console.error('프로필 로딩 에러:', error);
-      set({ 
-        error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
-        isLoading: false,
-        profile: { title: '', paragraph: '' },
-        profilePhoto: null
-      });
+      console.error('프로필 로딩 실패:', error);
+      set({ error: error.message, isLoading: false });
     }
   },
 
   updateProfile: async (field, value) => {
     set((state) => {
-      const newProfile = { ...state.profile, [field]: value };
-      saveProfileData(newProfile).catch(error => {
-        console.error('프로필 데이터 저장 실패:', error);
-        set({ error: error.message });
-      });
+      const newProfile = {
+        ...state.profile,
+        [field]: value
+      };
+      saveProfileData(encryptData(newProfile)); // 비동기 함수이지만 여기서는 await를 사용하지 않습니다.
       return { profile: newProfile };
     });
   },
 
-  updateProfileImage: async (imageData) => {
-    set((state) => ({
-      profile: { ...state.profile, imageUrl: imageData }
-    }));
-    if (imageData) {
-      try {
-        await saveProfilePhoto(imageData);
-      } catch (error) {
-        console.error('이미지 저장 실패:', error);
-        set({ error: error.message });
-      }
+  updateProfileImage: async (newImageUrl) => {
+    try {
+      await saveProfilePhoto(newImageUrl);
+      set((state) => ({
+        profile: { ...state.profile, imageUrl: newImageUrl }
+      }));
+    } catch (error) {
+      console.error('프로필 이미지 업데이트 실패:', error);
+      set({ error: error.message });
     }
   },
 

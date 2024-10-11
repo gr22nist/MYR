@@ -13,13 +13,6 @@ import DataActions from '@/components/common/actions/DataActions';
 import useResumeStore from '@/store/resumeStore';
 import { getDB } from '@/hooks/dbConfig';
 import {
-  loadCareers,
-  loadEducations,
-  loadUserInfo,
-  loadProfilePhoto,
-  loadProfileData,
-  loadCustomSections,
-  loadSectionOrder,
   saveCareers,
   saveEducations,
   saveUserInfo,
@@ -53,9 +46,12 @@ const Resume = () => {
     isLoading
   } = useResumeSections();
 
-  const { loadCustomSections } = useCustomSectionsStore();
-
+  const { loadCustomSections, exportCustomSections } = useCustomSectionsStore();
   const { careerSection, educationSection } = useResumeStore();
+  const { loadProfile, exportProfile } = useProfileStore();
+  const { exportCareers } = useCareerStore();
+  const { exportEducations } = useEducationStore();
+  const { exportUserInfo } = useUserInfoStore();
 
   const [expandedSections, setExpandedSections] = useState({});
   const [areAllSectionsExpanded, setAreAllSectionsExpanded] = useState(true);
@@ -64,8 +60,9 @@ const Resume = () => {
     if (!isLoaded && !isLoading) {
       loadAllSections();
       loadCustomSections();
+      loadProfile();
     }
-  }, [isLoaded, isLoading, loadAllSections, loadCustomSections]);
+  }, [isLoaded, isLoading, loadAllSections, loadCustomSections, loadProfile]);
 
   useEffect(() => {
     if (Array.isArray(sections) && sections.length > 0) {
@@ -156,12 +153,6 @@ const Resume = () => {
     setAreAllSectionsExpanded(newExpandedState);
   }, [areAllSectionsExpanded, orderedSections]);
 
-  const { exportProfile, loadProfile } = useProfileStore();
-  const { exportCareers } = useCareerStore();
-  const { exportEducations } = useEducationStore();
-  const { exportCustomSections } = useCustomSectionsStore();
-  const { exportUserInfo } = useUserInfoStore();
-
   const handleExport = async () => {
     try {
       console.log('내보내기 함수 시작');
@@ -195,8 +186,8 @@ const Resume = () => {
 
   const handleImport = async (importedData) => {
     try {
-      await saveProfileData(importedData.profile);
-      await saveProfilePhoto(importedData.profilePhoto);
+      await saveProfileData(importedData.profile.profileData);
+      await saveProfilePhoto(importedData.profile.profilePhoto);
       await saveCareers(importedData.careers);
       await saveEducations(importedData.educations);
       if (importedData.customSections) {
@@ -207,8 +198,7 @@ const Resume = () => {
 
       // 데이터 다시 로드
       loadAllSections();
-      // loadProfile 함수가 없다면 이 줄을 제거하거나 적절한 함수로 대체하세요
-      // loadProfile();
+      loadProfile();
     } catch (error) {
       console.error('데이터 가져오기 실패:', error);
       throw error;

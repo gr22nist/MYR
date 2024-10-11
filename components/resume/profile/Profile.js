@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import PhotoUploader from './PhotoUploader';
-import { common } from '@/styles/constLayout';
 import useProfileStore from '@/store/profileStore';
 
 const Profile = () => {

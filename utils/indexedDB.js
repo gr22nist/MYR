@@ -90,8 +90,21 @@ export const loadUserInfo = async () => {
   return decryptedItems.sort((a, b) => a.order - b.order);
 };
 
-export const saveProfilePhoto = (photoData) => saveEncryptedItem('profilePhotos', 'profilePhoto', photoData);
-export const loadProfilePhoto = () => loadEncryptedItem('profilePhotos', 'profilePhoto');
+export const saveProfilePhoto = async (photoData) => {
+  const db = await getDB();
+  await db.profilePhotos.put({ key: 'profilePhoto', value: photoData });
+};
+
+export const loadProfilePhoto = async () => {
+  try {
+    const db = await getDB();
+    const profilePhoto = await db.profilePhotos.get('profilePhoto');
+    return profilePhoto ? profilePhoto.value : null;
+  } catch (error) {
+    console.error('프로필 사진 로딩 실패:', error);
+    return null;
+  }
+};
 
 export const saveProfileData = (profileData) => saveEncryptedItem('profileData', 'profile', profileData);
 export const loadProfileData = () => loadEncryptedItem('profileData', 'profile');
@@ -253,11 +266,10 @@ export const loadEncryptedProfileData = async () => {
 export const loadEncryptedProfilePhoto = async () => {
   try {
     const db = await getDB();
-    const result = await db.profilePhotos.get('profilePhoto');
-    // console.log('Loaded encrypted profile photo:', result);
-    return result;
+    const profilePhoto = await db.profilePhotos.get('profilePhoto');
+    return profilePhoto ? profilePhoto.value : null;
   } catch (error) {
-    console.error('Error loading encrypted profile photo:', error);
+    console.error('프로필 사진 로딩 실패:', error);
     return null;
   }
 };
@@ -307,7 +319,7 @@ export const loadEncryptedCareers = async () => {
     const encryptedItems = await db.careers.toArray();
     return encryptedItems.map(item => ({
       id: item.id,
-      value: item.value // 암호화된 상태 그대로 반환
+      value: item.value
     }));
   } catch (error) {
     console.error('Error loading encrypted careers:', error);
@@ -321,7 +333,7 @@ export const loadEncryptedEducations = async () => {
     const encryptedItems = await db.educations.toArray();
     return encryptedItems.map(item => ({
       id: item.id,
-      value: item.value // 암호화된 상태 그대로 반환
+      value: item.value
     }));
   } catch (error) {
     console.error('Error loading encrypted educations:', error);

@@ -80,12 +80,8 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
       
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const imageData = reader.result;  // 전체 data URL을 사용
-        // 중복된 접두사 제거
-        const cleanImageData = imageData.replace(/^data:image\/[a-z]+;base64,/, '');
-        const encryptedImageData = encryptData(cleanImageData);
-        await saveProfilePhoto(encryptedImageData);
-        onImageChange(imageData);  // 암호화되지 않은 원본 data URL 사용
+        const imageData = reader.result;
+        onImageChange(imageData);
         showToast({ message: '이미지가 성공적으로 업로드되었습니다.', type: 'success' });
       };
       reader.readAsDataURL(resizedBlob);
