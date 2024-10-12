@@ -19,15 +19,8 @@ const useProfileStore = create((set, get) => ({
       
       const profileData = await loadEncryptedProfileData();
       const profilePhoto = await loadEncryptedProfilePhoto();
-      
-      console.log('Loaded encrypted profile data:', profileData);
-      console.log('Loaded encrypted profile photo:', profilePhoto);
-
       const decryptedProfile = profileData ? decryptData(profileData.value) : null;
       const decryptedPhoto = profilePhoto ? decryptData(profilePhoto.value) : null;
-
-      console.log('Decrypted profile:', decryptedProfile);
-      console.log('Decrypted photo:', decryptedPhoto);
 
       if (!decryptedProfile) {
         set({ 
@@ -44,7 +37,6 @@ const useProfileStore = create((set, get) => ({
         isLoading: false,
       });
     } catch (error) {
-      console.error('프로필 로딩 에러:', error);
       set({ 
         error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
         isLoading: false,
@@ -58,7 +50,6 @@ const useProfileStore = create((set, get) => ({
     set((state) => {
       const newProfile = { ...state.profile, [field]: value };
       saveProfileData(newProfile).catch(error => {
-        console.error('프로필 데이터 저장 실패:', error);
         set({ error: error.message });
       });
       return { profile: newProfile };
@@ -73,7 +64,6 @@ const useProfileStore = create((set, get) => ({
       try {
         await saveProfilePhoto(imageData);
       } catch (error) {
-        console.error('이미지 저장 실패:', error);
         set({ error: error.message });
       }
     }
@@ -85,7 +75,6 @@ const useProfileStore = create((set, get) => ({
       await saveProfileData(resetProfile);
       set({ profile: resetProfile, error: null });
     } catch (error) {
-      console.error('프로필 리셋 실패:', error);
       set({ error: error.message });
     }
   },

@@ -186,7 +186,6 @@ export const loadEncryptedProfileData = async () => {
   try {
     const db = await getDB();
     const result = await db.profileData.get('profile');
-    console.log('Loaded encrypted profile data:', result);
     return result;
   } catch (error) {
     console.error('Error loading encrypted profile data:', error);
@@ -198,7 +197,6 @@ export const loadEncryptedProfilePhoto = async () => {
   try {
     const db = await getDB();
     const result = await db.profilePhotos.get('profilePhoto');
-    console.log('Loaded encrypted profile photo:', result);
     return result;
   } catch (error) {
     console.error('Error loading encrypted profile photo:', error);

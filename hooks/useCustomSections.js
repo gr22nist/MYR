@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import useCustomStore from '@/store/customSectionsStore';
+import useCustomStore from '@/store/customStore';
 
 const useCustomSections = () => {
   const { 

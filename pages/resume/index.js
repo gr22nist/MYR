@@ -8,7 +8,7 @@ import CustomForm from '@/components/resume/custom/CustomForm';
 import useResumeSections from '@/hooks/useResumeSections';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import usecustomStore from '@/store/customStore';
 import DataActions from '@/components/common/actions/DataActions';
 import useResumeStore from '@/store/resumeStore';
 import { getDB } from '@/hooks/dbConfig';
@@ -53,7 +53,7 @@ const Resume = () => {
     isLoading
   } = useResumeSections();
 
-  const { loadCustomSections } = useCustomSectionsStore();
+  const { loadCustomSections } = usecustomStore();
 
   const { careerSection, educationSection } = useResumeStore();
 
@@ -159,12 +159,12 @@ const Resume = () => {
   const { exportProfile, loadProfile } = useProfileStore();
   const { exportCareers } = useCareerStore();
   const { exportEducations } = useEducationStore();
-  const { exportCustomSections } = useCustomSectionsStore();
+  const { exportCustomSections } = usecustomStore();
   const { exportUserInfo } = useUserInfoStore();
 
   const handleExport = async () => {
     try {
-      console.log('내보내기 함수 시작');
+      // console.log('내보내기 함수 시작');
       const profileData = await exportProfile();
       const careersData = await exportCareers();
       const educationsData = await exportEducations();
@@ -179,7 +179,7 @@ const Resume = () => {
         userInfo: userInfoData,
       };
 
-      console.log('내보내기 데이터:', exportData);
+      // console.log('내보내기 데이터:', exportData);
 
       if (Object.keys(exportData).length === 0) {
         throw new Error('내보낼 데이터가 없습니다.');

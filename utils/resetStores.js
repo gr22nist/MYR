@@ -1,9 +1,9 @@
 import { saveCareers, saveEducations, saveCustomSections, saveSectionOrder } from '@/utils/indexedDB';
 
-export const resetAllStores = async (resetResumeStore, resetCustomSectionsStore) => {
+export const resetAllStores = async (resetResumeStore, resetcustomStore) => {
   try {
     resetResumeStore();
-    resetCustomSectionsStore();
+    resetcustomStore();
 
     await Promise.all([
       saveCareers([]),

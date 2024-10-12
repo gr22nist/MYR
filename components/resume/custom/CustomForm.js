@@ -2,13 +2,15 @@ import React, { useMemo, useCallback } from 'react';
 import TagButtons from '@/components/common/TagButtons';
 import { PREDEFINED_SECTIONS, CUSTOM_SECTIONS } from '@/constants/resumeConstants';
 import useResumeStore from '@/store/resumeStore';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import usecustomStore from '@/store/customStore';
+import useResumeSections from '@/hooks/useResumeSections';
 
 const UNIQUE_SECTION_TYPES = ['project', 'award', 'certificate', 'language', 'skill', 'link'];
 
 const CustomForm = ({ onAddSection }) => {
   const { sections } = useResumeStore();
-  const { addCustomSection, predefinedSections } = useCustomSectionsStore();
+  const { addCustomSection, predefinedSections } = usecustomStore();
+  const { loadAllSections } = useResumeSections();
 
   const tags = useMemo(() => 
     Object.entries(PREDEFINED_SECTIONS).map(([type, label]) => ({ type, label })), 
@@ -23,14 +25,18 @@ const CustomForm = ({ onAddSection }) => {
     return !UNIQUE_SECTION_TYPES.includes(type) || !predefinedSections[type];
   }, [predefinedSections]);
   
-  const handleAddSection = useCallback((type) => {
+  const handleAddSection = useCallback(async (type) => {
     if (!canAddSection(type)) {
       alert('이 섹션은 이미 추가되어 있습니다.');
       return;
     }
+    console.log('CustomForm: 섹션 추가 시도:', type);
     const newSection = addCustomSection(type);
-    onAddSection(newSection);
-  }, [canAddSection, addCustomSection, onAddSection]);
+    console.log('CustomForm: 추가된 새 섹션:', newSection);
+    
+    // 섹션 추가 후 모든 섹션을 다시 로드
+    await loadAllSections();
+  }, [canAddSection, addCustomSection, loadAllSections]);
 
   return (
     <div className="custom-form mt-4">

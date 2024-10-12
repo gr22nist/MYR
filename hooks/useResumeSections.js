@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import useResumeStore from '@/store/resumeStore';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import usecustomStore from '@/store/customStore';
 
 const useResumeSections = () => {
   const { 
@@ -20,7 +20,7 @@ const useResumeSections = () => {
     removeCustomSection,
     sectionOrder: customSectionOrder,
     updateSectionOrder: updateCustomSectionOrder
-  } = useCustomSectionsStore();
+  } = usecustomStore();
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

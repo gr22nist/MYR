@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import useResumeStore from '@/store/resumeStore';
-import useCustomSectionsStore from '@/store/customSectionsStore';
+import usecustomStore from '@/store/customStore';
 import useGlobalStore from '@/store/globalStore';
 import { clearDatabase, clearsectionOrder, checksectionOrderStore, manualClearsectionOrder } from '@/utils/indexedDB';
 
 export const useResumeActions = () => {
   const resetSections = useResumeStore(state => state.resetSections);
-  const resetCustomSections = useCustomSectionsStore(state => state.resetCustomSections);
+  const resetCustomSections = usecustomStore(state => state.resetCustomSections);
   const toggleAllSections = useResumeStore(state => state.toggleAllSections);
   const { showToast } = useGlobalStore();
   

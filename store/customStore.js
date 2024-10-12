@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import { v4 as uuidv4 } from 'uuid';  // uuid 라이브러리에서 v4 함수를 import
+import { generateUUID } from '@/utils/uuid';
 import { 
   saveCustomSections, 
   loadCustomSections as loadCustomSectionsDB, 
   deleteCustomSection, 
-  loadSectionOrder, 
+  loadSectionOrder as loadSectionOrderFromDB, 
   saveSectionOrder,
   loadEncryptedItems, 
   loadEncryptedSectionOrder 
@@ -19,18 +19,18 @@ const initialState = {
   predefinedSections: {},
 };
 
-const useCustomSectionsStore = create((set, get) => ({
+const usecustomStore = create((set, get) => ({
   ...initialState,
 
   loadCustomSections: async () => {
     const { isLoading } = get();
-    if (isLoading) return; // 이미 로딩 중이면 함수 실행을 중단
+    if (isLoading) return;
 
     set({ isLoading: true });
     try {
       const [savedSections, savedOrder] = await Promise.all([
         loadCustomSectionsDB(),
-        loadSectionOrder()
+        loadSectionOrderFromDB()
       ]);
 
       // savedOrder가 배열인지 확인하고, 아니면 빈 배열 사용
@@ -56,11 +56,9 @@ const useCustomSectionsStore = create((set, get) => ({
   },
 
   addCustomSection: (type) => {
-    const { customSections, predefinedSections } = get();
-    const updateSectionOrder = useResumeStore.getState().updateSectionOrder;
-    const sectionOrder = useResumeStore.getState().sectionOrder;
+    const { customSections, predefinedSections, sectionOrder } = get();
     const newSection = {
-      id: uuidv4(),
+      id: generateUUID(),
       type,
       title: type === CUSTOM_SECTIONS.type ? '' : PREDEFINED_SECTIONS[type] || '새 섹션',
       content: '',
@@ -68,7 +66,11 @@ const useCustomSectionsStore = create((set, get) => ({
     };
 
     const updatedSections = [...customSections, newSection];
-    const updatedOrder = [...sectionOrder, newSection.id];
+    // 기존 순서를 유지하면서 새 섹션 추가
+    const updatedOrder = Array.isArray(sectionOrder) 
+      ? [...sectionOrder, newSection.id] 
+      : ['career', 'education', newSection.id]; // 기본 섹션 포함
+
     const updatedPredefinedSections = { ...predefinedSections };
     if (type !== CUSTOM_SECTIONS.type) {
       updatedPredefinedSections[type] = true;
@@ -80,8 +82,13 @@ const useCustomSectionsStore = create((set, get) => ({
       predefinedSections: updatedPredefinedSections
     });
 
-    saveCustomSections(updatedSections);
-    updateSectionOrder(updatedOrder);
+    // 비동기 작업을 Promise.all로 처리
+    Promise.all([
+      saveCustomSections(updatedSections),
+      useResumeStore.getState().updateSectionOrder(updatedOrder)
+    ]).catch((error) => {
+      console.error('저장 중 오류 발생:', error);
+    });
 
     return newSection;
   },
@@ -125,11 +132,11 @@ const useCustomSectionsStore = create((set, get) => ({
   },
 
   resetCustomSections: () => {
-    const resetCustomSectionsStore = () => set(initialState);
+    const resetcustomStore = () => set(initialState);
     const resetResumeStore = () => {
     };
 
-    resetAllStores(resetResumeStore, resetCustomSectionsStore);
+    resetAllStores(resetResumeStore, resetcustomStore);
   },
 
   exportCustomSections: async () => {
@@ -143,6 +150,17 @@ const useCustomSectionsStore = create((set, get) => ({
       sectionOrder
     };
   },
+
+  loadSectionOrder: async () => {
+    try {
+      const order = await loadSectionOrderFromDB();
+      set({ sectionOrder: order });
+      return order;
+    } catch (error) {
+      console.error('섹션 순서 로딩 중 오류:', error);
+      return [];
+    }
+  },
 }));
 
-export default useCustomSectionsStore;
+export default usecustomStore;

@@ -31,7 +31,7 @@ const Profile = () => {
   }, [updateProfileImage]);
 
 	if (isLoading) {
-		return <div>프로필 로딩 중...</div>;
+		return null;
 	}
 
 	if (error) {

@@ -66,10 +66,8 @@ const useUserInfoStore = create((set, get) => ({
     set({ status: 'loading' });
     try {
       const loadedItems = await loadUserInfoFromDB();
-      console.log('Loaded encrypted user info:', loadedItems);
       const decryptedItems = loadedItems.map(item => {
         const decrypted = decryptData(item.value);
-        console.log('Decrypted item:', decrypted);
         return {
           ...decrypted,
           id: item.id,
@@ -78,7 +76,6 @@ const useUserInfoStore = create((set, get) => ({
         };
       });
       const sortedItems = decryptedItems.sort((a, b) => a.order - b.order);
-      console.log('Sorted and processed items:', sortedItems);
       set({ items: sortedItems, status: 'success' });
     } catch (error) {
       console.error('Error loading user info in store:', error);
