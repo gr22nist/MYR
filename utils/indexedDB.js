@@ -124,6 +124,16 @@ export const clearDatabase = async () => {
       await db[store].clear();
     }
   });
+
+  // 초기화 확인
+  for (const store of stores) {
+    const count = await db[store].count();
+    if (count > 0) {
+      throw new Error(`${store} 스토어가 완전히 비워지지 않았습니다.`);
+    }
+  }
+
+  return true;
 };
 
 export const loadSections = async () => {
@@ -249,3 +259,7 @@ export const importData = async (encryptedData) => {
     return false;
   }
 };
+
+// profileData와 sectionOrder를 위한 명시적 초기화 함수 추가
+export const initializeProfileData = () => saveData('profileData', null);
+export const initializeSectionOrder = () => saveData('sectionOrder', ['career', 'education']);

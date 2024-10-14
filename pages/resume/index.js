@@ -11,7 +11,6 @@ import ResetModal from '@/components/common/actions/ResetModal';
 import usecustomStore from '@/store/customStore';
 import DataActions from '@/components/common/actions/DataActions';
 import useResumeStore from '@/store/resumeStore';
-import { getDB } from '@/hooks/dbConfig';
 import {
   loadCareers,
   loadEducations,
@@ -32,6 +31,7 @@ import useProfileStore from '@/store/profileStore';
 import useCareerStore from '@/store/careerStore';
 import useEducationStore from '@/store/educationStore';
 import useUserInfoStore from '@/store/userInfoStore';
+import useSectionOrderStore from '@/store/sectionOrderStore';
 
 const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
   ssr: false,
@@ -40,68 +40,52 @@ const DynamicSortableSectionList = dynamic(() => import('@/components/common/Sor
 const Resume = () => {
   const { handleReset } = useResumeActions();
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const { updateSectionOrder } = useSectionOrderStore();
   
   const { 
     sections,
     sectionOrder,
+    isLoading,
     loadAllSections, 
     updateSection, 
     removeSection, 
     addSection,
-    updateSectionOrder,
-    isLoaded,
-    isLoading
   } = useResumeSections();
-
-  const { loadCustomSections } = usecustomStore();
-
-  const { careerSection, educationSection } = useResumeStore();
 
   const [expandedSections, setExpandedSections] = useState({});
   const [areAllSectionsExpanded, setAreAllSectionsExpanded] = useState(true);
 
   useEffect(() => {
-    if (!isLoaded && !isLoading) {
-      loadAllSections();
-      loadCustomSections();
-    }
-  }, [isLoaded, isLoading, loadAllSections, loadCustomSections]);
+    loadAllSections();
+  }, [loadAllSections]);
 
   useEffect(() => {
     if (Array.isArray(sections) && sections.length > 0) {
       setExpandedSections(prevState => {
         const newState = { ...prevState };
-        let hasChanges = false;
         sections.forEach(section => {
-          if (section && typeof section === 'object' && 'id' in section && !(section.id in newState)) {
+          if (section && 'id' in section && !(section.id in newState)) {
             newState[section.id] = true;
-            hasChanges = true;
           }
         });
-        return hasChanges ? newState : prevState;
+        return newState;
       });
     }
-  }, [sections]); // sections만 의존성으로 추가
+  }, [sections]);
 
   const orderedSections = useMemo(() => {
-    if (!Array.isArray(sections) || sections.length === 0 || !Array.isArray(sectionOrder)) {
+    if (!Array.isArray(sections) || !Array.isArray(sectionOrder)) {
       return [];
     }
     const orderedSections = sectionOrder
       .map(sectionId => sections.find(section => section && section.id === sectionId))
       .filter(Boolean);
     
-    // Add any sections that are not in the order
     const remainingSections = sections.filter(section => section && !sectionOrder.includes(section.id));
     
-    // 중복 제거
     return Array.from(new Set([...orderedSections, ...remainingSections].map(s => s.id)))
       .map(id => [...orderedSections, ...remainingSections].find(s => s.id === id));
   }, [sections, sectionOrder]);
-
-  useEffect(() => {
-    // 이 useEffect는 비어있지만, 향후 sections 변경에 따른 추가 로직이 필요할 경우 사용할 수 있습니다.
-  }, [sections]);
 
   const handleDeleteSection = useCallback((id) => {
     removeSection(id);
@@ -120,11 +104,10 @@ const Resume = () => {
     try {
       await handleReset();
       setIsResetModalOpen(false);
-      setExpandedSections({}); // 로컬 상태 초기화
-      await loadAllSections(); // 섹션 다시 로드
+      setExpandedSections({});
+      await loadAllSections();
     } catch (error) {
       console.error('초기화 중 오류 발생:', error);
-      // 오류 처리 (예: 사용자에게 알림)
     }
   };
 
@@ -139,7 +122,6 @@ const Resume = () => {
     const newSection = addSection(type);
     if (newSection) {
       setExpandedSections(prev => ({ ...prev, [newSection.id]: true }));
-      // 새로운 섹션이 추가된 후 상태 업데이트
       loadAllSections();
     }
   }, [addSection, loadAllSections]);
@@ -215,7 +197,7 @@ const Resume = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !sections.length) {
     return <SkeletonLoader />;
   }
 
@@ -228,18 +210,14 @@ const Resume = () => {
       />
       <Profile />
       <UserInfoForm />
-      {orderedSections.length > 0 ? (
-        <DynamicSortableSectionList
-          sections={orderedSections}
-          onSectionChange={updateSection}
-          onDelete={handleDeleteSection}
-          onReorder={handleReorder}
-          expandedSections={expandedSections}
-          onToggleExpand={toggleExpand}
-        />
-      ) : (
-        <SkeletonLoader />
-      )}
+      <DynamicSortableSectionList
+        sections={orderedSections}
+        onSectionChange={updateSection}
+        onDelete={handleDeleteSection}
+        onReorder={handleReorder}
+        expandedSections={expandedSections}
+        onToggleExpand={toggleExpand}
+      />
       <CustomForm onAddSection={handleAddSection} />
       <ResetModal
         isOpen={isResetModalOpen}

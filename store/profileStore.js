@@ -61,12 +61,16 @@ const useProfileStore = create((set, get) => ({
   resetProfile: async () => {
     const resetProfile = { title: '', paragraph: '', imageUrl: null };
     try {
-      await saveProfileData(resetProfile);
-      await deleteProfilePhoto();
+      await Promise.all([
+        saveProfileData(null),
+        deleteProfilePhoto()
+      ]);
       set({ profile: resetProfile, error: null });
+      return true;
     } catch (error) {
       console.error('프로필 리셋 중 오류:', error);
       set({ error: error.message });
+      throw error;
     }
   },
 

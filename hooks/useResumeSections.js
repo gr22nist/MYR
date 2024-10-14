@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import useResumeStore from '@/store/resumeStore';
-import usecustomStore from '@/store/customStore';
+import useCustomStore from '@/store/customStore';
+import useSectionOrderStore from '@/store/sectionOrderStore';
 
 const useResumeSections = () => {
   const { 
-    careerSection,
-    educationSection,
+    sections: resumeSections,
     loadAllSections: storeLoadAllSections, 
     updateSection: updateResumeSection,
-    sectionOrder: resumeSectionOrder,
-    updateSectionOrder: updateResumeSectionOrder
   } = useResumeStore();
 
   const {
@@ -18,54 +16,49 @@ const useResumeSections = () => {
     addCustomSection,
     updateCustomSection,
     removeCustomSection,
-    sectionOrder: customSectionOrder,
-    updateSectionOrder: updateCustomSectionOrder
-  } = usecustomStore();
+  } = useCustomStore();
 
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    sectionOrder,
+    loadSectionOrder,
+    updateSectionOrder,
+    addSectionToOrder,
+    removeSectionFromOrder
+  } = useSectionOrderStore();
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadAllSections = useCallback(async () => {
-    if (!isLoaded && !isLoading) {
-      setIsLoading(true);
-      try {
-        await Promise.all([storeLoadAllSections(), loadCustomSections()]);
-        setIsLoaded(true);
-      } catch (error) {
-        console.error('Failed to load sections:', error);
-      } finally {
-        setIsLoading(false);
-      }
+    setIsLoading(true);
+    try {
+      await Promise.all([
+        storeLoadAllSections(),
+        loadCustomSections(),
+        loadSectionOrder()
+      ]);
+    } catch (error) {
+      console.error('Failed to load sections:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [storeLoadAllSections, loadCustomSections, isLoaded, isLoading]);
+  }, [storeLoadAllSections, loadCustomSections, loadSectionOrder]);
 
   useEffect(() => {
     loadAllSections();
   }, [loadAllSections]);
 
   const sections = useMemo(() => {
-    const defaultSections = [
+    const basicSections = [
       { id: 'career', type: 'career', title: '경력', items: [] },
       { id: 'education', type: 'education', title: '학력', items: [] }
     ];
-
-    const allSections = [
-      careerSection || defaultSections[0],
-      educationSection || defaultSections[1],
-      ...(Array.isArray(customSections) ? customSections : [])
-    ].filter(Boolean);
-
-    // 중복 제거
-    return Array.from(new Set(allSections.map(s => s.id)))
-      .map(id => allSections.find(s => s.id === id) || defaultSections.find(s => s.id === id));
-  }, [careerSection, educationSection, customSections]);
-
-  const sectionOrder = useMemo(() => {
-    // customSectionOrder가 배열인지 확인하고, 아니면 빈 배열 사용
-    const customOrder = Array.isArray(customSectionOrder) ? customSectionOrder : [];
-    // 중복 제거
-    return Array.from(new Set([...resumeSectionOrder, ...customOrder]));
-  }, [resumeSectionOrder, customSectionOrder]);
+    const existingBasicSections = resumeSections.filter(s => s.type === 'career' || s.type === 'education');
+    const mergedBasicSections = basicSections.map(bs => {
+      const existing = existingBasicSections.find(es => es.type === bs.type);
+      return existing || bs;
+    });
+    return [...mergedBasicSections, ...customSections];
+  }, [resumeSections, customSections]);
 
   const updateSection = useCallback((id, updatedSection) => {
     if (id === 'career' || id === 'education') {
@@ -75,28 +68,27 @@ const useResumeSections = () => {
     }
   }, [updateResumeSection, updateCustomSection]);
 
-  const removeSection = useCallback((id) => {
+  const addSection = useCallback(async (type) => {
+    const newSection = addCustomSection(type);
+    await addSectionToOrder(newSection.id);
+    return newSection;
+  }, [addCustomSection, addSectionToOrder]);
+
+  const removeSection = useCallback(async (id) => {
     if (id !== 'career' && id !== 'education') {
       removeCustomSection(id);
+      await removeSectionFromOrder(id);
     }
-  }, [removeCustomSection]);
-
-  const updateSectionOrder = useCallback((newOrder) => {
-    const resumeOrder = newOrder.filter(id => id === 'career' || id === 'education');
-    const customOrder = newOrder.filter(id => id !== 'career' && id !== 'education');
-    updateResumeSectionOrder(resumeOrder);
-    updateCustomSectionOrder(customOrder);
-  }, [updateResumeSectionOrder, updateCustomSectionOrder]);
+  }, [removeCustomSection, removeSectionFromOrder]);
 
   return {
     sections,
     sectionOrder,
     loadAllSections,
-    addSection: addCustomSection,
+    addSection,
     updateSection,
     removeSection,
     updateSectionOrder,
-    isLoaded,
     isLoading
   };
 };

@@ -3,23 +3,19 @@ import { generateUUID } from '@/utils/uuid';
 import { 
   saveCustomSections, 
   loadCustomSections as loadCustomSectionsDB, 
-  deleteSection, 
-  loadSectionOrder as loadSectionOrderFromDB, 
-  saveSectionOrder
+  deleteSection
 } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
-import { resetAllStores } from '@/utils/resetStores';
-import useResumeStore from './resumeStore';
+import useSectionOrderStore from './sectionOrderStore';
 
 const initialState = {
   customSections: [],
-  sectionOrder: [],
   predefinedSections: {},
   isLoading: false,
   error: null,
 };
 
-const usecustomStore = create((set, get) => ({
+const useCustomStore = create((set, get) => ({
   ...initialState,
 
   loadCustomSections: async () => {
@@ -28,12 +24,8 @@ const usecustomStore = create((set, get) => ({
 
     set({ isLoading: true, error: null });
     try {
-      const [savedSections, savedOrder] = await Promise.all([
-        loadCustomSectionsDB(),
-        loadSectionOrderFromDB()
-      ]);
+      const savedSections = await loadCustomSectionsDB();
 
-      const order = Array.isArray(savedOrder) ? savedOrder : [];
       const sections = Array.isArray(savedSections) ? savedSections : [];
 
       const predefinedSections = sections.reduce((acc, section) => {
@@ -45,9 +37,9 @@ const usecustomStore = create((set, get) => ({
 
       set({ 
         customSections: sections, 
-        sectionOrder: order,
         predefinedSections,
-        isLoading: false
+        isLoading: false,
+        error: null
       });
     } catch (error) {
       console.error('커스텀 섹션 로딩 중 오류:', error);
@@ -56,7 +48,7 @@ const usecustomStore = create((set, get) => ({
   },
 
   addCustomSection: (type) => {
-    const { customSections, predefinedSections, sectionOrder } = get();
+    const { customSections, predefinedSections } = get();
     const newSection = {
       id: generateUUID(),
       type,
@@ -66,9 +58,6 @@ const usecustomStore = create((set, get) => ({
     };
 
     const updatedSections = [...customSections, newSection];
-    const updatedOrder = Array.isArray(sectionOrder) 
-      ? [...sectionOrder, newSection.id] 
-      : ['career', 'education', newSection.id];
 
     const updatedPredefinedSections = { ...predefinedSections };
     if (type !== CUSTOM_SECTIONS.type) {
@@ -77,8 +66,8 @@ const usecustomStore = create((set, get) => ({
 
     set({ 
       customSections: updatedSections,
-      sectionOrder: updatedOrder,
-      predefinedSections: updatedPredefinedSections
+      predefinedSections: updatedPredefinedSections,
+      error: null
     });
 
     saveCustomSections(updatedSections).catch((error) => {
@@ -86,20 +75,9 @@ const usecustomStore = create((set, get) => ({
       set({ error: error.message });
     });
 
-    saveSectionOrder(updatedOrder).catch((error) => {
-      console.error('섹션 순서 저장 중 오류 발생:', error);
-      set({ error: error.message });
-    });
+    useSectionOrderStore.getState().addSectionToOrder(newSection.id);
 
     return newSection;
-  },
-
-  updateSectionOrder: (newOrder) => {
-    set({ sectionOrder: newOrder });
-    saveSectionOrder(newOrder).catch(error => {
-      console.error('섹션 순서 저장 중 오류:', error);
-      set({ error: error.message });
-    });
   },
 
   updateCustomSection: (id, updatedSection) => {
@@ -111,7 +89,7 @@ const usecustomStore = create((set, get) => ({
         console.error('커스텀 섹션 업데이트 중 오류:', error);
         set({ error: error.message });
       });
-      return { customSections: updatedSections };
+      return { customSections: updatedSections, error: null };
     });
   },
 
@@ -124,43 +102,38 @@ const usecustomStore = create((set, get) => ({
         delete updatedPredefinedSections[sectionToRemove.type];
       }
       
-      const updatedOrder = state.sectionOrder.filter(sectionId => sectionId !== id);
-      
-      deleteSection(id).then(success => {
-        if (!success) {
-          console.error('섹션 삭제 실패');
-          set({ error: '섹션 삭제 실패' });
-        }
-      }).catch(error => {
+      deleteSection(id).catch(error => {
         console.error('섹션 삭제 중 오류 발생:', error);
         set({ error: error.message });
       });
 
+      useSectionOrderStore.getState().removeSectionFromOrder(id);
+
       return { 
         customSections: updatedSections,
-        sectionOrder: updatedOrder,
-        predefinedSections: updatedPredefinedSections
+        predefinedSections: updatedPredefinedSections,
+        error: null
       };
     });
   },
 
-  resetCustomSections: () => {
-    set(initialState);
-    saveCustomSections([]);
-    saveSectionOrder(['career', 'education']);
-  },
-
-  loadSectionOrder: async () => {
+  resetCustomSections: async () => {
     try {
-      const order = await loadSectionOrderFromDB();
-      set({ sectionOrder: order });
-      return order;
+      await saveCustomSections([]);
+      set({
+        customSections: [],
+        predefinedSections: {},
+        isLoading: false,
+        error: null,
+      });
+      useSectionOrderStore.getState().updateSectionOrder(['career', 'education']);
+      return true;
     } catch (error) {
-      console.error('섹션 순서 로딩 중 오류:', error);
+      console.error('커스텀 섹션 리셋 중 오류:', error);
       set({ error: error.message });
-      return [];
+      return false;
     }
   },
 }));
 
-export default usecustomStore;
+export default useCustomStore;

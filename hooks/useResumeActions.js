@@ -22,14 +22,10 @@ export const useResumeActions = () => {
       
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 3000);
     } catch (error) {
       console.error('초기화 중 오류 발생:', error);
-      showToast({ message: '초기화 중 오류 발생, 페이지가 새로고침 됩니다.', type: 'error' });
-      
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+      showToast({ message: '초기화 중 오류 발생, 관리자에게 문의하세요.', type: 'error' });
     }
   }, [resetSections, resetCustomSections, resetUserInfo, resetProfile, showToast]);
 

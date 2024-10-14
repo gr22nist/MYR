@@ -1,4 +1,5 @@
 import { 
+  clearDatabase,
   saveCareers, 
   saveEducations, 
   saveCustomSections, 
@@ -6,7 +7,8 @@ import {
   saveUserInfo,
   saveProfileData,
   deleteProfilePhoto,
-  clearDatabase
+  initializeProfileData,
+  initializeSectionOrder
 } from '@/utils/indexedDB';
 
 export const resetAllStores = async (resetResumeStore, resetCustomStore, resetUserInfoStore, resetProfileStore) => {
@@ -15,15 +17,22 @@ export const resetAllStores = async (resetResumeStore, resetCustomStore, resetUs
     await clearDatabase();
 
     // 모든 스토어 리셋
-    if (typeof resetResumeStore === 'function') await resetResumeStore();
-    if (typeof resetCustomStore === 'function') await resetCustomStore();
-    if (typeof resetUserInfoStore === 'function') await resetUserInfoStore();
-    if (typeof resetProfileStore === 'function') await resetProfileStore();
+    await Promise.all([
+      resetResumeStore(),
+      resetCustomStore(),
+      resetUserInfoStore(),
+      resetProfileStore()
+    ]);
 
     // 기본 데이터 설정
     await Promise.all([
-      saveSectionOrder(['career', 'education']),
-      saveProfileData({ title: '', paragraph: '', imageUrl: null }),
+      initializeSectionOrder(),
+      initializeProfileData(),
+      deleteProfilePhoto(),
+      saveCareers([]),
+      saveEducations([]),
+      saveCustomSections([]),
+      saveUserInfo([])
     ]);
 
     console.log('모든 스토어와 데이터베이스가 성공적으로 초기화되었습니다.');

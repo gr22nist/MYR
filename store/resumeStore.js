@@ -7,19 +7,17 @@ import {
   saveCareers,
   saveEducations,
   saveCustomSections,
-  deleteSection, 
-  saveSectionOrder, 
-  loadSectionOrder
+  deleteSection
 } from '@/utils/indexedDB';
 import { CUSTOM_SECTIONS, PREDEFINED_SECTIONS } from '@/constants/resumeConstants';
-import { resetAllStores } from '@/utils/resetStores';
+import useSectionOrderStore from './sectionOrderStore';
 
 const initialState = {
   sections: [
     { id: 'career', type: 'career', title: '경력', items: [] },
     { id: 'education', type: 'education', title: '학력', items: [] },
   ],
-  sectionOrder: ['career', 'education'],
+  error: null,
 };
 
 const useResumeStore = create((set, get) => ({
@@ -27,11 +25,10 @@ const useResumeStore = create((set, get) => ({
   
   loadAllSections: async () => {
     try {
-      const [careers, educations, customSections, order] = await Promise.all([
+      const [careers, educations, customSections] = await Promise.all([
         loadCareers(),
         loadEducations(),
-        loadCustomSections(),
-        loadSectionOrder()
+        loadCustomSections()
       ]);
 
       const sectionsWithUUID = [
@@ -45,34 +42,34 @@ const useResumeStore = create((set, get) => ({
 
       set({ 
         sections: sectionsWithUUID,
-        sectionOrder: order || ['career', 'education']
+        error: null
       });
     } catch (error) {
       console.error('Error loading all sections:', error);
+      set({ error: error.message });
     }
   },
 
   addSection: (type) => {
-    const { sections, sectionOrder } = get();
+    const { sections } = get();
     const newSection = ensureUUID({
       type,
       title: type === CUSTOM_SECTIONS.type ? '' : PREDEFINED_SECTIONS[type] || '새 섹션',
       items: []
     });
     const updatedSections = [...sections, newSection];
-    const updatedOrder = [...sectionOrder, newSection.id];
     
-    set({ sections: updatedSections, sectionOrder: updatedOrder });
+    set({ sections: updatedSections, error: null });
 
     if (type === 'career') {
-      saveCareers(updatedSections.find(s => s.type === 'career').items);
+      saveCareers(updatedSections.find(s => s.type === 'career').items).catch(error => set({ error: error.message }));
     } else if (type === 'education') {
-      saveEducations(updatedSections.find(s => s.type === 'education').items);
+      saveEducations(updatedSections.find(s => s.type === 'education').items).catch(error => set({ error: error.message }));
     } else {
-      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
+      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type))).catch(error => set({ error: error.message }));
     }
     
-    saveSectionOrder(updatedOrder);
+    useSectionOrderStore.getState().addSectionToOrder(newSection.id);
     
     return newSection;
   },
@@ -84,14 +81,14 @@ const useResumeStore = create((set, get) => ({
       );
       
       if (updatedSection.type === 'career') {
-        saveCareers(updatedSection.items);
+        saveCareers(updatedSection.items).catch(error => set({ error: error.message }));
       } else if (updatedSection.type === 'education') {
-        saveEducations(updatedSection.items);
+        saveEducations(updatedSection.items).catch(error => set({ error: error.message }));
       } else {
-        saveCustomSections([updatedSection]);
+        saveCustomSections([updatedSection]).catch(error => set({ error: error.message }));
       }
       
-      return { sections: updatedSections };
+      return { sections: updatedSections, error: null };
     });
   },
 
@@ -100,30 +97,42 @@ const useResumeStore = create((set, get) => ({
       const sectionToRemove = state.sections.find(section => section.id === id);
       if (sectionToRemove && ['career', 'education'].includes(sectionToRemove.type)) {
         console.warn('Cannot remove career or education sections');
-        return state;
+        return { ...state, error: 'Cannot remove career or education sections' };
       }
 
       const updatedSections = state.sections.filter(section => section.id !== id);
-      const updatedOrder = state.sectionOrder.filter(sectionId => sectionId !== id);
       
-      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
-      saveSectionOrder(updatedOrder);
-      deleteSection(id);
-      return { sections: updatedSections, sectionOrder: updatedOrder };
+      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)))
+        .catch(error => set({ error: error.message }));
+      deleteSection(id).catch(error => set({ error: error.message }));
+      
+      useSectionOrderStore.getState().removeSectionFromOrder(id);
+      
+      return { sections: updatedSections, error: null };
     });
   },
 
-  updateSectionOrder: (newOrder) => {
-    set({ sectionOrder: newOrder });
-    saveSectionOrder(newOrder);
-  },
-
-  resetSections: () => {
-    set(initialState);
-    saveCareers([]);
-    saveEducations([]);
-    saveCustomSections([]);
-    saveSectionOrder(['career', 'education']);
+  resetSections: async () => {
+    try {
+      await Promise.all([
+        saveCareers([]),
+        saveEducations([]),
+        saveCustomSections([])
+      ]);
+      set({
+        sections: [
+          { id: 'career', type: 'career', title: '경력', items: [] },
+          { id: 'education', type: 'education', title: '학력', items: [] },
+        ],
+        error: null
+      });
+      useSectionOrderStore.getState().updateSectionOrder(['career', 'education']);
+      return true;
+    } catch (error) {
+      console.error('섹션 리셋 중 오류:', error);
+      set({ error: error.message });
+      return false;
+    }
   },
 }));
 

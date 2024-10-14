@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { loadSectionOrder as loadSectionOrderFromDB, saveSectionOrder } from '@/utils/indexedDB';
 
 const useSectionOrderStore = create((set, get) => ({
-  sectionOrder: [],
+  sectionOrder: ['career', 'education'],  // 기본값 설정
   status: 'idle',
   error: null,
 
@@ -10,15 +10,23 @@ const useSectionOrderStore = create((set, get) => ({
     set({ status: 'loading' });
     try {
       const order = await loadSectionOrderFromDB();
+      const newOrder = Array.isArray(order) && order.length > 0 
+        ? order 
+        : ['career', 'education'];
+      
+      // 'career'와 'education'이 없다면 추가
+      if (!newOrder.includes('career')) newOrder.unshift('career');
+      if (!newOrder.includes('education')) newOrder.splice(1, 0, 'education');
+
       set({ 
-        sectionOrder: Array.isArray(order) ? order : [],
+        sectionOrder: newOrder,
         status: 'success',
         error: null
       });
     } catch (error) {
       console.error('섹션 순서 로딩 중 오류:', error);
       set({ 
-        sectionOrder: [],
+        sectionOrder: ['career', 'education'],
         status: 'error',
         error: '섹션 순서를 불러오는 데 실패했습니다.'
       });
@@ -26,6 +34,10 @@ const useSectionOrderStore = create((set, get) => ({
   },
 
   updateSectionOrder: async (newOrder) => {
+    // 'career'와 'education'이 없다면 추가
+    if (!newOrder.includes('career')) newOrder.unshift('career');
+    if (!newOrder.includes('education')) newOrder.splice(1, 0, 'education');
+
     try {
       await saveSectionOrder(newOrder);
       set({ sectionOrder: newOrder, error: null });
@@ -36,25 +48,15 @@ const useSectionOrderStore = create((set, get) => ({
   },
 
   addSectionToOrder: async (sectionId) => {
-    const newOrder = [...get().sectionOrder, sectionId];
-    try {
-      await saveSectionOrder(newOrder);
-      set({ sectionOrder: newOrder, error: null });
-    } catch (error) {
-      console.error('섹션 추가 중 오류:', error);
-      set({ error: '새 섹션을 추가하는 데 실패했습니다.' });
-    }
+    const { sectionOrder } = get();
+    const newOrder = [...sectionOrder, sectionId];
+    await get().updateSectionOrder(newOrder);
   },
 
   removeSectionFromOrder: async (sectionId) => {
-    const newOrder = get().sectionOrder.filter(id => id !== sectionId);
-    try {
-      await saveSectionOrder(newOrder);
-      set({ sectionOrder: newOrder, error: null });
-    } catch (error) {
-      console.error('섹션 제거 중 오류:', error);
-      set({ error: '섹션을 제거하는 데 실패했습니다.' });
-    }
+    const { sectionOrder } = get();
+    const newOrder = sectionOrder.filter(id => id !== sectionId);
+    await get().updateSectionOrder(newOrder);
   },
 }));
 
