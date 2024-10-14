@@ -35,23 +35,24 @@ const useResumeStore = create((set, get) => ({
       ]);
 
       const sectionsWithUUID = [
-        ...ensureUUIDForArray(careers.map(c => ({ ...c, type: 'career' }))),
-        ...ensureUUIDForArray(educations.map(e => ({ ...e, type: 'education' }))),
-        ...ensureUUIDForArray(customSections)
+        { id: 'career', type: 'career', title: '경력', items: ensureUUIDForArray(careers || []) },
+        { id: 'education', type: 'education', title: '학력', items: ensureUUIDForArray(educations || []) },
+        ...(customSections || []).map(section => ({
+          ...section,
+          items: ensureUUIDForArray(section.items || [])
+        }))
       ];
 
-      // ... 나머지 코드
       set({ 
         sections: sectionsWithUUID,
-        // ... 나머지 상태 업데이트
+        sectionOrder: order || ['career', 'education']
       });
     } catch (error) {
-      // ... 오류 처리
+      console.error('Error loading all sections:', error);
     }
   },
 
   addSection: (type) => {
-    console.log('resumeStore: 섹션 추가 시작:', type);
     const { sections, sectionOrder } = get();
     const newSection = ensureUUID({
       type,
@@ -61,39 +62,18 @@ const useResumeStore = create((set, get) => ({
     const updatedSections = [...sections, newSection];
     const updatedOrder = [...sectionOrder, newSection.id];
     
-    console.log('resumeStore: 새로운 섹션:', newSection);
-    
-    set((state) => ({ 
-      sections: updatedSections, 
-      sectionOrder: updatedOrder 
-    }));
+    set({ sections: updatedSections, sectionOrder: updatedOrder });
 
-    console.log('resumeStore: 상태 업데이트 후');
-    console.log('sections:', get().sections);
-    console.log('sectionOrder:', get().sectionOrder);
-
-    // 비동기 작업을 Promise.all로 처리
-    const savePromises = [];
-    
     if (type === 'career') {
-      savePromises.push(saveCareers(updatedSections.filter(s => s.type === 'career').map(s => s.items).flat()));
+      saveCareers(updatedSections.find(s => s.type === 'career').items);
     } else if (type === 'education') {
-      savePromises.push(saveEducations(updatedSections.filter(s => s.type === 'education').map(s => s.items).flat()));
+      saveEducations(updatedSections.find(s => s.type === 'education').items);
     } else {
-      savePromises.push(saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type))));
+      saveCustomSections(updatedSections.filter(s => !['career', 'education'].includes(s.type)));
     }
     
-    savePromises.push(saveSectionOrder(updatedOrder));
-
-    Promise.all(savePromises)
-      .then(() => {
-        console.log('resumeStore: 저장 완료');
-      })
-      .catch((error) => {
-        console.error('resumeStore: 저장 중 오류 발생', error);
-      });
+    saveSectionOrder(updatedOrder);
     
-    console.log('resumeStore: 섹션 추가 완료');
     return newSection;
   },
 
@@ -103,7 +83,6 @@ const useResumeStore = create((set, get) => ({
         section.id === updatedSection.id ? { ...section, ...updatedSection } : section
       );
       
-      // 섹션 타입에 따라 적절한 저장 함수 호출
       if (updatedSection.type === 'career') {
         saveCareers(updatedSection.items);
       } else if (updatedSection.type === 'education') {
@@ -140,11 +119,11 @@ const useResumeStore = create((set, get) => ({
   },
 
   resetSections: () => {
-    const resetResumeStore = () => set(initialState);
-    const resetcustomStore = () => {
-    };
-
-    resetAllStores(resetResumeStore, resetcustomStore);
+    set(initialState);
+    saveCareers([]);
+    saveEducations([]);
+    saveCustomSections([]);
+    saveSectionOrder(['career', 'education']);
   },
 }));
 

@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { createBaseActions } from '@/utils/storeUtils';
-import { loadUserInfo as loadUserInfoFromDB, saveUserInfo as saveUserInfoToDB, loadEncryptedItems } from '@/utils/indexedDB';
+import { loadUserInfo as loadUserInfoFromDB, saveUserInfo as saveUserInfoToDB } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import { typeToKorean } from '@/constants/resumeConstants';
 
 const useUserInfoStore = create((set, get) => ({
-  items: [], // 초기 상태를 빈 배열로 변경
+  items: [],
   status: 'idle',
   error: null,
   ...createBaseActions('items', loadUserInfoFromDB, saveUserInfoToDB),
@@ -66,16 +66,7 @@ const useUserInfoStore = create((set, get) => ({
     set({ status: 'loading' });
     try {
       const loadedItems = await loadUserInfoFromDB();
-      const decryptedItems = loadedItems.map(item => {
-        const decrypted = decryptData(item.value);
-        return {
-          ...decrypted,
-          id: item.id,
-          type: decrypted.type || 'text',
-          displayType: decrypted.displayType || decrypted.type || 'text'
-        };
-      });
-      const sortedItems = decryptedItems.sort((a, b) => a.order - b.order);
+      const sortedItems = loadedItems.sort((a, b) => a.order - b.order);
       set({ items: sortedItems, status: 'success' });
     } catch (error) {
       console.error('Error loading user info in store:', error);
@@ -88,9 +79,7 @@ const useUserInfoStore = create((set, get) => ({
     saveUserInfoToDB(items);
   },
 
-  exportUserInfo: async () => {
-    return await loadEncryptedItems('userInfo');
-  },
+  // exportUserInfo 함수 제거
 }));
 
 export default useUserInfoStore;

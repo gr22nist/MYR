@@ -1,7 +1,6 @@
 import { create } from 'zustand';
-import { loadEncryptedProfileData, loadEncryptedProfilePhoto, saveProfileData, saveProfilePhoto } from '@/utils/indexedDB';
+import { loadProfileData, loadProfilePhoto, saveProfileData, saveProfilePhoto, deleteProfilePhoto } from '@/utils/indexedDB';
 import { getDB } from '@/hooks/dbConfig';
-import { decryptData } from '@/utils/cryptoUtils';
 
 const useProfileStore = create((set, get) => ({
   profile: {
@@ -17,31 +16,21 @@ const useProfileStore = create((set, get) => ({
     try {
       await getDB();
       
-      const profileData = await loadEncryptedProfileData();
-      const profilePhoto = await loadEncryptedProfilePhoto();
-      const decryptedProfile = profileData ? decryptData(profileData.value) : null;
-      const decryptedPhoto = profilePhoto ? decryptData(profilePhoto.value) : null;
-
-      if (!decryptedProfile) {
-        set({ 
-          profile: { title: '', paragraph: '' },
-          profilePhoto: null,
-          isLoading: false,
-        });
-        return;
-      }
+      const profileData = await loadProfileData();
+      const profilePhoto = await loadProfilePhoto();
 
       set({ 
-        profile: decryptedProfile, 
-        profilePhoto: decryptedPhoto,
+        profile: {
+          ...profileData,
+          imageUrl: profilePhoto
+        } || { title: '', paragraph: '', imageUrl: null },
         isLoading: false,
       });
     } catch (error) {
       set({ 
         error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
         isLoading: false,
-        profile: { title: '', paragraph: '' },
-        profilePhoto: null
+        profile: { title: '', paragraph: '', imageUrl: null },
       });
     }
   },
@@ -73,16 +62,18 @@ const useProfileStore = create((set, get) => ({
     const resetProfile = { title: '', paragraph: '', imageUrl: null };
     try {
       await saveProfileData(resetProfile);
+      await deleteProfilePhoto();
       set({ profile: resetProfile, error: null });
     } catch (error) {
+      console.error('프로필 리셋 중 오류:', error);
       set({ error: error.message });
     }
   },
 
   exportProfile: async () => {
     const [profileData, profilePhoto] = await Promise.all([
-      loadEncryptedProfileData(),
-      loadEncryptedProfilePhoto()
+      loadProfileData(),
+      loadProfilePhoto()
     ]);
     return { profileData, profilePhoto };
   },

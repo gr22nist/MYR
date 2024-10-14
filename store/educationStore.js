@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDB, loadEncryptedItems } from '@/utils/indexedDB';
+import { loadEducations as loadEducationsFromDB, saveEducations as saveEducationsToDB } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import useResumeStore from './resumeStore';
 
@@ -25,14 +25,15 @@ const useEducationStore = create((set, get) => ({
     try {
       const loadedEducations = await loadEducationsFromDB();
       const sortedEducations = loadedEducations
-        .sort((a, b) => a.order - b.order)
-        .map((education, index) => ({ ...education, order: index }));
+        ? loadedEducations.sort((a, b) => a.order - b.order).map((education, index) => ({ ...education, order: index }))
+        : [createInitialEducation()];
       set({
-        educations: sortedEducations.length > 0 ? sortedEducations : [createInitialEducation()],
-        status: 'seccess'
+        educations: sortedEducations,
+        status: 'success'
       });
     } catch (error) {
-      set({ error, status: 'error'});
+      console.error('Error loading educations:', error);
+      set({ error, status: 'error' });
     }
   },
 
@@ -53,7 +54,8 @@ const useEducationStore = create((set, get) => ({
       const newEducations = state.educations.map(edu => 
         edu.id === updatedEducation.id ? { ...edu, ...updatedEducation } : edu
       );
-      if(JSON.stringify(newEducations) !== JSON.stringify(state.educations)) {
+      if (JSON.stringify(newEducations) !== JSON.stringify(state.educations)) {
+        saveEducationsToDB(newEducations);
         useResumeStore.getState().updateSection({ id: 'education', type: 'education', items: newEducations });
         return { educations: newEducations };
       }
@@ -83,9 +85,7 @@ const useEducationStore = create((set, get) => ({
     });
   },
 
-  exportEducations: async () => {
-    return await loadEncryptedItems('educations');
-  },
+  // exportEducations 함수 제거
 }));
 
 export default useEducationStore;

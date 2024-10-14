@@ -1,87 +1,119 @@
 import { getDB } from '@/hooks/dbConfig';
 import { encryptData, decryptData } from '@/utils/cryptoUtils';
 
-const saveItems = async (storeName, items) => {
-  const db = await getDB();
-  await db.transaction('rw', storeName, async () => {
-    await db.table(storeName).clear();
-    if (Array.isArray(items) && items.length > 0) {
-      const encryptedItems = items.map(item => ({
-        id: item.id,
-        value: encryptData({ ...item, id: item.id })
-      }));
-      await db.table(storeName).bulkAdd(encryptedItems);
+// 통합된 저장 함수
+const saveData = async (storeName, data) => {
+  try {
+    const db = await getDB();
+    await db.transaction('rw', storeName, async () => {
+      await db.table(storeName).clear();
+      if (Array.isArray(data)) {
+        const encryptedItems = data.map(item => ({
+          id: item.id,
+          value: encryptData({ ...item, id: item.id })
+        }));
+        await db.table(storeName).bulkAdd(encryptedItems);
+      } else if (storeName === 'sectionOrder') {
+        await db.table(storeName).put({ id: 'sectionOrder', order: encryptData(data) });
+      } else {
+        const encryptedData = { key: storeName, value: encryptData(data) };
+        await db.table(storeName).put(encryptedData);
+      }
+    });
+    return true;
+  } catch (error) {
+    console.error(`${storeName} 저장 중 오류:`, error);
+    return false;
+  }
+};
+
+// 통합된 로드 함수
+const loadData = async (storeName) => {
+  try {
+    const db = await getDB();
+    if (!db[storeName]) return null;
+    const encryptedData = await db[storeName].toArray();
+    if (encryptedData.length === 0) return null;
+
+    if (storeName === 'sectionOrder') {
+      return decryptData(encryptedData[0].order);
+    } else if (encryptedData.length === 1 && encryptedData[0].key === storeName) {
+      return decryptData(encryptedData[0].value);
+    } else {
+      return encryptedData.map(item => {
+        try {
+          const decryptedData = decryptData(item.value);
+          return { ...decryptedData, id: item.id };
+        } catch (error) {
+          console.error(`${storeName} 항목 복호화 중 오류:`, error);
+          return null;
+        }
+      }).filter(Boolean);
     }
-  });
+  } catch (error) {
+    console.error('Error loading data:', error);
+    return null;
+  }
 };
 
-const loadItems = async (storeName) => {
-  const db = await getDB();
-  if (!db[storeName]) return [];
-  const encryptedItems = await db[storeName].toArray();
-  return encryptedItems.map(item => {
-    try {
-      const decryptedData = decryptData(item.value);
-      return { ...decryptedData, id: item.id };
-    } catch (error) {
-      console.error(`${storeName} 항목 복호화 중 오류:`, error);
-      return null;
-    }
-  }).filter(Boolean);
-};
+export const saveCareers = (careers) => saveData('careers', careers);
+export const loadCareers = () => loadData('careers');
 
-const saveEncryptedItem = async (storeName, key, value) => {
-  const db = await getDB();
-  const data = storeName === 'sectionOrder' 
-    ? { id: key, order: encryptData(value) }
-    : { key, value: encryptData(value) };
-  await db[storeName].put(data);
-};
-
-const loadEncryptedItem = async (storeName, key) => {
-  const db = await getDB();
-  if (!db[storeName]) return null;
-  const data = await db[storeName].get(key);
-  return data ? decryptData(storeName === 'sectionOrder' ? data.order : data.value) : null;
-};
-
-const deleteItem = async (storeName, id) => {
-  const db = await getDB();
-  await db[storeName].delete(id);
-};
-
-export const saveCareers = (careers) => careers?.length ? saveItems('careers', careers) : null;
-export const loadCareers = () => loadItems('careers');
-
-export const saveEducations = (educations) => educations?.length ? saveItems('educations', educations) : null;
-export const loadEducations = () => loadItems('educations');
+export const saveEducations = (educations) => saveData('educations', educations);
+export const loadEducations = () => loadData('educations');
 
 export const saveUserInfo = (userInfo) => {
   const itemsWithOrder = userInfo.map((item, index) => ({
     ...item,
     order: item.order !== undefined ? item.order : index
   }));
-  return saveItems('userInfo', itemsWithOrder);
+  return saveData('userInfo', itemsWithOrder);
 };
 
 export const loadUserInfo = async () => {
-  const items = await loadItems('userInfo');
-  return items.sort((a, b) => a.order - b.order);
+  const items = await loadData('userInfo');
+  return items ? items.sort((a, b) => a.order - b.order) : [];
 };
 
-export const saveProfilePhoto = (photoData) => saveEncryptedItem('profilePhotos', 'profilePhoto', photoData);
-export const loadProfilePhoto = () => loadEncryptedItem('profilePhotos', 'profilePhoto');
+export const saveProfilePhoto = (photoData) => saveData('profilePhotos', photoData);
+export const loadProfilePhoto = async () => {
+  const photoData = await loadData('profilePhotos');
+  return photoData ? photoData : null;
+};
 
-export const saveProfileData = (profileData) => saveEncryptedItem('profileData', 'profile', profileData);
-export const loadProfileData = () => loadEncryptedItem('profileData', 'profile');
+export const saveProfileData = (profileData) => saveData('profileData', profileData);
+export const loadProfileData = () => loadData('profileData');
 
-export const saveCustomSections = (sections) => saveItems('customSections', sections);
-export const loadCustomSections = () => loadItems('customSections');
+export const saveCustomSections = (sections) => saveData('customSections', sections);
+export const loadCustomSections = () => loadData('customSections');
 
-export const deleteCustomSection = (id) => deleteItem('customSections', id);
+export const saveSectionOrder = async (order) => {
+  try {
+    const db = await getDB();
+    await db.transaction('rw', 'sectionOrder', async () => {
+      await db.table('sectionOrder').clear();
+      await db.table('sectionOrder').add({ id: 'sectionOrder', order: encryptData(order) });
+    });
+    return true;
+  } catch (error) {
+    console.error('섹션 순서 저장 중 오류:', error);
+    return false;
+  }
+};
 
-export const saveSectionOrder = (order) => saveEncryptedItem('sectionOrder', 'sectionOrder', order);
-export const loadSectionOrder = () => loadEncryptedItem('sectionOrder', 'sectionOrder');
+export const loadSectionOrder = async () => {
+  try {
+    const db = await getDB();
+    const result = await db.table('sectionOrder').get('sectionOrder');
+    if (result && result.order) {
+      return decryptData(result.order);
+    }
+    return [];
+  } catch (error) {
+    console.error('섹션 순서 로딩 중 오류:', error);
+    return [];
+  }
+};
 
 export const clearDatabase = async () => {
   const db = await getDB();
@@ -89,17 +121,8 @@ export const clearDatabase = async () => {
   
   await db.transaction('rw', stores, async () => {
     for (const store of stores) {
-      if (db[store]) {
-        await db[store].clear();
-      }
+      await db[store].clear();
     }
-  });
-};
-
-export const clearsectionOrder = async () => {
-  const db = await getDB();
-  await db.transaction('rw', 'sectionOrder', async () => {
-    await db.sectionOrder.clear();
   });
 };
 
@@ -114,7 +137,7 @@ export const loadSections = async () => {
     const sections = [
       { id: 'career', type: 'career', title: '경력', items: careers || [] },
       { id: 'education', type: 'education', title: '학력', items: educations || [] },
-      ...customSections.map(section => ({
+      ...(customSections || []).map(section => ({
         id: section.type,
         type: section.type,
         title: getSectionTitle(section.type),
@@ -146,19 +169,28 @@ const getSectionTitle = (type) => {
   return titles[type] || '기타';
 };
 
-export const deleteSection = (id) => deleteItem('sections', id);
+export const deleteSection = async (id) => {
+  try {
+    const db = await getDB();
+    // customSections에서 해당 섹션 삭제
+    const customSections = await loadCustomSections();
+    if (!customSections) return false;
+    
+    const updatedSections = customSections.filter(section => section.id !== id);
+    await saveCustomSections(updatedSections);
 
-export const checksectionOrderStore = async () => {
-  const db = await getDB();
-  if (db.sectionOrder) {
-    const count = await db.sectionOrder.count();
-    const allData = await db.sectionOrder.toArray();
+    // sectionOrder에서 해당 id 제거
+    const sectionOrder = await loadSectionOrder();
+    if (!sectionOrder) return false;
+    
+    const updatedOrder = sectionOrder.filter(sectionId => sectionId !== id);
+    await saveSectionOrder(updatedOrder);
+
+    return true;
+  } catch (error) {
+    console.error('섹션 삭제 중 오류 발생:', error);
+    return false;
   }
-};
-
-export const manualClearsectionOrder = async () => {
-  const db = await getDB();
-  await db.sectionOrder.clear();
 };
 
 export const deleteProfilePhoto = async () => {
@@ -172,101 +204,48 @@ export const deleteProfilePhoto = async () => {
   }
 };
 
-export const loadEncryptedItems = async (storeName) => {
-  const db = await getDB();
-  if (!db[storeName]) return [];
-  const encryptedItems = await db[storeName].toArray();
-  return encryptedItems.map(item => ({
-    id: item.id,
-    value: item.value // 암호화된 상태 그대로 반환
-  }));
-};
-
-export const loadEncryptedProfileData = async () => {
+// 전체 데이터 내보내기
+export const exportAllData = async () => {
   try {
-    const db = await getDB();
-    const result = await db.profileData.get('profile');
-    return result;
+    const allData = {
+      userInfo: await loadUserInfo(),
+      careers: await loadCareers(),
+      educations: await loadEducations(),
+      customSections: await loadCustomSections(),
+      profileData: await loadProfileData(),
+      sectionOrder: await loadSectionOrder()
+    };
+    return encryptData(allData);
   } catch (error) {
-    console.error('Error loading encrypted profile data:', error);
+    console.error('전체 데이터 내보내기 오류:', error);
     return null;
   }
 };
 
-export const loadEncryptedProfilePhoto = async () => {
+// 데이터 가져오기
+export const importData = async (encryptedData) => {
   try {
-    const db = await getDB();
-    const result = await db.profilePhotos.get('profilePhoto');
-    return result;
-  } catch (error) {
-    console.error('Error loading encrypted profile photo:', error);
-    return null;
-  }
-};
+    const decryptedData = decryptData(encryptedData);
+    if (!decryptedData) {
+      throw new Error('데이터 복호화 실패');
+    }
 
-export const loadEncryptedSectionOrder = async () => {
-  try {
     const db = await getDB();
-    const data = await db.sectionOrder.get('sectionOrder');
-    return data ? { key: 'sectionOrder', value: data.order } : null;
-  } catch (error) {
-    console.error('Error loading encrypted section order:', error);
-    return null;
-  }
-};
+    await db.transaction('rw', 
+      ['userInfo', 'careers', 'educations', 'customSections', 'profileData', 'sectionOrder'], 
+      async () => {
+        if (decryptedData.userInfo) await saveUserInfo(decryptedData.userInfo);
+        if (decryptedData.careers) await saveCareers(decryptedData.careers);
+        if (decryptedData.educations) await saveEducations(decryptedData.educations);
+        if (decryptedData.customSections) await saveCustomSections(decryptedData.customSections);
+        if (decryptedData.profileData) await saveProfileData(decryptedData.profileData);
+        if (decryptedData.sectionOrder) await saveSectionOrder(decryptedData.sectionOrder);
+      }
+    );
 
-export const loadEncryptedUserInfo = async () => {
-  try {
-    const db = await getDB();
-    const encryptedItems = await db.userInfo.toArray();
-    return encryptedItems.map(item => ({
-      id: item.id,
-      value: item.value // 암호화된 상태 그대로 반환
-    }));
+    return true;
   } catch (error) {
-    console.error('Error loading encrypted user info:', error);
-    return [];
-  }
-};
-
-export const loadEncryptedCustomSections = async () => {
-  try {
-    const db = await getDB();
-    const encryptedItems = await db.customSections.toArray();
-    return encryptedItems.map(item => ({
-      id: item.id,
-      value: item.value // 암호화된 상태 그대로 반환
-    }));
-  } catch (error) {
-    console.error('Error loading encrypted custom sections:', error);
-    return [];
-  }
-};
-
-export const loadEncryptedCareers = async () => {
-  try {
-    const db = await getDB();
-    const encryptedItems = await db.careers.toArray();
-    return encryptedItems.map(item => ({
-      id: item.id,
-      value: item.value // 암호화된 상태 그대로 반환
-    }));
-  } catch (error) {
-    console.error('Error loading encrypted careers:', error);
-    return [];
-  }
-};
-
-export const loadEncryptedEducations = async () => {
-  try {
-    const db = await getDB();
-    const encryptedItems = await db.educations.toArray();
-    return encryptedItems.map(item => ({
-      id: item.id,
-      value: item.value // 암호화된 상태 그대로 반환
-    }));
-  } catch (error) {
-    console.error('Error loading encrypted educations:', error);
-    return [];
+    console.error('데이터 가져오기 오류:', error);
+    return false;
   }
 };

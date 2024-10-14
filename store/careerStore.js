@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDB, loadEncryptedItems } from '@/utils/indexedDB';
+import { loadCareers as loadCareersFromDB, saveCareers as saveCareersToDB } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import useResumeStore from './resumeStore';
 
@@ -15,7 +15,7 @@ const createInitialCareer = () => ({
 });
 
 const useCareerStore = create((set, get) => ({
-  careers: [],  // 배열로 초기화
+  careers: [],
   status: 'idle',
   error: null,
 
@@ -24,10 +24,10 @@ const useCareerStore = create((set, get) => ({
     try {
       const loadedCareers = await loadCareersFromDB();
       const sortedCareers = loadedCareers
-        .sort((a, b) => a.order - b.order)
-        .map((career, index) => ({ ...career, order: index }));
+        ? loadedCareers.sort((a, b) => a.order - b.order).map((career, index) => ({ ...career, order: index }))
+        : [createInitialCareer()];
       set({ 
-        careers: sortedCareers.length > 0 ? sortedCareers : [createInitialCareer()], 
+        careers: sortedCareers, 
         status: 'success' 
       });
     } catch (error) {
@@ -54,6 +54,7 @@ const useCareerStore = create((set, get) => ({
         career.id === updatedCareer.id ? { ...career, ...updatedCareer } : career
       );
       if (JSON.stringify(newCareers) !== JSON.stringify(state.careers)) {
+        saveCareersToDB(newCareers);
         useResumeStore.getState().updateSection({ id: 'career', type: 'career', items: newCareers });
         return { careers: newCareers };
       }
@@ -83,9 +84,7 @@ const useCareerStore = create((set, get) => ({
     });
   },
 
-  exportCareers: async () => {
-    return await loadEncryptedItems('careers');
-  },
+  // exportCareers 함수 제거
 }));
 
 export default useCareerStore;

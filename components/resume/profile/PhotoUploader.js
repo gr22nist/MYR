@@ -4,7 +4,6 @@ import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
 import imageCompression from 'browser-image-compression';
 import useGlobalStore from '@/store/globalStore';
 import { saveProfilePhoto, deleteProfilePhoto } from '@/utils/indexedDB';
-import { encryptData } from '@/utils/cryptoUtils';
 
 // 컴포넌트 외부로 이동
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -33,7 +32,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
 
   const resizeImage = useCallback((file, maxWidth, maxHeight) => {
     return new Promise((resolve) => {
-      const img = new window.Image();  // 'window.Image'를 사용
+      const img = new window.Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
@@ -80,12 +79,9 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
       
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const imageData = reader.result;  // 전체 data URL을 사용
-        // 중복된 접두사 제거
-        const cleanImageData = imageData.replace(/^data:image\/[a-z]+;base64,/, '');
-        const encryptedImageData = encryptData(cleanImageData);
-        await saveProfilePhoto(encryptedImageData);
-        onImageChange(imageData);  // 암호화되지 않은 원본 data URL 사용
+        const imageData = reader.result;
+        await saveProfilePhoto(imageData);
+        onImageChange(imageData);
         showToast({ message: '이미지가 성공적으로 업로드되었습니다.', type: 'success' });
       };
       reader.readAsDataURL(resizedBlob);
