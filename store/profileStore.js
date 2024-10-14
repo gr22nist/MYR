@@ -26,7 +26,9 @@ const useProfileStore = create((set, get) => ({
         } || { title: '', paragraph: '', imageUrl: null },
         isLoading: false,
       });
+      console.log('설정된 프로필:', get().profile); // 로그 추가
     } catch (error) {
+      console.error('프로필 로딩 중 오류:', error);
       set({ 
         error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
         isLoading: false,
@@ -38,7 +40,10 @@ const useProfileStore = create((set, get) => ({
   updateProfile: async (field, value) => {
     set((state) => {
       const newProfile = { ...state.profile, [field]: value };
-      saveProfileData(newProfile).catch(error => {
+      console.log('프로필 업데이트:', newProfile); // 로그 추가
+      const isProfileEmpty = Object.values(newProfile).every(v => v === '' || v === null);
+      console.log('프로필이 비어있나요?', isProfileEmpty); // 로그 추가
+      saveProfileData(isProfileEmpty ? null : newProfile).catch(error => {
         set({ error: error.message });
       });
       return { profile: newProfile };
@@ -59,13 +64,12 @@ const useProfileStore = create((set, get) => ({
   },
 
   resetProfile: async () => {
-    const resetProfile = { title: '', paragraph: '', imageUrl: null };
     try {
       await Promise.all([
-        saveProfileData(null),
+        saveProfileData(null),  // null을 저장하여 완전히 삭제
         deleteProfilePhoto()
       ]);
-      set({ profile: resetProfile, error: null });
+      set({ profile: { title: '', paragraph: '', imageUrl: null }, error: null });
       return true;
     } catch (error) {
       console.error('프로필 리셋 중 오류:', error);

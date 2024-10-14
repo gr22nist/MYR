@@ -11,7 +11,7 @@ import {
   initializeSectionOrder
 } from '@/utils/indexedDB';
 
-export const resetAllStores = async (resetResumeStore, resetCustomStore, resetUserInfoStore, resetProfileStore) => {
+export const resetAllStores = async (resetResumeStore, resetCustomStore, resetUserInfoStore, resetProfileStore, resetSectionOrderStore) => {
   try {
     // 데이터베이스 완전 초기화
     await clearDatabase();
@@ -21,7 +21,8 @@ export const resetAllStores = async (resetResumeStore, resetCustomStore, resetUs
       resetResumeStore(),
       resetCustomStore(),
       resetUserInfoStore(),
-      resetProfileStore()
+      resetProfileStore(),
+      resetSectionOrderStore()
     ]);
 
     // 기본 데이터 설정

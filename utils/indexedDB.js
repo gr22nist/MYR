@@ -7,6 +7,10 @@ const saveData = async (storeName, data) => {
     const db = await getDB();
     await db.transaction('rw', storeName, async () => {
       await db.table(storeName).clear();
+      if (data === null) {
+        // 데이터가 null이면 저장하지 않고 종료
+        return;
+      }
       if (Array.isArray(data)) {
         const encryptedItems = data.map(item => ({
           id: item.id,
@@ -81,18 +85,27 @@ export const loadProfilePhoto = async () => {
   return photoData ? photoData : null;
 };
 
-export const saveProfileData = (profileData) => saveData('profileData', profileData);
-export const loadProfileData = () => loadData('profileData');
+export const saveProfileData = (profileData) => {
+  console.log('저장할 프로필 데이터:', profileData); // 로그 추가
+  return saveData('profileData', profileData);
+};
+
+export const loadProfileData = async () => {
+  const data = await loadData('profileData');
+  console.log('로드된 프로필 데이터:', data); // 로그 추가
+  return data;
+};
 
 export const saveCustomSections = (sections) => saveData('customSections', sections);
 export const loadCustomSections = () => loadData('customSections');
 
 export const saveSectionOrder = async (order) => {
+  console.log('저장할 섹션 순서:', order); // 로그 추가
   try {
     const db = await getDB();
     await db.transaction('rw', 'sectionOrder', async () => {
       await db.table('sectionOrder').clear();
-      await db.table('sectionOrder').add({ id: 'sectionOrder', order: encryptData(order) });
+      await db.table('sectionOrder').put({ id: 'sectionOrder', order: encryptData(order) });
     });
     return true;
   } catch (error) {
@@ -106,7 +119,9 @@ export const loadSectionOrder = async () => {
     const db = await getDB();
     const result = await db.table('sectionOrder').get('sectionOrder');
     if (result && result.order) {
-      return decryptData(result.order);
+      const decryptedOrder = decryptData(result.order);
+      console.log('로드된 섹션 순서:', decryptedOrder); // 로그 추가
+      return decryptedOrder;
     }
     return [];
   } catch (error) {
@@ -193,7 +208,8 @@ export const deleteSection = async (id) => {
     const sectionOrder = await loadSectionOrder();
     if (!sectionOrder) return false;
     
-    const updatedOrder = sectionOrder.filter(sectionId => sectionId !== id);
+    const updatedOrder = sectionOrder.filter(sectionId => sectionId !== id && sectionId !== 'career' && sectionId !== 'education');
+    updatedOrder.unshift('career', 'education');
     await saveSectionOrder(updatedOrder);
 
     return true;
@@ -262,4 +278,12 @@ export const importData = async (encryptedData) => {
 
 // profileData와 sectionOrder를 위한 명시적 초기화 함수 추가
 export const initializeProfileData = () => saveData('profileData', null);
-export const initializeSectionOrder = () => saveData('sectionOrder', ['career', 'education']);
+export const initializeSectionOrder = async () => {
+  try {
+    await saveSectionOrder(['career', 'education']);
+    return true;
+  } catch (error) {
+    console.error('섹션 순서 초기화 중 오류:', error);
+    return false;
+  }
+};

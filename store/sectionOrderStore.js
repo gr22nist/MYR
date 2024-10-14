@@ -1,11 +1,14 @@
 import { create } from 'zustand';
 import { loadSectionOrder as loadSectionOrderFromDB, saveSectionOrder } from '@/utils/indexedDB';
 
-const useSectionOrderStore = create((set, get) => ({
-  sectionOrder: ['career', 'education'],  // 기본값 설정
+const initialState = {
+  sectionOrder: ['career', 'education'],
   status: 'idle',
   error: null,
+};
 
+const useSectionOrderStore = create((set, get) => ({
+  ...initialState,
   loadSectionOrder: async () => {
     set({ status: 'loading' });
     try {
@@ -55,8 +58,25 @@ const useSectionOrderStore = create((set, get) => ({
 
   removeSectionFromOrder: async (sectionId) => {
     const { sectionOrder } = get();
-    const newOrder = sectionOrder.filter(id => id !== sectionId);
-    await get().updateSectionOrder(newOrder);
+    console.log('제거 전 섹션 순서:', sectionOrder); // 로그 추가
+    if (sectionId !== 'career' && sectionId !== 'education') {
+      const newOrder = sectionOrder.filter(id => id !== sectionId);
+      console.log('제거 후 섹션 순서:', newOrder); // 로그 추가
+      await get().updateSectionOrder(newOrder);
+    }
+  },
+
+  resetSectionOrder: async () => {
+    const defaultOrder = ['career', 'education'];
+    try {
+      await saveSectionOrder(defaultOrder);
+      set({ sectionOrder: defaultOrder, status: 'success', error: null });
+      return true;
+    } catch (error) {
+      console.error('섹션 순서 리셋 중 오류:', error);
+      set({ error: '섹션 순서를 리셋하는 데 실패했습니다.', status: 'error' });
+      return false;
+    }
   },
 }));
 
