@@ -79,10 +79,15 @@ export const loadUserInfo = async () => {
   return items ? items.sort((a, b) => a.order - b.order) : [];
 };
 
-export const saveProfilePhoto = (photoData) => saveData('profilePhotos', photoData);
+export const saveProfilePhoto = async (photoData) => {
+  console.log('저장할 프로필 사진 데이터:', photoData.substring(0, 50) + '...');
+  return saveData('profilePhotos', photoData);
+};
+
 export const loadProfilePhoto = async () => {
   const photoData = await loadData('profilePhotos');
-  return photoData ? photoData : null;
+  console.log('로드된 프로필 사진 데이터:', photoData ? '존재함' : '없음');
+  return photoData;
 };
 
 export const saveProfileData = (profileData) => {
@@ -227,15 +232,46 @@ export const deleteProfilePhoto = async () => {
 // 전체 데이터 내보내기
 export const exportAllData = async () => {
   try {
-    const allData = {
-      userInfo: await loadUserInfo(),
-      careers: await loadCareers(),
-      educations: await loadEducations(),
-      customSections: await loadCustomSections(),
-      profileData: await loadProfileData(),
-      sectionOrder: await loadSectionOrder()
+    const db = await getDB();
+    const profilePhoto = await loadProfilePhoto();
+    console.log('내보내기 시 프로필 사진 데이터:', profilePhoto ? '존재함' : '없음');
+    
+    const encryptedData = {
+      userInfo: await db.userInfo.toArray(),
+      careers: await db.careers.toArray(),
+      educations: await db.educations.toArray(),
+      customSections: {
+        customSections: await db.customSections.toArray(),
+        sectionOrder: await db.sectionOrder.get('sectionOrder')
+      },
+      profile: {
+        profileData: await db.profileData.get('profileData'),
+        profilePhoto: profilePhoto ? { key: 'profilePhoto', value: profilePhoto } : null
+      }
     };
-    return encryptData(allData);
+
+    // null이나 빈 배열인 경우 해당 키를 제거
+    Object.keys(encryptedData).forEach(key => {
+      if (encryptedData[key] === null || (Array.isArray(encryptedData[key]) && encryptedData[key].length === 0)) {
+        delete encryptedData[key];
+      }
+    });
+
+    // profile 객체 내부의 null 값 제거
+    if (encryptedData.profile) {
+      Object.keys(encryptedData.profile).forEach(key => {
+        if (encryptedData.profile[key] === null) {
+          delete encryptedData.profile[key];
+        }
+      });
+      // profile 객체가 비어있으면 제거
+      if (Object.keys(encryptedData.profile).length === 0) {
+        delete encryptedData.profile;
+      }
+    }
+
+    console.log('최종 내보내기 데이터:', JSON.stringify(encryptedData, null, 2));
+    return encryptedData;
   } catch (error) {
     console.error('전체 데이터 내보내기 오류:', error);
     return null;
@@ -245,21 +281,42 @@ export const exportAllData = async () => {
 // 데이터 가져오기
 export const importData = async (encryptedData) => {
   try {
-    const decryptedData = decryptData(encryptedData);
-    if (!decryptedData) {
-      throw new Error('데이터 복호화 실패');
-    }
-
     const db = await getDB();
     await db.transaction('rw', 
-      ['userInfo', 'careers', 'educations', 'customSections', 'profileData', 'sectionOrder'], 
+      ['userInfo', 'careers', 'educations', 'customSections', 'profileData', 'sectionOrder', 'profilePhotos'], 
       async () => {
-        if (decryptedData.userInfo) await saveUserInfo(decryptedData.userInfo);
-        if (decryptedData.careers) await saveCareers(decryptedData.careers);
-        if (decryptedData.educations) await saveEducations(decryptedData.educations);
-        if (decryptedData.customSections) await saveCustomSections(decryptedData.customSections);
-        if (decryptedData.profileData) await saveProfileData(decryptedData.profileData);
-        if (decryptedData.sectionOrder) await saveSectionOrder(decryptedData.sectionOrder);
+        // userInfo, careers, educations 처리
+        for (const store of ['userInfo', 'careers', 'educations']) {
+          await db[store].clear();
+          if (Array.isArray(encryptedData[store])) {
+            for (const item of encryptedData[store]) {
+              await db[store].add(item);
+            }
+          }
+        }
+
+        // customSections 처리
+        if (encryptedData.customSections) {
+          await db.customSections.clear();
+          if (Array.isArray(encryptedData.customSections.customSections)) {
+            for (const item of encryptedData.customSections.customSections) {
+              await db.customSections.add(item);
+            }
+          }
+          if (encryptedData.customSections.sectionOrder) {
+            await db.sectionOrder.put(encryptedData.customSections.sectionOrder);
+          }
+        }
+
+        // profile 처리
+        if (encryptedData.profile) {
+          if (encryptedData.profile.profileData) {
+            await db.profileData.put(encryptedData.profile.profileData);
+          }
+          if (encryptedData.profile.profilePhoto) {
+            await saveProfilePhoto(encryptedData.profile.profilePhoto.value);
+          }
+        }
       }
     );
 

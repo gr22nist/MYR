@@ -18,6 +18,10 @@ const useProfileStore = create((set, get) => ({
       
       const profileData = await loadProfileData();
       const profilePhoto = await loadProfilePhoto();
+      
+      console.log('프로필 데이터 로드:', profileData);
+      console.log('프로필 사진 로드:', profilePhoto ? '존재함' : '없음');
+      console.log('프로필 사진 데이터:', profilePhoto ? profilePhoto.substring(0, 50) + '...' : 'null');
 
       set({ 
         profile: {

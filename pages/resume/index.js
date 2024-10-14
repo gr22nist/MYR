@@ -32,6 +32,7 @@ import useCareerStore from '@/store/careerStore';
 import useEducationStore from '@/store/educationStore';
 import useUserInfoStore from '@/store/userInfoStore';
 import useSectionOrderStore from '@/store/sectionOrderStore';
+import { exportAllData, importData } from '@/utils/indexedDB';
 
 const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
   ssr: false,
@@ -146,27 +147,10 @@ const Resume = () => {
 
   const handleExport = async () => {
     try {
-      // console.log('내보내기 함수 시작');
-      const profileData = await exportProfile();
-      const careersData = await exportCareers();
-      const educationsData = await exportEducations();
-      const customSectionsData = await exportCustomSections();
-      const userInfoData = await exportUserInfo();
-
-      const exportData = {
-        profile: profileData,
-        careers: careersData,
-        educations: educationsData,
-        customSections: customSectionsData,
-        userInfo: userInfoData,
-      };
-
-      // console.log('내보내기 데이터:', exportData);
-
-      if (Object.keys(exportData).length === 0) {
+      const exportData = await exportAllData();
+      if (!exportData) {
         throw new Error('내보낼 데이터가 없습니다.');
       }
-
       return exportData;
     } catch (error) {
       console.error('데이터 내보내기 준비 중 오류 발생:', error);
@@ -177,20 +161,9 @@ const Resume = () => {
 
   const handleImport = async (importedData) => {
     try {
-      await saveProfileData(importedData.profile);
-      await saveProfilePhoto(importedData.profilePhoto);
-      await saveCareers(importedData.careers);
-      await saveEducations(importedData.educations);
-      if (importedData.customSections) {
-        await saveCustomSections(importedData.customSections.customSections);
-        await saveSectionOrder(importedData.customSections.sectionOrder);
-      }
-      await saveUserInfo(importedData.userInfo);
-
+      await importData(importedData);
       // 데이터 다시 로드
       loadAllSections();
-      // loadProfile 함수가 없다면 이 줄을 제거하거나 적절한 함수로 대체하세요
-      // loadProfile();
     } catch (error) {
       console.error('데이터 가져오기 실패:', error);
       throw error;
