@@ -86,21 +86,17 @@ export const loadProfilePhoto = async () => {
 };
 
 export const saveProfileData = (profileData) => {
-  console.log('저장할 프로필 데이터:', profileData); // 로그 추가
   return saveData('profileData', profileData);
 };
 
 export const loadProfileData = async () => {
-  const data = await loadData('profileData');
-  console.log('로드된 프로필 데이터:', data); // 로그 추가
-  return data;
+  return await loadData('profileData');
 };
 
 export const saveCustomSections = (sections) => saveData('customSections', sections);
 export const loadCustomSections = () => loadData('customSections');
 
 export const saveSectionOrder = async (order) => {
-  console.log('저장할 섹션 순서:', order); // 로그 추가
   try {
     const db = await getDB();
     await db.transaction('rw', 'sectionOrder', async () => {
@@ -119,9 +115,7 @@ export const loadSectionOrder = async () => {
     const db = await getDB();
     const result = await db.table('sectionOrder').get('sectionOrder');
     if (result && result.order) {
-      const decryptedOrder = decryptData(result.order);
-      console.log('로드된 섹션 순서:', decryptedOrder); // 로그 추가
-      return decryptedOrder;
+      return decryptData(result.order);
     }
     return [];
   } catch (error) {

@@ -26,7 +26,6 @@ const useProfileStore = create((set, get) => ({
         } || { title: '', paragraph: '', imageUrl: null },
         isLoading: false,
       });
-      console.log('설정된 프로필:', get().profile); // 로그 추가
     } catch (error) {
       console.error('프로필 로딩 중 오류:', error);
       set({ 
@@ -40,9 +39,7 @@ const useProfileStore = create((set, get) => ({
   updateProfile: async (field, value) => {
     set((state) => {
       const newProfile = { ...state.profile, [field]: value };
-      console.log('프로필 업데이트:', newProfile); // 로그 추가
       const isProfileEmpty = Object.values(newProfile).every(v => v === '' || v === null);
-      console.log('프로필이 비어있나요?', isProfileEmpty); // 로그 추가
       saveProfileData(isProfileEmpty ? null : newProfile).catch(error => {
         set({ error: error.message });
       });
