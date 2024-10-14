@@ -1,9 +1,11 @@
 import React from 'react';
+import useGlobalStore from '@/store/globalStore';
 
 const ExportAction = ({ onExport, dataType }) => {
+  const { showToast } = useGlobalStore();
+
   const handleExport = async () => {
     try {
-      console.log('내보내기 시작');
       const exportData = await onExport();
       const dataStr = JSON.stringify(exportData);
       const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -12,9 +14,10 @@ const ExportAction = ({ onExport, dataType }) => {
       linkElement.setAttribute('href', dataUri);
       linkElement.setAttribute('download', exportFileDefaultName);
       linkElement.click();
+      showToast({ message: `${dataType} 데이터를 성공적으로 내보냈습니다.`, type: 'success' });
     } catch (error) {
       console.error('내보내기 중 오류 발생:', error);
-      alert('내보내기에 실패했습니다.');
+      showToast({ message: '내보내기에 실패했습니다.', type: 'error' });
     }
   };
 

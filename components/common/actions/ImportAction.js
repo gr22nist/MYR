@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import ModalComponent from '@/components/common/ModalComponent';
+import useGlobalStore from '@/store/globalStore';
 
 const ImportAction = ({ onImport, dataType }) => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const { showToast } = useGlobalStore();
 
   const handleImport = (event) => {
     const file = event.target.files[0];
@@ -13,10 +15,10 @@ const ImportAction = ({ onImport, dataType }) => {
         const importedData = JSON.parse(e.target.result);
         await onImport(importedData);
         setIsImportModalOpen(false);
-        alert(`${dataType} 데이터를 성공적으로 가져왔습니다.`);
+        showToast({ message: `${dataType} 데이터를 성공적으로 가져왔습니다.`, type: 'success' });
       } catch (error) {
         console.error('파일 파싱 중 오류 발생:', error);
-        alert('올바른 JSON 파일이 아닙니다. 다시 시도해 주세요.');
+        showToast({ message: '올바른 JSON 파일이 아닙니다. 다시 시도해 주세요.', type: 'error' });
       }
     };
 

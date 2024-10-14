@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { createBaseActions } from '@/utils/storeUtils';
 import { loadUserInfo as loadUserInfoFromDB, saveUserInfo as saveUserInfoToDB } from '@/utils/indexedDB';
 import { generateUUID } from '@/utils/uuid';
 import { typeToKorean } from '@/constants/resumeConstants';
@@ -8,7 +7,18 @@ const useUserInfoStore = create((set, get) => ({
   items: [],
   status: 'idle',
   error: null,
-  ...createBaseActions('items', loadUserInfoFromDB, saveUserInfoToDB),
+
+  loadUserInfo: async () => {
+    set({ status: 'loading' });
+    try {
+      const loadedItems = await loadUserInfoFromDB();
+      const sortedItems = loadedItems.sort((a, b) => a.order - b.order);
+      set({ items: sortedItems, status: 'success' });
+    } catch (error) {
+      console.error('Error loading user info:', error);
+      set({ error: error.message, status: 'error' });
+    }
+  },
 
   addUserInfo: (newItem) => {
     set(state => {
@@ -62,24 +72,10 @@ const useUserInfoStore = create((set, get) => ({
     });
   },
 
-  loadUserInfo: async () => {
-    set({ status: 'loading' });
-    try {
-      const loadedItems = await loadUserInfoFromDB();
-      const sortedItems = loadedItems.sort((a, b) => a.order - b.order);
-      set({ items: sortedItems, status: 'success' });
-    } catch (error) {
-      console.error('Error loading user info in store:', error);
-      set({ error: error.message, status: 'error' });
-    }
-  },
-
   saveUserInfo: () => {
     const { items } = get();
     saveUserInfoToDB(items);
   },
-
-  // exportUserInfo 함수 제거
 }));
 
 export default useUserInfoStore;
