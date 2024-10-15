@@ -23,7 +23,6 @@ const ResumePreview = ({ resumeData }) => {
   console.log('Raw resumeData:', resumeData);
 
   const decryptSection = (section) => {
-    console.log('Original section data:', section);
     if (Array.isArray(section)) {
       return section.map((item) => ({
         ...item,
@@ -48,7 +47,6 @@ const ResumePreview = ({ resumeData }) => {
 
   const renderSection = (section) => {
     const decryptedData = decryptSection(section.data);
-    console.log('Decrypted data for section:', section.type, decryptedData);
 
     switch (section.type) {
       case 'profile':
@@ -80,8 +78,6 @@ const ResumePreview = ({ resumeData }) => {
             <h2 className="section-title">기본 정보</h2>
             <div className="user-info-grid">
               {decryptedData.map((info, index) => {
-                console.log(`UserInfo item ${index}:`, info);
-                
                 let displayValue, displayType;
                 
                 if (typeof info.value === 'object' && info.value !== null) {
@@ -96,12 +92,10 @@ const ResumePreview = ({ resumeData }) => {
                   displayType = info.displayType || info.type;
                   displayValue = info.value;
                 }
-                
+
                 if (typeof displayValue === 'object' && displayValue !== null) {
                   displayValue = displayValue.value || JSON.stringify(displayValue);
                 }
-
-                console.log(`Rendered item ${index}:`, { displayType, displayValue });
 
                 return (
                   <div key={index} className="user-info-item flex flex-col">
@@ -117,28 +111,34 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'careers':
         return (
-          <div key="careers">
-            <h2>경력</h2>
+          <div key="careers" className="careers-section">
+            <h2 className="section-title">경력</h2>
             {decryptedData.map((career, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={index}>
-                <p>{career.value?.company || '회사명 없음'}</p>
-                <p>{career.value?.position || '직책 없음'}</p>
-                <div>{renderWithLineBreaks(career.value?.description)}</div>
+              <div key={index} className="career-item">
+                <h3 className="company-name">{career.value?.companyName || '회사명 없음'}</h3>
+                <p className="position">{career.value?.position || '직책 없음'}</p>
+                <p className="date-range">
+                  {career.value?.startDate || '시작일 없음'} - {career.value?.isCurrent ? '현재' : (career.value?.endDate || '종료일 없음')}
+                </p>
+                <div className="main-tasks">
+                  {renderWithLineBreaks(career.value?.mainTask || '주요 업무 내용 없음')}
+                </div>
               </div>
             ))}
           </div>
         );
       case 'educations':
         return (
-          <div key="educations">
-            <h2>학력</h2>
+          <div key="educations" className="educations-section">
+            <h2 className="section-title">학력</h2>
             {decryptedData.map((education, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={index}>
-                <p>{education.value?.school || '학교명 없음'}</p>
-                <p>{education.value?.major || '전공 없음'}</p>
-                <div>{renderWithLineBreaks(education.value?.description)}</div>
+              <div key={index} className="education-item">
+                <h3 className="school-name">{education.value?.schoolName || '학교명 없음'}</h3>
+                <p className="major">{education.value?.major || '전공 없음'}</p>
+                <p className="date-range">
+                  {education.value?.startDate || '시작일 없음'} - {education.value?.isCurrent ? '현재' : (education.value?.endDate || '종료일 없음')}
+                </p>
+                <p className="graduation-status">{education.value?.graduationStatus || '졸업 상태 없음'}</p>
               </div>
             ))}
           </div>
