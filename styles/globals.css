@@ -118,7 +118,7 @@
     @apply group-hover:opacity-0 transition-opacity duration-300;
   }
 
-  /* 버튼 텍스트 */
+  /* 버튼 텍��트 */
   .btn-text {
     @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center lg:text-sm text-xs;
   }
@@ -232,3 +232,18 @@
     @apply w-full flex flex-col gap-2
   }
 
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #resume-preview, #resume-preview * {
+      visibility: visible;
+    }
+    #resume-preview {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { btn, quickBtns } from '@/styles/constLayout';
 import { ResetBtn, FoldAllBtn, ExpandAllBtn } from '@/components/icons/IconSet';
 
@@ -26,6 +27,13 @@ const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => 
           초기화
         </span>
       </button>
+      <Link href="/resume/preview" legacyBehavior >
+        <a className={`${btn.common} ${btn.preview}`}>
+          <span className={btn.text}>
+            미리보기
+          </span>
+        </a>
+      </Link>
     </div>
   );
 };

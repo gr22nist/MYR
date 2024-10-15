@@ -80,13 +80,11 @@ export const loadUserInfo = async () => {
 };
 
 export const saveProfilePhoto = async (photoData) => {
-  console.log('저장할 프로필 사진 데이터:', photoData.substring(0, 50) + '...');
   return saveData('profilePhotos', photoData);
 };
 
 export const loadProfilePhoto = async () => {
   const photoData = await loadData('profilePhotos');
-  console.log('로드된 프로필 사진 데이터:', photoData ? '존재함' : '없음');
   return photoData;
 };
 
@@ -234,7 +232,6 @@ export const exportAllData = async () => {
   try {
     const db = await getDB();
     const profilePhoto = await loadProfilePhoto();
-    console.log('내보내기 시 프로필 사진 데이터:', profilePhoto ? '존재함' : '없음');
     
     const encryptedData = {
       userInfo: await db.userInfo.toArray(),
@@ -270,7 +267,6 @@ export const exportAllData = async () => {
       }
     }
 
-    console.log('최종 내보내기 데이터:', JSON.stringify(encryptedData, null, 2));
     return encryptedData;
   } catch (error) {
     console.error('전체 데이터 내보내기 오류:', error);
