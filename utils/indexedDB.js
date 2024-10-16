@@ -96,8 +96,20 @@ export const loadProfileData = async () => {
   return await loadData('profileData');
 };
 
-export const saveCustomSections = (sections) => saveData('customSections', sections);
-export const loadCustomSections = () => loadData('customSections');
+export const saveCustomSections = async (sections) => {
+  return saveData('customSections', sections.map(section => ({
+    ...section,
+    showQR: section.showQR || false
+  })));
+};
+
+export const loadCustomSections = async () => {
+  const sections = await loadData('customSections');
+  return sections ? sections.map(section => ({
+    ...section,
+    showQR: section.showQR || false
+  })) : [];
+};
 
 export const saveSectionOrder = async (order) => {
   try {
@@ -219,7 +231,7 @@ export const deleteSection = async (id) => {
 export const deleteProfilePhoto = async () => {
   const db = await getDB();
   try {
-    await db.profilePhotos.delete('profilePhoto');
+    await db.profilePhotos.clear();
     return true;
   } catch (error) {
     console.error('프로필 사진 삭제 중 오류 발생:', error);

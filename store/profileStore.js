@@ -18,10 +18,6 @@ const useProfileStore = create((set, get) => ({
       
       const profileData = await loadProfileData();
       const profilePhoto = await loadProfilePhoto();
-      
-      console.log('프로필 데이터 로드:', profileData);
-      console.log('프로필 사진 로드:', profilePhoto ? '존재함' : '없음');
-      console.log('프로필 사진 데이터:', profilePhoto ? profilePhoto.substring(0, 50) + '...' : 'null');
 
       set({ 
         profile: {
@@ -55,12 +51,14 @@ const useProfileStore = create((set, get) => ({
     set((state) => ({
       profile: { ...state.profile, imageUrl: imageData }
     }));
-    if (imageData) {
-      try {
+    try {
+      if (imageData) {
         await saveProfilePhoto(imageData);
-      } catch (error) {
-        set({ error: error.message });
+      } else {
+        await deleteProfilePhoto();
       }
+    } catch (error) {
+      set({ error: error.message });
     }
   },
 

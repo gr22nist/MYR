@@ -55,7 +55,6 @@ const Profile = () => {
         ref={textareaRef}
         className='profile-text-area-paragraph flex self-center'
         value={profile.paragraph || ''}
-				rows={3}
         onChange={(e) => {
           handleChange('paragraph', e.target.value);
           autoResize();
