@@ -33,6 +33,10 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
     onSectionChange(updatedSection);
   }, [updateCustomSection, onSectionChange, section.id]);
 
+  const handleShowQRChange = useCallback((showQR) => {
+    handleChange({ ...section, showQR });
+  }, [handleChange, section]);
+
   const isCustomType = section.type === CUSTOM_SECTIONS.type;
 
   const renderTitle = () => {
@@ -70,6 +74,8 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
           section={section}
           onChange={handleChange}
           isCustomType={isCustomType}
+          isEditing={isExpanded}
+          onShowQRChange={handleShowQRChange}
         />
       </AccordionSection>
     </div>

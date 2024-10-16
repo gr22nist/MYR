@@ -3,7 +3,7 @@ import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import LinkItems from './LinkItems';
 import { PLACEHOLDERS } from '@/constants/placeHolders';
 
-const CustomSectionItem = ({ section, onChange }) => {
+const CustomSectionItem = ({ section, onChange, isEditing }) => {
   const handleChange = (field, value) => {
     onChange({ ...section, [field]: value });
   };
@@ -13,7 +13,8 @@ const CustomSectionItem = ({ section, onChange }) => {
       <div>
         <LinkItems
           links={section.links || []}
-          onChange={(newLinks) => handleChange('links', newLinks)}
+          onChange={(newData) => onChange({ ...section, ...newData })}
+          isEditing={isEditing}
         />
       </div>
     );
@@ -21,13 +22,17 @@ const CustomSectionItem = ({ section, onChange }) => {
 
   return (
     <div>
-      <FloatingLabelTextarea
-        label="내용"
-        value={section.content || ''}
-        onChange={(e) => handleChange('content', e.target.value)}
-        placeholder={PLACEHOLDERS[section.type] || PLACEHOLDERS.default}
-        spellCheck="false"
-      />
+      {isEditing ? (
+        <FloatingLabelTextarea
+          label="내용"
+          value={section.content || ''}
+          onChange={(e) => handleChange('content', e.target.value)}
+          placeholder={PLACEHOLDERS[section.type] || PLACEHOLDERS.default}
+          spellCheck="false"
+        />
+      ) : (
+        <div>{section.content}</div>
+      )}
     </div>
   );
 };
