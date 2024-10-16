@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { decryptData } from '@/utils/cryptoUtils';
 import Image from 'next/image';
-import { Fragment } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 
 
 const renderWithLineBreaks = (text) => {
@@ -34,6 +34,15 @@ const ResumePreview = ({ resumeData }) => {
       Object.keys(section).forEach((key) => {
         if (key === 'profilePhoto') {
           decryptedSection[key] = section[key];
+        } else if (key === 'value' && typeof section[key] === 'string') {
+          try {
+            const decryptedValue = decryptData(section[key]);
+            // 복호화된 값이 이미 객체인지 확인
+            decryptedSection[key] = typeof decryptedValue === 'object' ? decryptedValue : JSON.parse(decryptedValue);
+          } catch (error) {
+            console.error('Failed to parse decrypted data:', error);
+            decryptedSection[key] = decryptData(section[key]);
+          }
         } else if (typeof section[key] === 'object' && section[key] !== null) {
           decryptedSection[key] = section[key].value ? decryptData(section[key].value) : null;
         } else {
@@ -51,7 +60,7 @@ const ResumePreview = ({ resumeData }) => {
     switch (section.type) {
       case 'profile':
         return (
-          <div key="profile" className="profile-container">
+          <div key="profile" className="profile-container pdf-section">
             <div className="profile-title">
               <p className="profile-text-area-title leading-normal">
                 {renderWithLineBreaks(decryptedData.profileData?.title || '')}
@@ -74,7 +83,7 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'userInfo':
         return (
-          <div key="userInfo" className="user-info-container">
+          <div key="userInfo" className="user-info-container pdf-section mb-6">
             <h2 className="section-title">기본 정보</h2>
             <div className="user-info-grid">
               {decryptedData.map((info, index) => {
@@ -111,7 +120,7 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'careers':
         return (
-          <div key="careers" className="careers-section">
+          <div key="careers" className="careers-section pdf-section mb-6">
             <h2 className="section-title">경력</h2>
             {decryptedData.map((career, index) => (
               <div key={index} className="career-item">
@@ -129,7 +138,7 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'educations':
         return (
-          <div key="educations" className="educations-section">
+          <div key="educations" className="educations-section pdf-section mb-6">
             <h2 className="section-title">학력</h2>
             {decryptedData.map((education, index) => (
               <div key={index} className="education-item">
@@ -141,6 +150,42 @@ const ResumePreview = ({ resumeData }) => {
                 <p className="graduation-status">{education.value?.graduationStatus || '졸업 상태 없음'}</p>
               </div>
             ))}
+          </div>
+        );
+      case 'custom':
+        console.log('Rendering custom section:', decryptedData);
+        const customData = decryptedData.value;
+        console.log('Custom data:', customData);
+        console.log('Show QR:', customData.showQR);
+        return (
+          <div key={customData.id || decryptedData.id} className="custom-section">
+            <h2 className="section-title">{customData.title || '제목 없음'}</h2>
+            {customData.type === 'link' ? (
+              <div className="link-items-container">
+                {(customData.links || []).map((link, index) => (
+                  <div key={index} className="link-item">
+                    {customData.showQR && (
+                      <QRCodeSVG value={link.link} size={40} />
+                    )}
+                    <div className="link-content">
+                      <span className="link-site-name">{link.siteName}</span>
+                      <a
+                        href={link.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-url"
+                      >
+                        {link.link}
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="custom-content">
+                {renderWithLineBreaks(customData.content || '')}
+              </div>
+            )}
           </div>
         );
       default:

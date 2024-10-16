@@ -83,7 +83,7 @@ const useCustomStore = create((set, get) => ({
   updateCustomSection: (id, updatedSection) => {
     set(state => {
       const updatedSections = state.customSections.map(section =>
-        section.id === id ? { ...section, ...updatedSection } : section
+        section.id === id ? { ...section, ...updatedSection, showQR: updatedSection.showQR } : section
       );
       saveCustomSections(updatedSections).catch(error => {
         console.error('커스텀 섹션 업데이트 중 오류:', error);

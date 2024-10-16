@@ -118,7 +118,7 @@
     @apply group-hover:opacity-0 transition-opacity duration-300;
   }
 
-  /* 버튼 텍��트 */
+  /* 버튼 텍스트 */
   .btn-text {
     @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center lg:text-sm text-xs;
   }
@@ -170,11 +170,11 @@
 
   /* 프로필 스타일 */
   .profile-container {
-    @apply flex flex-col gap-2;
+    @apply flex flex-col gap-4;
   }
 
   .profile-title {
-    @apply relative w-full flex flex-row justify-between items-center gap-4;
+    @apply w-full flex flex-row justify-between items-center gap-4;
   }
 
   .profile-text-area {
@@ -182,13 +182,12 @@
   }
 
   .profile-text-area-title {
-    @apply profile-text-area lg:text-4xl text-3xl font-extrabold h-36 leading-normal;
+    @apply profile-text-area lg:text-4xl text-3xl font-extrabold leading-normal;
   }
 
   .profile-text-area-paragraph {
     @apply profile-text-area lg:text-lg text-base h-auto;
   }
-}
 
   /* 이력서 항목 공통 스타일 */
   .resume-item-container {
@@ -232,80 +231,109 @@
     @apply w-full flex flex-col gap-2
   }
 
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-    #resume-preview, #resume-preview * {
-      visibility: visible;
-    }
-    #resume-preview {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-    }
+  /* 이력서 프리뷰 스타일 */
+  .pdf-section {
+    @apply mb-6;
+    page-break-inside: avoid;
+  }
+
+  .section-title {
+    @apply text-xl font-bold mb-2;
   }
 
   .user-info-container {
-  margin-bottom: 2rem;
+    @apply mb-8;
+  }
+
+  .user-info-grid {
+    @apply grid grid-cols-4 gap-4;
+  }
+
+  .user-info-item {
+    @apply bg-mono-f5 p-4 rounded;
+  }
+
+  .user-info-label {
+    @apply font-bold mr-2;
+  }
+
+  .user-info-value {
+    @apply break-words;
+  }
+
+  .careers-section, .educations-section {
+    @apply mb-8;
+  }
+
+  .career-item, .education-item {
+    @apply mb-6 pb-4 border-b border-gray-200;
+  }
+
+  .company-name, .school-name {
+    @apply font-bold text-lg mb-2;
+  }
+
+  .position, .major {
+    @apply text-gray-700 mb-1;
+  }
+
+  .date-range {
+    @apply italic text-gray-500 mb-2;
+  }
+
+  .main-tasks, .graduation-status {
+    @apply whitespace-pre-wrap;
+  }
+
+  .custom-section {
+    @apply mb-6;
+  }
+
+  .link-items-container {
+    @apply flex gap-8;
+  }
+
+  .link-item {
+    @apply flex gap-4 items-center rounded bg-mono-f5 p-2;
+  }
+
+  .link-content {
+    @apply flex flex-col items-center h-full w-full overflow-hidden;
+  }
+  
+  .link-site-name {
+    @apply font-bold whitespace-nowrap overflow-hidden text-ellipsis;
+  }
+  
+  .link-url {
+    @apply text-blue-500 no-underline;
+  }
+  
+  .link-site-name, .link-url {
+    @apply w-full;
+  }
+
+  .action-buttons {
+    @apply flex justify-between mb-5;
+  }
+
+  .back-btn, .print-btn {
+    @apply px-5 py-2.5 bg-blue-500 text-white border-none rounded cursor-pointer text-base hover:bg-blue-600;
+  }
 }
 
-.section-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.user-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.user-info-item {
-  background-color: #f5f5f5;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-
-.user-info-label {
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
-
-.user-info-value {
-  word-break: break-word;
-}
-
-.careers-section {
-  margin-bottom: 2rem;
-}
-
-.career-item {
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eaeaea;
-}
-
-.company-name {
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-}
-
-.position {
-  color: #555;
-  margin-bottom: 0.25rem;
-}
-
-.date-range {
-  font-style: italic;
-  color: #777;
-  margin-bottom: 0.5rem;
-}
-
-.main-tasks {
-  white-space: pre-wrap;
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body {
+    margin: 1.6cm;
+  }
+  .action-buttons {
+    display: none;
+  }
+  .page-break {
+    page-break-before: always;
+  }
 }

@@ -52,4 +52,13 @@ export const theme = {
     },
   },
 };
-export const plugins = [];
+export const plugins = [
+  function({ addUtilities }) {
+    const newUtilities = {
+      '.page-break-inside-avoid': {
+        'page-break-inside': 'avoid',
+      },
+    }
+    addUtilities(newUtilities, ['responsive', 'hover'])
+  }
+];
