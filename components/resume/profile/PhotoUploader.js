@@ -118,7 +118,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
   return (
     <div className="flex items-center flex-col">
       <div 
-        className="relative w-[110px] h-[144px] overflow-hidden cursor-pointer rounded-md flex items-center justify-center"
+        className="relative w-[108px] h-[144px] overflow-hidden cursor-pointer rounded-md flex items-center justify-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -131,7 +131,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
               style={{ objectFit: 'cover' }}
             />
             {isHovered && (
-              <div className="absolute inset-0 bg-extrabold bg-opacity-50 flex items-center justify-center transition-opacity">
+              <div className="absolute inset-0 bg-mono-11 bg-opacity-50 flex items-center justify-center transition-opacity">
                 <button onClick={handlePhotoDelete}>
                   <PhotoRemove className="w-8 h-8 text-white" />
                 </button>
@@ -144,7 +144,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
               <PhotoAdd className="w-8 h-8 text-mono-99" />
             ) : (
               <p className="text-xs text-center text-mono-99 leading-normal">
-                사진 첨부가 <br />꼭 필요한 곳에만<br />사용해보세요<br /><br /> 110*140
+                사진 첨부가 <br />꼭 필요한 곳에만<br />사용해보세요<br /><br /> 108*144
               </p>
             )}
           </label>

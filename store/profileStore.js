@@ -7,6 +7,7 @@ const useProfileStore = create((set, get) => ({
     title: '',
     paragraph: '',
     imageUrl: null,
+    paragraphHeight: 'auto',
   },
   isLoading: true,
   error: null,
@@ -22,8 +23,9 @@ const useProfileStore = create((set, get) => ({
       set({ 
         profile: {
           ...profileData,
-          imageUrl: profilePhoto
-        } || { title: '', paragraph: '', imageUrl: null },
+          imageUrl: profilePhoto,
+          paragraphHeight: profileData?.paragraphHeight || 'auto',
+        } || { title: '', paragraph: '', imageUrl: null, paragraphHeight: 'auto' },
         isLoading: false,
       });
     } catch (error) {
@@ -31,7 +33,7 @@ const useProfileStore = create((set, get) => ({
       set({ 
         error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
         isLoading: false,
-        profile: { title: '', paragraph: '', imageUrl: null },
+        profile: { title: '', paragraph: '', imageUrl: null, paragraphHeight: 'auto' },
       });
     }
   },
@@ -39,7 +41,7 @@ const useProfileStore = create((set, get) => ({
   updateProfile: async (field, value) => {
     set((state) => {
       const newProfile = { ...state.profile, [field]: value };
-      const isProfileEmpty = Object.values(newProfile).every(v => v === '' || v === null);
+      const isProfileEmpty = Object.values(newProfile).every(v => v === '' || v === null || v === 'auto');
       saveProfileData(isProfileEmpty ? null : newProfile).catch(error => {
         set({ error: error.message });
       });
@@ -68,7 +70,7 @@ const useProfileStore = create((set, get) => ({
         saveProfileData(null),  // null을 저장하여 완전히 삭제
         deleteProfilePhoto()
       ]);
-      set({ profile: { title: '', paragraph: '', imageUrl: null }, error: null });
+      set({ profile: { title: '', paragraph: '', imageUrl: null, paragraphHeight: 'auto' }, error: null });
       return true;
     } catch (error) {
       console.error('프로필 리셋 중 오류:', error);
