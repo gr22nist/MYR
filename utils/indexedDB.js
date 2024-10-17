@@ -63,7 +63,10 @@ const loadData = async (storeName) => {
 export const saveCareers = (careers) => saveData('careers', careers);
 export const loadCareers = () => loadData('careers');
 
-export const saveEducations = (educations) => saveData('educations', educations);
+export const saveEducations = (educations) => saveData('educations', educations.map(edu => ({
+  ...edu,
+  graduationStatus: edu.graduationStatus || ''
+})));
 export const loadEducations = () => loadData('educations');
 
 export const saveUserInfo = (userInfo) => {

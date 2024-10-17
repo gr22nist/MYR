@@ -4,10 +4,11 @@ import { validateAndFormatDate, isValidDateOrder, isValidDateString } from '@/ut
 const ERROR_MESSAGE = '종료일이 시작일보다 빠를 수 없습니다.';
 const INVALID_MONTH_MESSAGE = '유효한 월을 입력하세요.';
 
-export const useDateRange = (initialStartDate = '', initialEndDate = '', initialIsCurrent = false) => {
+export const useDateRange = (initialStartDate, initialEndDate, initialIsCurrent, initialStatus = '') => {
   const [startDate, setStartDate] = useState(initialStartDate);
   const [endDate, setEndDate] = useState(initialEndDate);
   const [isCurrent, setIsCurrent] = useState(initialIsCurrent);
+  const [status, setStatus] = useState(initialStatus);
   const [errorMessage, setErrorMessage] = useState('');
 
   const validateDates = useCallback(() => {
@@ -49,10 +50,12 @@ export const useDateRange = (initialStartDate = '', initialEndDate = '', initial
     startDate,
     endDate,
     isCurrent,
+    status,
     errorMessage,
     handleStartDateChange,
     handleEndDateChange,
     handleCurrentChange,
-    validateDates
+    validateDates,
+    setStatus,
   };
 };

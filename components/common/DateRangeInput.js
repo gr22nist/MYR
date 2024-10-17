@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo } from 'react';
-import { common, combineClasses } from '@/styles/constLayout';
 import { useDateRange } from '@/hooks/useDateRange';
 
 const DateRangeInput = ({ 
@@ -7,6 +6,8 @@ const DateRangeInput = ({
   initialStartDate = '', 
   initialEndDate = '', 
   initialIsCurrent = false,
+  initialStatus = '',
+  showGraduationStatus = false,
 }) => {
   const {
     startDate,
@@ -16,64 +17,77 @@ const DateRangeInput = ({
     handleStartDateChange,
     handleEndDateChange,
     handleCurrentChange,
-    validateDates
-  } = useDateRange(initialStartDate, initialEndDate, initialIsCurrent);
+    validateDates,
+    status,
+    setStatus,
+  } = useDateRange(initialStartDate, initialEndDate, initialIsCurrent, initialStatus);
 
-  const inputClasses = useMemo(() => combineClasses(
-    common.inputBase,
-    common.focusStyle,
-    'max-w-[88px]'
-  ), []);
+  const handleStatusChange = useCallback((newStatus) => {
+    setStatus(newStatus);
+    onChange({ startDate, endDate, isCurrent, status: newStatus });
+  }, [setStatus, onChange, startDate, endDate, isCurrent]);
 
-  const endDateInputClasses = useMemo(() => combineClasses(
-    inputClasses,
-    isCurrent && 'opacity-50'
-  ), [inputClasses, isCurrent]);
+  const statusButtonClass = useCallback((buttonStatus) => 
+    `date-range-status-button ${status === buttonStatus ? 'date-range-status-button-active' : 'date-range-status-button-inactive'}`
+  , [status]);
 
   return (
-    <div>
-      <div className="flex items-center space-x-2">
+    <div className="date-range-container">
+      <div className="date-range-input-group">
         <input
           type="text"
-          className={inputClasses}
+          className="date-range-input"
           value={startDate}
           onChange={(e) => {
             handleStartDateChange(e);
-            onChange({ startDate: e.target.value, endDate, isCurrent });
+            onChange({ startDate: e.target.value, endDate, isCurrent, status });
           }}
           onBlur={validateDates}
           placeholder="202401"
           maxLength="7"
         />
-        <span className="text-gray-500">~</span>
+        <span className="date-range-separator">~</span>
         <input
           type="text"
-          className={endDateInputClasses}
+          className={`date-range-input ${isCurrent ? 'date-range-input-current' : ''}`}
           value={isCurrent ? '현재' : endDate}
           onChange={(e) => {
             handleEndDateChange(e);
-            onChange({ startDate, endDate: e.target.value, isCurrent });
+            onChange({ startDate, endDate: e.target.value, isCurrent, status });
           }}
           onBlur={validateDates}
           placeholder="202401"
           disabled={isCurrent}
           maxLength="7"
         />
-        <label className="flex items-center whitespace-nowrap">
+        <label className="date-range-checkbox-label">
           <input
             type="checkbox"
-            className="form-checkbox mr-1"
+            className="date-range-checkbox"
             checked={isCurrent}
             onChange={(e) => {
               handleCurrentChange(e);
-              onChange({ startDate, endDate, isCurrent: e.target.checked });
+              onChange({ startDate, endDate, isCurrent: e.target.checked, status });
             }}
           />
-          <span className="lg:text-sm text-xs">현재</span>
+          <span className="date-range-checkbox-text">현재</span>
         </label>
       </div>
+      {showGraduationStatus && (
+        <div className="date-range-status-group">
+          {['졸업', '졸업예정', '재학중'].map((statusOption) => (
+            <button 
+              key={statusOption}
+              className={statusButtonClass(statusOption)}
+              onClick={() => handleStatusChange(statusOption)}
+            >
+              {statusOption}
+            </button>
+          ))}
+        </div>
+      )}
       {errorMessage && (
-        <p className="text-red-500 text-xs mt-1">{errorMessage}</p>
+        <p className="date-range-error">{errorMessage}</p>
       )}
     </div>
   );
