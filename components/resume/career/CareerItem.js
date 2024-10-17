@@ -61,6 +61,7 @@ const CareerItem = ({
               initialStartDate={career.startDate || ''}
               initialEndDate={career.endDate || ''}
               initialIsCurrent={career.isCurrent || false}
+              showGraduationStatus={false}
             />
           </div>
           <ActionButtons 

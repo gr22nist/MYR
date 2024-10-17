@@ -18,7 +18,7 @@ const IconButton = ({
 
   return (
     <span 
-      className={`inline-block rounded-full ${sizeClasses[size]} ${className}`}
+      className={`block bg-slate-200 ${sizeClasses[size]} ${className}`}
       {...props}
     >
       <Icon className={`hover:${hoverFill} hover:scale-110 duration-300`} />

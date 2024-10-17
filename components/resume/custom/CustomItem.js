@@ -3,7 +3,7 @@ import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import LinkItems from './LinkItems';
 import { PLACEHOLDERS } from '@/constants/placeHolders';
 
-const CustomSectionItem = ({ section, onChange, isEditing }) => {
+const CustomItem = ({ section, onChange, isEditing }) => {
   const handleChange = (field, value) => {
     onChange({ ...section, [field]: value });
   };
@@ -37,4 +37,4 @@ const CustomSectionItem = ({ section, onChange, isEditing }) => {
   );
 };
 
-export default CustomSectionItem;
+export default CustomItem;

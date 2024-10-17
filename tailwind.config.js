@@ -16,6 +16,10 @@ export const theme = {
       background: "var(--background)",
       foreground: "var(--foreground)",
     },
+    fontSize: {
+      // 기본 폰트 크기와 라인 높이 설정
+      base: ['1rem', { lineHeight: '1.5' }],
+    },
     fontFamily: {
       suit: ["var(--font-suit)"],
       // nanum: ["var(--font-nanum)"],

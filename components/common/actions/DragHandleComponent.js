@@ -20,7 +20,7 @@ const DragHandleComponent = ({ id, isSubItem, dragHandleProps }) => {
       ref={setNodeRef} 
       style={style} 
       {...handleProps} 
-      className="cursor-grab active:cursor-grabbing"
+      className="btn-drag"
     >
       <IconButton 
         icon={isSubItem ? DragHandleBtn : DragHandleLineBtn}

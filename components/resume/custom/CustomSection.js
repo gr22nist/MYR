@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import AccordionSection from '@/components/common/AccordionSection';
-import CustomSectionItem from './CustomItem';
+import CustomItem from './CustomItem';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -70,7 +70,7 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
         onDelete={handleDelete}
         isCustomTitle={isCustomType}
       >
-        <CustomSectionItem
+        <CustomItem
           section={section}
           onChange={handleChange}
           isCustomType={isCustomType}

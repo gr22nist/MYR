@@ -84,7 +84,7 @@ const LinkItems = ({ links, onChange, isEditing }) => {
       )}
       {isEditing && (
         <div className="flex flex-col mb-4">
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2">
             <FloatingLabelInput
               inputRef={siteNameInputRef}
               label="사이트명"
@@ -93,7 +93,6 @@ const LinkItems = ({ links, onChange, isEditing }) => {
               placeholder="사이트 이름을 입력하세요"
               spellCheck="false"
               maxLength="100"
-              className="mr-2"
             />
             <FloatingLabelInput
               inputRef={linkInputRef}
@@ -102,7 +101,6 @@ const LinkItems = ({ links, onChange, isEditing }) => {
               onChange={handleLinkChange}
               placeholder="https://"
               spellCheck="false"
-              className="mr-2"
             />
             <button onClick={handleAddLink} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">추가</button>
           </div>

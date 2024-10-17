@@ -3,7 +3,6 @@ import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
-import { radio } from '@/styles/constLayout';
 import { CSSTransition } from 'react-transition-group';
 import { PLACEHOLDERS } from '@/constants/placeHolders';
 
@@ -16,12 +15,13 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
     onEducationChange({ ...education, [field]: value });
   }, [education, onEducationChange]);
 
-  const handleDateChange = useCallback(({ startDate, endDate, isCurrent }) => {
+  const handleDateChange = useCallback(({ startDate, endDate, isCurrent, status }) => {
     onEducationChange({
       ...education,
       startDate,
       endDate: isCurrent ? '현재' : endDate,
-      isCurrent
+      isCurrent,
+      graduationStatus: status
     });
   }, [education, onEducationChange]);
 
@@ -50,26 +50,13 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
                 tooltipMessage="학교명을 꼭 입력해 주세요."
               />
             </div>
-            <div className="flex items-center gap-4 mt-2 lg:text-sm text-xs">
-              {['졸업', '졸업 예정', '재학중'].map((status) => (
-                <label key={status} className={radio.radioLabel}>
-                  <input
-                    type="radio"
-                    name={radioGroupName}
-                    value={status}
-                    checked={education.graduationStatus === status}
-                    onChange={() => handleChange('graduationStatus', status)}
-                    className={radio.radioInput}
-                  />
-                  <span className={radio.radioText}>{status}</span>
-                </label>
-              ))}
-            </div>
             <DateRangeInput
               onChange={handleDateChange}
               initialStartDate={education.startDate || ''}
               initialEndDate={education.endDate || ''}
               initialIsCurrent={education.isCurrent || false}
+              initialStatus={education.graduationStatus || ''}
+              showGraduationStatus={true}
             />
           </div>
           <ActionButtons 

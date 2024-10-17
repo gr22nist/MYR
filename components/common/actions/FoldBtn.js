@@ -13,15 +13,14 @@ const FoldButton = ({ onClick, isExpanded, ariaLabel = '접기/펼치기' }) => 
   return (
     <button
       onClick={handleClick}
-      className="rounded-full hover:bg-gray-100 transition-colors duration-300"
       aria-label={ariaLabel}
     >
       <IconButton 
-        icon={FoldIcon} 
+        icon={FoldIcon}
         hoverFill="fill-secondary-dark"
         size="small"
         aria-hidden="true"
-        className={`transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+        className={`btn-rotate ${isExpanded ? 'rotate-180 hover:rotate-0' : ''}`}
       />
     </button>
   );

@@ -66,7 +66,7 @@ const ResumePreview = ({ resumeData }) => {
                 {renderWithLineBreaks(decryptedData.profileData?.title || '')}
               </p>
               {decryptedData.profilePhoto && decryptedData.profilePhoto.value && (
-                <div className="w-[110px] h-[144px] relative">
+                <div className="w-[108px] h-[144px] relative">
                   <Image
                     src={decryptedData.profilePhoto.value}
                     alt="Profile"

@@ -14,13 +14,13 @@ const DeleteButton = ({ onClick, isSubItem, ariaLabel = '삭제' }) => {
   return (
     <button
       onClick={handleClick}
-      className="rounded-full hover:bg-gray-200 transition-colors duration-300"
       aria-label={ariaLabel}
     >
       <IconButton 
         icon={isSubItem ? DeleteBtn : DeleteLineBtn}
         size="small"
         aria-hidden="true"
+        className={'btn-rotate'}
       />
     </button>
   );

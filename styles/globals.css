@@ -5,145 +5,111 @@
 @layer base {
   html {
     font-family: var(--font-suit), system-ui, sans-serif;
+    @apply text-base;
   }
 }
 
-
-.section-content {
-  @apply duration-300 ease-in-out overflow-hidden
-}
-
-.dragging-section-header {
-  @apply p-4 rounded-lg font-bold z-50 shadow-lg
-}
-
-.item-enter {
-  @apply opacity-0 overflow-hidden
-}
-
-.item-enter-active {
-  @apply opacity-100 transition-opacity duration-300 ease-in;
-}
-
-.item-exit {
-  @apply opacity-100
-}
-
-.item-exit-active {
-  @apply opacity-0 transition-opacity duration-300 ease-in;
-}
-
-.radioText::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  border: 2px solid #ccc;
-  border-radius: 50%;
-  background-color: #fff;
-  transition: all 0.2s ease;
-}
-
-.radioInput:checked + .radioText::before {
-  border-color: #3b82f6;
-  background-color: #3b82f6;
-}
-
-.radioInput:checked + .radioText::after {
-  content: '';
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #fff;
-}
-
+/* BASE STYLES */
 @layer components {
-  /* 기본 레이아웃 */
-  .base-layout {
+  .layout {
     @apply container max-w-myr mx-auto;
   }
-
-  /* Flex 유틸리티 */
-  .flex-center {
-    @apply flex items-center justify-center;
-  }
-
-  /* 레이아웃 컨테이너 */
-  .layout-container {
-    @apply base-layout px-12 py-16 pb-20 flex flex-col gap-4 justify-center bg-white relative;
-  }
-
-  /* 입력 필드 기본 스타일 */
+  
   .input-base {
-    @apply p-4 transition-colors duration-300 lg:text-sm text-xs rounded-lg;
+    @apply w-full p-4 transition-colors duration-300 rounded-lg;
   }
-
-  /* 포커스 스타일 */
+  
   .focus-style {
-    @apply focus:border-1 focus:border-mono-cc focus:ring-0 focus:outline-none;
+    @apply focus:border-0 focus:ring-0 focus:outline-none;
   }
-
-  /* 플레이스홀더 스타일 */
+  
   .placeholder-style {
     @apply [&::placeholder]:whitespace-pre-wrap [&::placeholder]:leading-normal [&::placeholder]:text-mono-99;
   }
+  
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+}
 
-  /* 버튼 기본 스타일 */
-  .btn-base {
-    @apply flex bg-mono-99 text-white px-4 py-2 rounded w-full group relative overflow-hidden lg:text-sm text-xs;
+/* LAYOUT STYLES */
+@layer components {
+  .layout-container {
+    @apply layout px-16 py-20 flex flex-col gap-10 justify-center bg-white;
+  }
+  
+  .date-input {
+    @apply max-w-20 p-2 transition-colors duration-300 text-sm rounded-lg bg-mono-f5;
+  }
+  
+  .check-box {
+    @apply flex-center whitespace-nowrap;
+  }
+}
+
+/* Profile Styles */
+.profile-container {
+  @apply flex flex-col gap-4;
+}
+
+.profile-title {
+  @apply w-full flex flex-row justify-between items-center gap-4;
+}
+
+.profile-text-area {
+  @apply p-4 bg-mono-f5 text-mono-11 border-0 rounded-lg overflow-hidden w-full resize-none transition-all duration-300 ease-in-out outline-none;
+}
+
+.profile-text-area-title {
+  @apply profile-text-area lg:text-4xl text-3xl font-extrabold leading-normal;
+}
+
+.profile-text-area-paragraph {
+  @apply profile-text-area lg:text-lg text-base;
+}
+
+.profile-text-area:focus {
+  @apply bg-blue-50;
+}
+
+/* COMPONENT STYLES */
+@layer components {
+  /* Button Styles */
+  .btn-common {
+    @apply flex text-mono-66 px-4 py-2 rounded-lg w-full relative overflow-hidden text-sm;
   }
 
-  /* 버튼 변형 */
+  .btn-drag {
+    @apply cursor-grab active:cursor-grabbing;
+  }
+
   .btn-preview {
-    @apply btn-base hover:bg-blue-500;
+    @apply btn-common hover:bg-blue-500;
   }
 
   .btn-reset {
-    @apply btn-base hover:bg-red-500;
+    @apply btn-common hover:bg-red-500;
   }
 
   .btn-fold {
-    @apply btn-base hover:bg-green-500;
+    @apply btn-common hover:bg-green-500;
   }
 
-  /* 버튼 아이콘 */
   .btn-icon {
     @apply group-hover:opacity-0 transition-opacity duration-300;
   }
 
-  /* 버튼 텍스트 */
   .btn-text {
-    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center lg:text-sm text-xs;
+    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-center text-sm;
   }
 
-  /* 라디오 버튼 스타일 */
-  
-  .radio-group {
-    @apply flex items-center space-x-2 mt-2 text-sm;
+  .btn-rotate {
+    @apply transform transition-transform duration-300 hover:rotate-180
   }
 
-  .radio-label {
-    @apply flex items-center cursor-pointer select-none;
-  }
-
-  .radio-input {
-    @apply absolute opacity-0 cursor-pointer;
-  }
-
-  .radio-text {
-    @apply relative pl-6;
-  }
-
-  /* 스켈레톤 로딩 기본 스타일 */
+  /* Skeleton Loading Styles */
   .skeleton-base {
-    @apply mb-5 rounded animate-skeleton bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%];
+    @apply mb-5 rounded-lg animate-skeleton bg-gradient-to-r from-mono-f5 via-mono-cc to-mono-f5 bg-[length:200%_100%];
   }
 
   .skeleton-profile {
@@ -153,66 +119,158 @@
   .skeleton-userinfo {
     @apply h-[100px];
   }
+
   .skeleton-section {
-    @apply h-[150px];
+    @apply h-[300px];
   }
 
-
-
-  /* 날짜 범위 입력 스타일 */
-  .date-range-container {
-    @apply flex items-center space-x-2;
+  /* Floating Label Styles */
+  .floating-label-container {
+    @apply relative;
   }
 
-  .date-range-input {
-    @apply input-base focus-style w-24;
+  .floating-label-input {
+    @apply focus-style input-base w-full p-4 transition-colors duration-300 rounded-lg;
   }
 
-  /* 프로필 스타일 */
-  .profile-container {
-    @apply flex flex-col gap-4;
+  .floating-label-input-focused {
+    @apply bg-blue-50;
   }
 
-  .profile-title {
-    @apply w-full flex flex-row justify-between items-center gap-4;
+  .floating-label-input-core {
+    @apply bg-pink-50 border-pink-200;
   }
 
-  .profile-text-area {
-    @apply p-4 bg-mono-f5 text-mono-11 border-0 rounded-lg overflow-hidden w-full resize-none;
+  .floating-label-input-title {
+    @apply text-xl font-bold;
   }
 
-  .profile-text-area-title {
-    @apply profile-text-area lg:text-4xl text-3xl font-extrabold leading-normal;
+  .floating-label {
+    @apply absolute right-4 transition-all duration-300;
   }
 
-  .profile-text-area-paragraph {
-    @apply profile-text-area lg:text-lg text-base h-auto;
+  .floating-label-active {
+    @apply text-xs top-2;
   }
 
-  /* 이력서 항목 공통 스타일 */
+  .floating-label-inactive {
+    @apply top-7 text-gray-400 opacity-0;
+  }
+
+  .floating-label-title {
+    @apply text-base font-semibold text-gray-900;
+  }
+
+  .floating-label-normal {
+    @apply text-sm text-gray-500;
+  }
+
+  .floating-label-textarea {
+    @apply resize-none;
+  }
+
+  .floating-label-textarea-label {
+    @apply right-2;
+  }
+
+  /* QuickBtns Styles */
+  .quick-btns-container {
+    @apply flex gap-4;
+  }
+
+  /* DateRangeInput Styles */
+  @layer components {
+    .date-range-container {
+      @apply flex gap-2;
+    }
+
+    .date-range-input-group {
+      @apply flex items-center gap-2;
+    }
+
+    .date-range-input {
+      @apply date-input focus-style;
+    }
+
+    .date-range-input-current {
+      @apply opacity-100;
+    }
+
+    .date-range-separator {
+      @apply text-mono-66;
+    }
+
+    .date-range-checkbox-label {
+      @apply flex items-center gap-1 cursor-pointer;
+    }
+
+    .date-range-checkbox {
+      @apply h-5 w-5 rounded-lg border-mono-cc text-mono-66 focus:ring-mono-66;
+    }
+
+    .date-range-checkbox-text {
+      @apply text-sm text-mono-66;
+    }
+
+    .date-range-status-group {
+      @apply flex gap-2;
+    }
+
+    .date-range-status-button {
+      @apply px-2 rounded-full text-xs font-bold;
+    }
+
+    .date-range-status-button-active {
+      @apply bg-secondary-dark text-white;
+    }
+
+    .date-range-status-button-inactive {
+      @apply bg-mono-f5 text-mono-66;
+    }
+
+    .date-range-error {
+      @apply text-red-500 text-xs mt-1;
+    }
+  }
+
+  /* Resume Item Styles */
   .resume-item-container {
-    @apply my-4 flex gap-2;
+    @apply my-4 relative flex flex-col gap-2;
   }
 
   .resume-item-header {
-    @apply flex flex-col items-center justify-between;
+    @apply flex items-center justify-between;
   }
 
-  .resume-input {
-    @apply resume-item-container flex flex-col gap-4 items-center;
+  .resume-item-input-container {
+    @apply flex gap-4 items-center;
   }
 
-  .resume-label {
-    @apply resume-item-container w-label;
+  .resume-item-label-container {
+    @apply w-label;
   }
 
-  /* 네비게이션 바 스타일 */
+  /* Education Item Styles */
+  .education-item-radio-group {
+    @apply flex items-center space-x-2 mt-2 text-sm;
+  }
+
+  /* Custom Input Styles */
+  .custom-input-container {
+    @apply mt-4;
+  }
+
+  .custom-input-button {
+    @apply mt-4 w-full;
+  }
+
+  /* NavBar Styles */
   .nav-container {
     @apply w-full fixed bg-white z-50 shadow-md opacity-90;
   }
 
   .nav-wrap {
-    @apply base-layout flex justify-between py-4 items-center;
+    @apply layout flex justify-between py-4 items-center;
   }
 
   .nav-list {
@@ -226,102 +284,37 @@
   .nav-logo {
     @apply fill-mono-33 hover:fill-primary-light;
   }
-  
-  .custom-container {
-    @apply w-full flex flex-col gap-2
+}
+
+/* UTILITY STYLES */
+@layer utilities {
+  .section-content {
+    @apply duration-300 ease-in-out overflow-hidden;
   }
 
-  /* 이력서 프리뷰 스타일 */
-  .pdf-section {
-    @apply mb-6;
-    page-break-inside: avoid;
+  .dragging-section-header {
+    @apply p-4 rounded-lg font-bold z-50 shadow-lg;
   }
 
-  .section-title {
-    @apply text-xl font-bold mb-2;
+  .item-enter {
+    @apply opacity-0 overflow-hidden;
   }
 
-  .user-info-container {
-    @apply mb-8;
+  .item-enter-active {
+    @apply opacity-100 transition-opacity duration-300 ease-in;
   }
 
-  .user-info-grid {
-    @apply grid grid-cols-4 gap-4;
+  .item-exit {
+    @apply opacity-100;
   }
 
-  .user-info-item {
-    @apply bg-mono-f5 p-4 rounded;
-  }
-
-  .user-info-label {
-    @apply font-bold mr-2;
-  }
-
-  .user-info-value {
-    @apply break-words;
-  }
-
-  .careers-section, .educations-section {
-    @apply mb-8;
-  }
-
-  .career-item, .education-item {
-    @apply mb-6 pb-4 border-b border-gray-200;
-  }
-
-  .company-name, .school-name {
-    @apply font-bold text-lg mb-2;
-  }
-
-  .position, .major {
-    @apply text-gray-700 mb-1;
-  }
-
-  .date-range {
-    @apply italic text-gray-500 mb-2;
-  }
-
-  .main-tasks, .graduation-status {
-    @apply whitespace-pre-wrap;
-  }
-
-  .custom-section {
-    @apply mb-6;
-  }
-
-  .link-items-container {
-    @apply flex gap-8;
-  }
-
-  .link-item {
-    @apply flex gap-4 items-center rounded bg-mono-f5 p-2;
-  }
-
-  .link-content {
-    @apply flex flex-col items-center h-full w-full overflow-hidden;
-  }
-  
-  .link-site-name {
-    @apply font-bold whitespace-nowrap overflow-hidden text-ellipsis;
-  }
-  
-  .link-url {
-    @apply text-blue-500 no-underline;
-  }
-  
-  .link-site-name, .link-url {
-    @apply w-full;
-  }
-
-  .action-buttons {
-    @apply flex justify-between mb-5;
-  }
-
-  .back-btn, .print-btn {
-    @apply px-5 py-2.5 bg-blue-500 text-white border-none rounded cursor-pointer text-base hover:bg-blue-600;
+  .item-exit-active {
+    @apply opacity-0 transition-opacity duration-300 ease-in;
   }
 }
 
+
+/* PRINT STYLES */
 @media print {
   @page {
     size: A4;
