@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { floatingLabel } from '@/styles/constLayout';
 import { useIMEInput } from '@/hooks/useIMEInput';
 
 const FloatingLabelTextarea = ({ 
@@ -31,11 +30,33 @@ const FloatingLabelTextarea = ({
     autoResize();
   }, [value]);
 
-  const textareaClasses = floatingLabel.textarea(isFocused, isTitle);
-  const labelClasses = floatingLabel.textareaLabel(isFocused, value, isTitle);
+  useEffect(() => {
+    window.addEventListener('resize', autoResize);
+    return () => window.removeEventListener('resize', autoResize);
+  }, []);
+
+  const textareaClasses = `
+    floating-label-input
+    floating-label-textarea
+    ${isFocused ? 'floating-label-input-focused' : 'bg-mono-f5'}
+    ${isTitle ? 'floating-label-input-title' : ''}
+    transition-all duration-300
+    outline-none
+    border-transparent
+    focus:ring-0
+    focus:border-transparent
+    ${className}
+  `;
+
+  const labelClasses = `
+    floating-label
+    floating-label-textarea-label
+    ${isFocused || value !== '' ? 'floating-label-active' : 'floating-label-inactive'}
+    ${isTitle ? 'floating-label-title' : 'floating-label-normal'}
+  `;
 
   return (
-    <div className={floatingLabel.container}>
+    <div className="floating-label-container w-full">
       <textarea
         ref={textareaRef}
         className={textareaClasses}
@@ -49,6 +70,10 @@ const FloatingLabelTextarea = ({
         onCompositionStart={onCompositionStart}
         onCompositionEnd={onCompositionEnd}
         placeholder={placeholder}
+        spellCheck={spellCheck}
+        maxLength={maxLength}
+        rows={1}
+        onInput={autoResize}
         {...props}
       />
       <label className={labelClasses}>
