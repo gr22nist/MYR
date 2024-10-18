@@ -82,7 +82,6 @@ const ResumePreview = ({ resumeData }) => {
       case 'userInfo':
         return (
           <div key="userInfo" className="user-info-container pdf-section mb-6">
-            <h2 className="section-title">기본 정보</h2>
             <div className="user-info-grid">
               {decryptedData.map((info, index) => {
                 let displayValue, displayType;

@@ -142,7 +142,7 @@
   }
 
   .floating-label-input-title {
-    @apply text-xl font-bold;
+    @apply text-xl font-bold w-label;
   }
 
   .floating-label {
