@@ -36,7 +36,6 @@ export const resetAllStores = async (resetResumeStore, resetCustomStore, resetUs
       saveUserInfo([])
     ]);
 
-    console.log('모든 스토어와 데이터베이스가 성공적으로 초기화되었습니다.');
     return true;
   } catch (error) {
     console.error('스토어 초기화 중 오류 발생:', error);

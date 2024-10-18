@@ -58,10 +58,8 @@ const useSectionOrderStore = create((set, get) => ({
 
   removeSectionFromOrder: async (sectionId) => {
     const { sectionOrder } = get();
-    console.log('제거 전 섹션 순서:', sectionOrder); // 로그 추가
     if (sectionId !== 'career' && sectionId !== 'education') {
       const newOrder = sectionOrder.filter(id => id !== sectionId);
-      console.log('제거 후 섹션 순서:', newOrder); // 로그 추가
       await get().updateSectionOrder(newOrder);
     }
   },

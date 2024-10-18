@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { exportAllData } from '@/utils/indexedDB';
-import ResumePreview from '@/components/ResumePreview';
+import ResumePreview from '@/components/preview/ResumePreview';
 import { decryptData } from '@/utils/cryptoUtils';
 import Link from 'next/link';
 import { PDFDocument, rgb } from 'pdf-lib';
@@ -28,20 +28,16 @@ const PreviewPage = () => {
       try {
         setIsLoading(true);
         const data = await exportAllData();
-        console.log('Exported data:', data);
         if (data) {
           const orderedData = [];
           let sectionOrder;
           try {
             const decryptedOrder = decryptData(data.customSections?.sectionOrder?.order);
-            console.log('Decrypted order:', decryptedOrder);
             sectionOrder = Array.isArray(decryptedOrder) ? decryptedOrder : ['userInfo', 'career', 'education'];
           } catch (error) {
             console.error('섹션 순서 복호화 오류:', error);
             sectionOrder = ['userInfo', 'career', 'education'];
           }
-
-          console.log('Section order:', sectionOrder);
 
           if (data.profile) {
             orderedData.push({ type: 'profile', data: data.profile });
@@ -60,18 +56,13 @@ const PreviewPage = () => {
                 if (data.educations) orderedData.push({ type: 'educations', data: data.educations });
                 break;
               default:
-                // 커스텀 섹션 처리
                 const customSection = data.customSections?.customSections?.find(s => s.id === sectionId);
                 if (customSection) {
-                  console.log('Adding custom section:', customSection);
                   orderedData.push({ type: 'custom', data: customSection });
-                } else {
-                  console.log('Custom section not found for id:', sectionId);
                 }
             }
           });
 
-          console.log('Final ordered data:', orderedData);
           setResumeData(orderedData);
         } else {
           setError('데이터를 불러올 수 없습니다.');

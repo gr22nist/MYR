@@ -100,10 +100,7 @@ export const loadProfileData = async () => {
 };
 
 export const saveCustomSections = async (sections) => {
-  return saveData('customSections', sections.map(section => ({
-    ...section,
-    showQR: section.showQR || false
-  })));
+  return saveData('customSections', sections);
 };
 
 export const loadCustomSections = async () => {
