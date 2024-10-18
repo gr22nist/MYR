@@ -20,8 +20,6 @@ const renderWithLineBreaks = (text) => {
 const ResumePreview = ({ resumeData }) => {
   if (!resumeData) return <div>데이터를 불러오는 중...</div>;
 
-  console.log('Raw resumeData:', resumeData);
-
   const decryptSection = (section) => {
     if (Array.isArray(section)) {
       return section.map((item) => ({
@@ -153,10 +151,8 @@ const ResumePreview = ({ resumeData }) => {
           </div>
         );
       case 'custom':
-        console.log('Rendering custom section:', decryptedData);
         const customData = decryptedData.value;
-        console.log('Custom data:', customData);
-        console.log('Show QR:', customData.showQR);
+        
         return (
           <div key={customData.id || decryptedData.id} className="custom-section">
             <h2 className="section-title">{customData.title || '제목 없음'}</h2>
@@ -164,9 +160,6 @@ const ResumePreview = ({ resumeData }) => {
               <div className="link-items-container">
                 {(customData.links || []).map((link, index) => (
                   <div key={index} className="link-item">
-                    {customData.showQR && (
-                      <QRCodeSVG value={link.link} size={40} />
-                    )}
                     <div className="link-content">
                       <span className="link-site-name">{link.siteName}</span>
                       <a
