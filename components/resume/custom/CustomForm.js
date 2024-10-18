@@ -35,26 +35,27 @@ const CustomForm = ({ onAddSection }) => {
   }, [canAddSection, addCustomSection, loadAllSections]);
 
   return (
-    <div className="custom-form mt-4">
-      <div className="info-message bg-mono-ee border-l-4 border-mono-33 text-mono-66 font-bold p-4 w-full mb-4">
-        <p className="text-sm">
-          작성하고 싶은 정보가 있는데 작성란이 없으셨나요? 직접 만들어보세요.
-          저서, 논문, 봉사경험 등 무엇이든 간단한 텍스트로 작성 가능합니다.
+    <div className="controls-container">
+      <div className="info-message">
+        <p className="text-small">
+          작성하고 싶은 정보가 있는데 필드가 없나요? 직접 만들어보세요.
+          저서, 논문, 봉사 경험, 교육활동 등 무엇이든 간단한 텍스트로 작성 가능합니다.
         </p>
       </div>
-      <div className="flex items-center justify-center bg-white rounded-md p-2 min-h-[60px] w-full">
+      <div className="controls">
         <button 
           onClick={() => handleAddSection(CUSTOM_SECTIONS.type)}
-          className="bg-secondary-dark text-white px-6 py-4 rounded-md hover:bg-primary-light transition-colors text-base font-bold flex-shrink-0 mr-2"
+          className="controls-custom-btn"
         >
           + 자유 서식 추가하기
         </button>
-        <TagButtons 
-          tags={tags}
-          onTagClick={handleAddSection}
-          className="flex-wrap justify-center"
-          disabledTags={disabledTags}
-        />
+        <div className="control-type-btn">
+          <TagButtons 
+            tags={tags}
+            onTagClick={handleAddSection}
+            disabledTags={disabledTags}
+          />
+        </div>
       </div>
     </div>
   );

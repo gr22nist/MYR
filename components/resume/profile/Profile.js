@@ -65,7 +65,7 @@ const Profile = () => {
 			<div className="profile-title flex items-stretch">
 				<div className="flex-grow flex items-center">
 					<textarea
-						className='profile-text-area-title'
+						className={`profile-text-area-title ${!profile.title ? 'profile-text-area-empty' : ''}`}
 						value={profile.title || ''}
 						onChange={(e) => handleChange('title', e.target.value)}
 						placeholder={`간단한 제목을 쓰거나 인사를 해주세요.\n두 줄로 쓰는 것이 가장 보기에 좋습니다.`}
@@ -78,7 +78,7 @@ const Profile = () => {
 			</div>
 			<textarea
 				ref={textareaRef}
-				className='profile-text-area-paragraph'
+				className={`profile-text-area-paragraph ${!profile.paragraph ? 'profile-text-area-empty' : ''}`}
 				value={profile.paragraph || ''}
 				onChange={(e) => handleChange('paragraph', e.target.value)}
 				placeholder={placeholderText}

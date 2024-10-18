@@ -64,7 +64,7 @@ const ResumePreview = ({ resumeData }) => {
                 {renderWithLineBreaks(decryptedData.profileData?.title || '')}
               </p>
               {decryptedData.profilePhoto && decryptedData.profilePhoto.value && (
-                <div className="w-[108px] h-[144px] relative">
+                <div className="w-[108px] h-[140px] relative">
                   <Image
                     src={decryptedData.profilePhoto.value}
                     alt="Profile"
@@ -82,7 +82,6 @@ const ResumePreview = ({ resumeData }) => {
       case 'userInfo':
         return (
           <div key="userInfo" className="user-info-container pdf-section mb-6">
-            <h2 className="section-title">기본 정보</h2>
             <div className="user-info-grid">
               {decryptedData.map((info, index) => {
                 let displayValue, displayType;
@@ -152,7 +151,7 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'custom':
         const customData = decryptedData.value;
-        
+
         return (
           <div key={customData.id || decryptedData.id} className="custom-section">
             <h2 className="section-title">{customData.title || '제목 없음'}</h2>

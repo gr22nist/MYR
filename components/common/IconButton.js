@@ -4,7 +4,7 @@ const IconButton = ({
   icon: Icon, 
   onClick, 
   className = '', 
-  hoverFill = 'fill-secondary-dark',
+  hoverFill = '',
   size = 'medium',
   ...props 
 }) => {
@@ -14,11 +14,9 @@ const IconButton = ({
     large: 'p-3'
   };
 
-  // handleClick 함수 제거
-
   return (
     <span 
-      className={`block bg-slate-200 ${sizeClasses[size]} ${className}`}
+      className={`block hover: rounded-full ${sizeClasses[size]} ${className}`}
       {...props}
     >
       <Icon className={`hover:${hoverFill} hover:scale-110 duration-300`} />

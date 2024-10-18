@@ -26,7 +26,7 @@ const FloatingLabelInput = ({
     handleBlur,
     inputClasses,
     labelClasses,
-  } = useFloatingLabel(externalValue, externalOnChange, isTitle);
+  } = useFloatingLabel(externalValue, externalOnChange, isTitle, isCore);
 
   const internalRef = useRef(null);
 
@@ -36,18 +36,13 @@ const FloatingLabelInput = ({
     }
   }, [inputRef]);
 
-  const finalInputClasses = `
-    ${inputClasses}
-    ${isCore && !value ? 'floating-label-input-core' : ''}
-  `;
-
   return (
     <div className="floating-label-container">
       <Tooltip content={isCore && !value ? tooltipMessage : ""} disabled={!!value}>
         <input
           ref={internalRef}
           type={type}
-          className={finalInputClasses}
+          className={`${inputClasses} ${className}`}
           value={value}
           onChange={onChange}
           onFocus={handleFocus}
