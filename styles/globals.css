@@ -61,11 +61,11 @@
 }
 
 .profile-text-area-title {
-  @apply profile-text-area lg:text-4xl text-3xl font-extrabold leading-normal;
+  @apply profile-text-area lg:text-4xl text-3xl font-bold lg:leading-normal;
 }
 
 .profile-text-area-paragraph {
-  @apply profile-text-area lg:text-lg text-base;
+  @apply profile-text-area flex self-center lg:text-lg text-base;
 }
 
 .profile-text-area:focus {
@@ -142,7 +142,7 @@
   }
 
   .floating-label-input-title {
-    @apply text-xl font-bold;
+    @apply text-base w-label bg-transparent;
   }
 
   .floating-label {
@@ -154,15 +154,15 @@
   }
 
   .floating-label-inactive {
-    @apply top-7 text-gray-400 opacity-0;
+    @apply top-7 text-mono-99 opacity-0;
   }
 
   .floating-label-title {
-    @apply text-base font-semibold text-gray-900;
+    @apply text-sm text-mono-99;
   }
 
   .floating-label-normal {
-    @apply text-sm text-gray-500;
+    @apply text-sm text-mono-cc;
   }
 
   .floating-label-textarea {
