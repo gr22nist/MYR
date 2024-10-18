@@ -64,7 +64,7 @@ const ResumePreview = ({ resumeData }) => {
                 {renderWithLineBreaks(decryptedData.profileData?.title || '')}
               </p>
               {decryptedData.profilePhoto && decryptedData.profilePhoto.value && (
-                <div className="w-[108px] h-[144px] relative">
+                <div className="w-[108px] h-[140px] relative">
                   <Image
                     src={decryptedData.profilePhoto.value}
                     alt="Profile"
@@ -152,7 +152,7 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'custom':
         const customData = decryptedData.value;
-        
+
         return (
           <div key={customData.id || decryptedData.id} className="custom-section">
             <h2 className="section-title">{customData.title || '제목 없음'}</h2>
