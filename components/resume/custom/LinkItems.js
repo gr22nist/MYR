@@ -1,12 +1,10 @@
 import React, { useState, useCallback, useRef } from 'react';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
-import { QRCodeSVG } from 'qrcode.react';
 
-const LinkItems = ({ links, onChange, isEditing }) => {
+const LinkItems = ({ links = [], onChange, isEditing }) => {
   const [error, setError] = useState('');
   const [siteName, setSiteName] = useState('');
   const [link, setLink] = useState('');
-  const [showQR, setShowQR] = useState(false);
   const siteNameInputRef = useRef(null);
   const linkInputRef = useRef(null);
 
@@ -61,27 +59,8 @@ const LinkItems = ({ links, onChange, isEditing }) => {
     setLink(e.target.value);
   }, []);
 
-  const handleQRToggle = useCallback((e) => {
-    const newShowQR = e.target.checked;
-    setShowQR(newShowQR);
-    onChange({ links, showQR: newShowQR });
-  }, [links, onChange]);
-
   return (
     <div>
-      {isEditing && (
-        <div className="mb-2">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={showQR}
-              onChange={handleQRToggle}
-              className="mr-2"
-            />
-            QR 코드 표시
-          </label>
-        </div>
-      )}
       {isEditing && (
         <div className="flex flex-col mb-4">
           <div className="flex w-full items-center gap-2">
@@ -110,11 +89,6 @@ const LinkItems = ({ links, onChange, isEditing }) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {links.map((item, index) => (
           <div key={index} className="flex items-center space-x-2 p-2 bg-gray-100 rounded-lg">
-            {showQR && (
-              <div className="flex-shrink-0">
-                <QRCodeSVG value={item.link} size={24} />
-              </div>
-            )}
             <div className="flex-grow flex items-center space-x-2 min-w-0">
               <span className="font-semibold whitespace-nowrap">{item.siteName}</span>
               <a

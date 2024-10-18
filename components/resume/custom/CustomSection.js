@@ -29,13 +29,10 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
   }, [removeCustomSection, onDelete, section.id]);
 
   const handleChange = useCallback((updatedSection) => {
+    console.log('Updated section:', updatedSection);
     updateCustomSection(section.id, updatedSection);
     onSectionChange(updatedSection);
   }, [updateCustomSection, onSectionChange, section.id]);
-
-  const handleShowQRChange = useCallback((showQR) => {
-    handleChange({ ...section, showQR });
-  }, [handleChange, section]);
 
   const isCustomType = section.type === CUSTOM_SECTIONS.type;
 
@@ -75,7 +72,6 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
           onChange={handleChange}
           isCustomType={isCustomType}
           isEditing={isExpanded}
-          onShowQRChange={handleShowQRChange}
         />
       </AccordionSection>
     </div>

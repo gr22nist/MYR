@@ -13,7 +13,7 @@ const CustomItem = ({ section, onChange, isEditing }) => {
       <div>
         <LinkItems
           links={section.links || []}
-          onChange={(newData) => onChange({ ...section, ...newData })}
+          onChange={(newLinks) => onChange({ ...section, links: newLinks })}
           isEditing={isEditing}
         />
       </div>

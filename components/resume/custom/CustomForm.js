@@ -30,11 +30,7 @@ const CustomForm = ({ onAddSection }) => {
       alert('이 섹션은 이미 추가되어 있습니다.');
       return;
     }
-    console.log('CustomForm: 섹션 추가 시도:', type);
     const newSection = addCustomSection(type);
-    console.log('CustomForm: 추가된 새 섹션:', newSection);
-    
-    // 섹션 추가 후 모든 섹션을 다시 로드
     await loadAllSections();
   }, [canAddSection, addCustomSection, loadAllSections]);
 

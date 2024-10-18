@@ -83,8 +83,9 @@ const useCustomStore = create((set, get) => ({
   updateCustomSection: (id, updatedSection) => {
     set(state => {
       const updatedSections = state.customSections.map(section =>
-        section.id === id ? { ...section, ...updatedSection, showQR: updatedSection.showQR } : section
+        section.id === id ? { ...section, ...updatedSection } : section
       );
+      console.log('Updated sections:', updatedSections); // 디버깅을 위한 로그
       saveCustomSections(updatedSections).catch(error => {
         console.error('커스텀 섹션 업데이트 중 오류:', error);
         set({ error: error.message });
