@@ -80,9 +80,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         const imageData = reader.result;
-        console.log('업로드된 이미지 데이터:', imageData.substring(0, 50) + '...');
         await saveProfilePhoto(imageData);
-        console.log('프로필 사진 저장 완료');
         onImageChange(imageData);
         showToast({ message: '이미지가 성공적으로 업로드되었습니다.', type: 'success' });
       };
@@ -118,7 +116,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
   return (
     <div className="flex items-center flex-col">
       <div 
-        className="relative w-[108px] h-[144px] overflow-hidden cursor-pointer rounded-md flex items-center justify-center"
+        className="relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded-md flex items-center justify-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
