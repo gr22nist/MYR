@@ -108,7 +108,7 @@
   }
 
   /* Skeleton Loading Styles */
-  .skeleton-base {
+  .skeleton{
     @apply mb-5 rounded-lg animate-skeleton bg-gradient-to-r from-mono-f5 via-mono-cc to-mono-f5 bg-[length:200%_100%];
   }
 
@@ -130,19 +130,35 @@
   }
 
   .floating-label-input {
-    @apply focus-style input-base w-full p-4 transition-colors duration-300 rounded-lg;
+    @apply focus-style input-base;
   }
 
   .floating-label-input-focused {
     @apply bg-blue-50;
   }
 
+  .floating-label-input-unfocused {
+    @apply bg-mono-f5;
+  }
+
   .floating-label-input-core {
-    @apply bg-pink-50 border-pink-200;
+    @apply bg-pink-50;
   }
 
   .floating-label-input-title {
-    @apply text-base w-label bg-transparent;
+    @apply text-base w-label;
+  }
+
+  .floating-label-input:not(.floating-label-input-focused) {
+    @apply bg-mono-f5;
+  }
+
+  .floating-label-input-core:not(.floating-label-input-focused) {
+    @apply bg-pink-50;
+  }
+
+  .floating-label-input-focused {
+    @apply bg-blue-50;
   }
 
   .floating-label {
