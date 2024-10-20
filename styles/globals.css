@@ -76,27 +76,16 @@
 @layer components {
   /* Button Styles */
   .btn-common {
-    @apply flex text-mono-66 px-4 py-2 rounded-lg w-full relative overflow-hidden text-sm;
+    @apply flex text-mono-66 hover:text-mono-11 duration-300 p-2 rounded-lg w-full relative overflow-hidden text-sm;
   }
 
   .btn-drag {
     @apply cursor-grab active:cursor-grabbing;
   }
 
-  .btn-preview {
-    @apply btn-common hover:bg-blue-500;
-  }
-
-  .btn-reset {
-    @apply btn-common hover:bg-red-500;
-  }
-
-  .btn-fold {
-    @apply btn-common hover:bg-green-500;
-  }
 
   .btn-icon {
-    @apply group-hover:opacity-0 transition-opacity duration-300;
+    @apply group-hover:opacity-0 transition-opacity duration-300 hover:rotate-180;
   }
 
   .btn-text {
@@ -104,7 +93,7 @@
   }
 
   .btn-rotate {
-    @apply transform transition-transform duration-300 hover:rotate-180
+    @apply transform transition-transform duration-300 hover:rotate-180;
   }
 
   /* Skeleton Loading Styles */
@@ -191,7 +180,7 @@
 
   /* QuickBtns Styles */
   .quick-btns-container {
-    @apply flex gap-4;
+    @apply flex flex-col gap-4;
   }
 
   /* DateRangeInput Styles */

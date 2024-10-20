@@ -4,10 +4,10 @@ import { ResetBtn, FoldAllBtn, ExpandAllBtn, ViewBtn } from '@/components/icons/
 
 const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => {
   return (
-    <div className={'container'}>
+    <div className={'container flex'}>
       <button 
         onClick={onToggleAllSections} 
-        className={'btn-common btn-fold'}
+        className={'btn-common'}
       >
         {areAllSectionsExpanded ? 
           <FoldAllBtn className={'btn-icon'} /> : 
@@ -19,7 +19,7 @@ const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => 
       </button>
       <button 
         onClick={onReset} 
-        className={'btn-common btn-reset'}
+        className={'btn-common'}
       >
         <ResetBtn className={'btn-icon'} />
         <span className={'btn-text'}>
@@ -27,7 +27,7 @@ const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => 
         </span>
       </button>
       <Link href="/resume/preview" legacyBehavior>
-        <a className={'btn-common btn-preview'} target="_blank" rel="noopener noreferrer">
+        <a className={'btn-common'} target="_blank" rel="noopener noreferrer">
           <ViewBtn className={'btn-icon'} />
           <span className={'btn-text'}>
             미리보기
