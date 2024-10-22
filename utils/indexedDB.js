@@ -1,14 +1,12 @@
 import { getDB } from '@/hooks/dbConfig';
 import { encryptData, decryptData } from '@/utils/cryptoUtils';
 
-// 통합된 저장 함수
 const saveData = async (storeName, data) => {
   try {
     const db = await getDB();
     await db.transaction('rw', storeName, async () => {
       await db.table(storeName).clear();
       if (data === null) {
-        // 데이터가 null이면 저장하지 않고 종료
         return;
       }
       if (Array.isArray(data)) {
@@ -31,7 +29,6 @@ const saveData = async (storeName, data) => {
   }
 };
 
-// 통합된 로드 함수
 const loadData = async (storeName) => {
   try {
     const db = await getDB();
@@ -60,13 +57,38 @@ const loadData = async (storeName) => {
   }
 };
 
-export const saveCareers = (careers) => saveData('careers', careers);
+export const saveCareers = async (careers) => {
+  console.log('저장 전 careers:', careers);
+  const validCareers = careers.filter(career => 
+    Object.entries(career).some(([key, value]) => 
+      key !== 'id' && key !== 'order' &&
+      value !== '' && value !== false && value != null && value !== undefined &&
+      !(typeof value === 'object' && Object.keys(value).length === 0)
+    )
+  );
+  console.log('필터링 후 validCareers:', validCareers);
+  const result = await saveData('careers', validCareers.length > 0 ? validCareers : null);
+  console.log('저장 결과:', result);
+  return result;
+};
+
 export const loadCareers = () => loadData('careers');
 
-export const saveEducations = (educations) => saveData('educations', educations.map(edu => ({
-  ...edu,
-  graduationStatus: edu.graduationStatus || ''
-})));
+export const saveEducations = async (educations) => {
+  console.log('저장 전 educations:', educations);
+  const validEducations = educations.filter(edu => 
+    Object.entries(edu).some(([key, value]) => 
+      key !== 'id' && key !== 'order' && key !== 'graduationStatus' &&
+      value !== '' && value !== false && value != null && value !== undefined &&
+      !(typeof value === 'object' && Object.keys(value).length === 0)
+    )
+  );
+  console.log('필터링 후 validEducations:', validEducations);
+  const result = await saveData('educations', validEducations.length > 0 ? validEducations : null);
+  console.log('저장 결과:', result);
+  return result;
+};
+
 export const loadEducations = () => loadData('educations');
 
 export const saveUserInfo = (userInfo) => {
@@ -330,7 +352,7 @@ export const importData = async (encryptedData) => {
 
     return true;
   } catch (error) {
-    console.error('데이터 가져오기 오류:', error);
+    console.error('이터 가져오기 오류:', error);
     return false;
   }
 };
@@ -346,3 +368,4 @@ export const initializeSectionOrder = async () => {
     return false;
   }
 };
+

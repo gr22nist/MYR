@@ -50,9 +50,16 @@ const useCareerStore = create((set, get) => ({
   
   updateCareer: (updatedCareer) => {
     set(state => {
+      console.log('Updating career:', updatedCareer);
       const newCareers = state.careers.map(career => 
-        career.id === updatedCareer.id ? { ...career, ...updatedCareer } : career
-      );
+        career.id === updatedCareer.id ? updatedCareer : career
+      ).filter(career => Object.entries(career).some(([key, v]) => 
+        key !== 'id' && key !== 'order' &&
+        v !== '' && v !== false && v != null && v !== undefined &&
+        !(typeof v === 'object' && Object.keys(v).length === 0)
+      ));
+      console.log('Filtered careers:', newCareers);
+      
       if (JSON.stringify(newCareers) !== JSON.stringify(state.careers)) {
         saveCareersToDB(newCareers);
         useResumeStore.getState().updateSection({ id: 'career', type: 'career', items: newCareers });

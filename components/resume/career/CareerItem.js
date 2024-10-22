@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
@@ -18,9 +18,21 @@ const CareerItem = ({
 }) => {
   const nodeRef = useRef(null);
 
-  const handleChange = (field, value) => {
-    onCareerChange({ ...career, [field]: value });
-  };
+  const handleChange = useCallback((field, value) => {
+    const updatedCareer = { ...career, [field]: value };
+    const isEmpty = Object.entries(updatedCareer).every(([key, v]) => 
+      key === 'id' || key === 'order' ||
+      v === '' || v === false || v == null || v === undefined || 
+      (typeof v === 'object' && Object.keys(v).length === 0)
+    );
+    console.log('updatedCareer:', updatedCareer, 'isEmpty:', isEmpty);
+    if (isEmpty) {
+      console.log('Deleting career:', career.id);
+      onDelete(career.id);
+    } else {
+      onCareerChange(updatedCareer);
+    }
+  }, [career, onCareerChange, onDelete]);
 
   const handleDateChange = ({ startDate, endDate, isCurrent }) => {
     onCareerChange({

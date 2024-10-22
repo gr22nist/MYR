@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useMemo } from 'react';
+import React, { useRef, useCallback } from 'react';
 import DateRangeInput from '@/components/common/DateRangeInput';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
@@ -8,12 +8,22 @@ import { PLACEHOLDERS } from '@/constants/placeHolders';
 
 const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDeletable, dragHandleProps, isSubItem = false, isExpanded, className }) => {
   const nodeRef = useRef(null);
-  
-  const radioGroupName = useMemo(() => `graduationStatus-${education.id}`, [education.id]);
 
   const handleChange = useCallback((field, value) => {
-    onEducationChange({ ...education, [field]: value });
-  }, [education, onEducationChange]);
+    const updatedEducation = { ...education, [field]: value };
+    const isEmpty = Object.entries(updatedEducation).every(([key, v]) => 
+      key === 'id' || key === 'order' || key === 'graduationStatus' ||
+      v === '' || v === false || v == null || v === undefined || 
+      (typeof v === 'object' && Object.keys(v).length === 0)
+    );
+    console.log('updatedEducation:', updatedEducation, 'isEmpty:', isEmpty);
+    if (isEmpty) {
+      console.log('Deleting education:', education.id);
+      onDelete(education.id);
+    } else {
+      onEducationChange(updatedEducation);
+    }
+  }, [education, onEducationChange, onDelete]);
 
   const handleDateChange = useCallback(({ startDate, endDate, isCurrent, status }) => {
     onEducationChange({
