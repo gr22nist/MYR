@@ -5,7 +5,7 @@
 @layer base {
   html {
     font-family: var(--font-suit), system-ui, sans-serif;
-    @apply text-base leading-normal;
+    @apply text-base leading-normal text-mono-11;
   }
 }
 
@@ -57,7 +57,7 @@
 }
 
 .profile-text-area {
-  @apply p-4 text-mono-11 border-0 rounded-lg overflow-hidden w-full resize-none transition-all animation outline-none;
+  @apply p-4  border-0 rounded-lg overflow-hidden w-full resize-none transition-all animation outline-none;
 }
 
 .profile-text-area-empty {
@@ -73,7 +73,7 @@
 }
 
 .profile-text-area-paragraph {
-  @apply profile-text-area flex self-center lg:text-lg;
+  @apply profile-text-area flex lg:text-lg;
 }
 
 /* COMPONENT STYLES */
@@ -83,7 +83,7 @@
     @apply flex text-mono-66 hover:text-mono-11 animation p-2 rounded-lg w-full relative overflow-hidden text-sm;
   }
 
-  .btn-drag {
+  .drag-item {
     @apply cursor-grab active:cursor-grabbing;
   }
 
@@ -114,6 +114,16 @@
 
   .skeleton-section {
     @apply h-[300px];
+  }
+
+  /* color Styles*/
+  .btn-color {
+    @apply bg-secondary-dark hover:bg-primary-light text-white
+    
+  }
+
+  .btn-inactive {
+    @apply bg-mono-f5 text-mono-66;
   }
 
   /* Floating Label Styles */
@@ -181,32 +191,79 @@
     @apply right-2;
   }
 
+  .userinfo-form {
+    @apply flex flex-col gap-4;
+  }
+
+  .userinfo-container {
+    @apply p-4 relative rounded-lg bg-mono-f5 hover:shadow-md transition-shadow animation;
+  }
+
+  .userinfo-item {
+    @apply drag-item flex flex-col gap-2;
+  }
+
+  .userinfo-item-type {
+    @apply text-small font-bold text-mono-99;
+  }
+
+  .userinfo-item-btns {
+    @apply absolute top-2 right-2 flex gap-1;
+  }
+
+  .userinfo-item-btn {
+    @apply text-mono-dd hover:text-secondary-dark animation;
+  }
+
   /* text style */
   .text-small {
-    @apply lg:text-sm text-xs
+    @apply lg:text-sm text-xs;
   }
 
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center rounded-lg
+    @apply w-full flex flex-col gap-4 items-center rounded-lg;
   }
 
   .controls{
-    @apply flex-base bg-white rounded-lg p-2 min-h-14 w-full
+    @apply flex-base bg-white rounded-lg p-2 min-h-14 w-full;
   }
 
   .controls-custom-btn {
-    @apply bg-secondary-dark text-white px-6 py-4 rounded-lg hover:bg-primary-light transition-colors text-base font-bold flex-shrink-0 mr-2
+    @apply btn-color px-6 py-4 rounded-lg transition-colors text-base font-bold flex-shrink-0;
   }
   
   .info-message {
-    @apply flex-base border rounded-lg border-mono-cc text-mono-99 p-4 mb-4
+    @apply flex-base border rounded-lg border-mono-cc text-mono-99 p-4;
   }
 
   .control-type-btn {
-    @apply flex-base rounded-lg p-2
+    @apply flex-base rounded-lg p-2;
   }
+
+  .disable-btn {
+    @apply bg-transparent border text-mono-cc cursor-not-allowed;
+  }
+
+  .grid-container {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
+  }
+
+  .tags-container {
+    @apply flex flex-wrap gap-2 font-bold text-base;
+  }
+
+  .tags-text {
+    @apply px-3 py-2 text-mono-99;
+  }
+  .tags-btn {
+    @apply px-3 py-2 rounded-md transition-colors text-sm;
+  }
+  .btn-hover {
+    @apply hover:bg-primary-light hover:text-white animation;
+  }
+
 
   /* QuickBtns Styles */
   .quick-btns-container {
@@ -243,6 +300,7 @@
       @apply h-5 w-5 rounded-lg border-mono-cc text-mono-66 focus:ring-mono-66;
     }
 
+
     .date-range-checkbox-text {
       @apply text-small text-mono-66;
     }
@@ -256,11 +314,11 @@
     }
 
     .date-range-status-button-active {
-      @apply bg-secondary-dark text-white;
+      @apply btn-color;
     }
 
     .date-range-status-button-inactive {
-      @apply bg-mono-f5 text-mono-66;
+      @apply btn-inactive;
     }
 
     .date-range-error {

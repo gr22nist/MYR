@@ -7,16 +7,16 @@ const UserInfoItem = ({ type, displayType, value, onRemove, onEdit, dragHandlePr
   const finalDisplayType = type === 'custom' ? value.title : displayType;
 
   return (
-    <div className="personal-info-item p-4 relative rounded-lg bg-mono-f5 hover:shadow-md transition-shadow duration-300">
-      <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
-        <div className="lg:text-sm text-xs font-bold mb-2 text-mono-99">{finalDisplayType}</div>
-        <div className="text-mono-11 font-bold">{displayValue}</div>
+    <div className="drag-item userinfo-container">
+      <div {...dragHandleProps} className="userinfo-item">
+        <div className="userinfo-item-type">{finalDisplayType}</div>
+        <div className="font-bold">{displayValue}</div>
       </div>
-      <div className="absolute top-2 right-2 flex space-x-2">
-        <button onClick={onEdit} className="text-mono-dd hover:text-mono-66 duration-300">
+      <div className="userinfo-item-btns">
+        <button onClick={onEdit} className="userinfo-item-btn">
           <EditBtn />
         </button>
-        <button onClick={onRemove} className="text-mono-dd hover:text-red-700 duration-300">
+        <button onClick={onRemove} className="userinfo-item-btn">
           <DeleteBtn />
         </button>
       </div>

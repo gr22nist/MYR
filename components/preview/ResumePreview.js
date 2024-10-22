@@ -81,8 +81,8 @@ const ResumePreview = ({ resumeData }) => {
         );
       case 'userInfo':
         return (
-          <div key="userInfo" className="user-info-container pdf-section mb-6">
-            <div className="user-info-grid">
+          <div key="userInfo" className="userinfo-container pdf-section mb-6">
+            <div className="userinfo-grid">
               {decryptedData.map((info, index) => {
                 let displayValue, displayType;
                 
@@ -104,9 +104,9 @@ const ResumePreview = ({ resumeData }) => {
                 }
 
                 return (
-                  <div key={index} className="user-info-item flex flex-col">
-                    <span className="user-info-label font-bold mb-1">{displayType || '정보'}</span>
-                    <span className="user-info-value">
+                  <div key={index} className="userinfo-item flex flex-col">
+                    <span className="userinfo-label font-bold mb-1">{displayType || '정보'}</span>
+                    <span className="userinfo-value">
                       {renderWithLineBreaks(displayValue)}
                     </span>
                   </div>
@@ -116,36 +116,52 @@ const ResumePreview = ({ resumeData }) => {
           </div>
         );
       case 'careers':
+        if (decryptedData.length === 0 || !decryptedData.some(career => career.value && Object.values(career.value).some(v => v !== null && v !== ''))) return null;
         return (
           <div key="careers" className="careers-section pdf-section mb-6">
             <h2 className="section-title">경력</h2>
             {decryptedData.map((career, index) => (
-              <div key={index} className="career-item">
-                <h3 className="company-name">{career.value?.companyName || '회사명 없음'}</h3>
-                <p className="position">{career.value?.position || '직책 없음'}</p>
-                <p className="date-range">
-                  {career.value?.startDate || '시작일 없음'} - {career.value?.isCurrent ? '현재' : (career.value?.endDate || '종료일 없음')}
-                </p>
-                <div className="main-tasks">
-                  {renderWithLineBreaks(career.value?.mainTask || '주요 업무 내용 없음')}
+              career.value && Object.values(career.value).some(v => v !== null && v !== '') ? (
+                <div key={index} className="career-item">
+                  {career.value.companyName && <h3 className="company-name">{career.value.companyName}</h3>}
+                  {career.value.position && <p className="position">{career.value.position}</p>}
+                  {(career.value.startDate || career.value.endDate) && (
+                    <p className="date-range">
+                      {career.value.startDate || ''}
+                      {(career.value.startDate && career.value.endDate) && ' - '}
+                      {career.value.isCurrent ? '현재' : career.value.endDate || ''}
+                    </p>
+                  )}
+                  {career.value.mainTask && (
+                    <div className="main-tasks">
+                      {renderWithLineBreaks(career.value.mainTask)}
+                    </div>
+                  )}
                 </div>
-              </div>
+              ) : null
             ))}
           </div>
         );
       case 'educations':
+        if (decryptedData.length === 0 || !decryptedData.some(education => education.value && Object.values(education.value).some(v => v !== null && v !== ''))) return null;
         return (
           <div key="educations" className="educations-section pdf-section mb-6">
             <h2 className="section-title">학력</h2>
             {decryptedData.map((education, index) => (
-              <div key={index} className="education-item">
-                <h3 className="school-name">{education.value?.schoolName || '학교명 없음'}</h3>
-                <p className="major">{education.value?.major || '전공 없음'}</p>
-                <p className="date-range">
-                  {education.value?.startDate || '시작일 없음'} - {education.value?.isCurrent ? '현재' : (education.value?.endDate || '종료일 없음')}
-                </p>
-                <p className="graduation-status">{education.value?.graduationStatus || '졸업 상태 없음'}</p>
-              </div>
+              education.value && Object.values(education.value).some(v => v !== null && v !== '') ? (
+                <div key={index} className="education-item">
+                  {education.value.schoolName && <h3 className="school-name">{education.value.schoolName}</h3>}
+                  {education.value.major && <p className="major">{education.value.major}</p>}
+                  {(education.value.startDate || education.value.endDate) && (
+                    <p className="date-range">
+                      {education.value.startDate || ''}
+                      {(education.value.startDate && education.value.endDate) && ' - '}
+                      {education.value.isCurrent ? '현재' : education.value.endDate || ''}
+                    </p>
+                  )}
+                  {education.value.graduationStatus && <p className="graduation-status">{education.value.graduationStatus}</p>}
+                </div>
+              ) : null
             ))}
           </div>
         );
@@ -154,7 +170,7 @@ const ResumePreview = ({ resumeData }) => {
 
         return (
           <div key={customData.id || decryptedData.id} className="custom-section">
-            <h2 className="section-title">{customData.title || '제목 없음'}</h2>
+            <h2 className="section-title">{customData.title || ''}</h2>
             {customData.type === 'link' ? (
               <div className="link-items-container">
                 {(customData.links || []).map((link, index) => (

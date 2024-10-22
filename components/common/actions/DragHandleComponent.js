@@ -20,7 +20,7 @@ const DragHandleComponent = ({ id, isSubItem, dragHandleProps }) => {
       ref={setNodeRef} 
       style={style} 
       {...handleProps} 
-      className="btn-drag"
+      className="drag-item"
     >
       <IconButton 
         icon={isSubItem ? DragHandleBtn : DragHandleLineBtn}

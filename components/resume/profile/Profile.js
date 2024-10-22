@@ -69,6 +69,7 @@ const Profile = () => {
 						value={profile.title || ''}
 						onChange={(e) => handleChange('title', e.target.value)}
 						placeholder={`간단한 제목을 쓰거나 인사를 해주세요.\n두 줄로 쓰는 것이 가장 보기에 좋습니다.`}
+						spellCheck="false"
 					/>
 				</div>
 				<PhotoUploader 
@@ -82,6 +83,7 @@ const Profile = () => {
 				value={profile.paragraph || ''}
 				onChange={(e) => handleChange('paragraph', e.target.value)}
 				placeholder={placeholderText}
+				spellCheck="false"
 			/>
 			<textarea
 				ref={placeholderRef}

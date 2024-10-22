@@ -214,11 +214,11 @@ const UserInfoForm = () => {
   )), [items, draggedItem, handleRemoveItem, setActiveField]);
 
   if (isLoading) {
-    return <div className="text-center py-4">로딩 중...</div>;
+    return null;
   }
 
   return (
-    <div className="personal-info-form">
+    <div className="userinfo-form">
       {renderAddSection()}
       
       {items.length > 0 && (
@@ -229,7 +229,7 @@ const UserInfoForm = () => {
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            <div className="grid-container">
               {memoizedItems}
             </div>
           </SortableContext>
