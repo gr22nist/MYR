@@ -22,7 +22,7 @@ const ExportAction = ({ onExport, dataType }) => {
   };
 
   return (
-    <button onClick={handleExport} className="px-4 py-2 text-sm bg-mono-99 text-white rounded-lg hover:bg-primary-light duration-300">
+    <button onClick={handleExport} className="export-btn">
       내보내기
     </button>
   );

@@ -116,7 +116,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
   return (
     <div className="flex items-center flex-col">
       <div 
-        className="relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded-md flex items-center justify-center"
+        className="relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded flex items-center justify-center"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >

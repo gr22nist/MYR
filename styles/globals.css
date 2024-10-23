@@ -16,7 +16,7 @@
   }
   
   .input-base {
-    @apply w-full p-4 transition-colors duration-300 rounded-lg;
+    @apply w-full p-4 transition-colors duration-300 rounded;
   }
   
   .focus-style {
@@ -28,23 +28,37 @@
   }
   
   .flex-base {
-    @apply flex  justify-center items-center;
+    @apply flex justify-center items-center;
   }
 }
 
 /* LAYOUT STYLES */
 @layer components {
   .layout-container {
+    @apply layout py-4 mt-8 flex flex-col gap-4;
+  }
+
+  .layout-section {
     @apply layout px-16 py-20 flex flex-col gap-10 justify-center bg-white;
   }
   
   .date-input {
-    @apply max-w-20 p-2 transition-colors duration-300 text-sm rounded-lg bg-mono-f5;
+    @apply max-w-20 p-2 transition-colors duration-300 text-small rounded bg-mono-f5;
   }
   
   .check-box {
     @apply flex-base whitespace-nowrap;
   }
+  
+  .data-container {
+    @apply flex justify-between gap-2;
+  }
+  
+  .data-btns {
+    @apply flex gap-2;
+  }
+
+
 }
 
 /* Profile Styles */
@@ -57,7 +71,7 @@
 }
 
 .profile-text-area {
-  @apply p-4  border-0 rounded-lg overflow-hidden w-full resize-none transition-all animation outline-none;
+  @apply p-4  border-0 rounded overflow-hidden w-full resize-none animation outline-none;
 }
 
 .profile-text-area-empty {
@@ -76,23 +90,30 @@
   @apply profile-text-area flex lg:text-lg;
 }
 
+  /* QuickBtns Styles */
+  @layer components {
+    .quick-btns-container {
+      @apply flex-base flex-row gap-4;
+    }
+  
+    .quick-btn {
+      @apply flex-base gap-1;
+    }
+  
+    .btn-icon {
+      @apply fill-secondary-dark hover:fill-primary-light animation hover:rotate-180;
+    }
+  }
+  
 /* COMPONENT STYLES */
 @layer components {
   /* Button Styles */
-  .btn-common {
-    @apply flex text-mono-66 hover:text-mono-11 animation p-2 rounded-lg w-full relative overflow-hidden text-sm;
+  .btn-base {
+    @apply flex-base gap-1 animation rounded font-bold;
   }
 
   .drag-item {
     @apply cursor-grab active:cursor-grabbing;
-  }
-
-  .btn-icon {
-    @apply group-hover:opacity-0 transition-opacity animation hover:rotate-180;
-  }
-
-  .btn-text {
-    @apply absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity animation flex-base text-sm;
   }
 
   .btn-rotate {
@@ -101,7 +122,7 @@
 
   /* Skeleton Loading Styles */
   .skeleton{
-    @apply mb-5 rounded-lg animate-skeleton bg-gradient-to-r from-mono-f5 via-mono-cc to-mono-f5 bg-[length:200%_100%];
+    @apply mb-5 rounded animate-skeleton bg-gradient-to-r from-mono-f5 via-mono-cc to-mono-f5 bg-[length:200%_100%];
   }
 
   .skeleton-profile {
@@ -117,9 +138,16 @@
   }
 
   /* color Styles*/
-  .btn-color {
-    @apply bg-secondary-dark hover:bg-primary-light text-white
-    
+  .btn-accent {
+    @apply bg-secondary-dark text-white hover-pri;
+  }
+  
+  .hover-pri {
+    @apply hover:bg-primary-light hover:text-white;
+  }
+
+  .hover-scd {
+    @apply hover:bg-secondary-dark hover:text-white;
   }
 
   .btn-inactive {
@@ -196,7 +224,7 @@
   }
 
   .userinfo-container {
-    @apply p-4 relative rounded-lg bg-mono-f5 hover:shadow-md transition-shadow animation;
+    @apply p-4 relative rounded bg-mono-f5 hover:shadow-md transition-shadow animation;
   }
 
   .userinfo-item {
@@ -223,23 +251,23 @@
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center rounded-lg;
+    @apply w-full flex flex-col gap-4 items-center rounded;
   }
 
   .controls{
-    @apply flex-base bg-white rounded-lg p-2 min-h-14 w-full;
+    @apply flex-base bg-white rounded p-2 min-h-14 w-full;
   }
 
   .controls-custom-btn {
-    @apply btn-color px-6 py-4 rounded-lg transition-colors text-base font-bold flex-shrink-0;
+    @apply btn-accent px-6 py-4 rounded transition-colors text-base font-bold flex-shrink-0;
   }
   
   .info-message {
-    @apply flex-base border rounded-lg border-mono-cc text-mono-99 p-4;
+    @apply flex-base border rounded border-mono-cc text-mono-99 p-4;
   }
 
   .control-type-btn {
-    @apply flex-base rounded-lg p-2;
+    @apply flex-base rounded p-2;
   }
 
   .disable-btn {
@@ -258,16 +286,10 @@
     @apply px-3 py-2 text-mono-99;
   }
   .tags-btn {
-    @apply px-3 py-2 rounded-md transition-colors text-sm;
+    @apply px-3 py-2 rounded transition-colors text-sm;
   }
   .btn-hover {
     @apply hover:bg-primary-light hover:text-white animation;
-  }
-
-
-  /* QuickBtns Styles */
-  .quick-btns-container {
-    @apply flex flex-col gap-4;
   }
 
   /* DateRangeInput Styles */
@@ -297,7 +319,7 @@
     }
 
     .date-range-checkbox {
-      @apply h-5 w-5 rounded-lg border-mono-cc text-mono-66 focus:ring-mono-66;
+      @apply h-5 w-5 rounded border-mono-cc text-mono-66 focus:ring-mono-66;
     }
 
 
@@ -314,7 +336,7 @@
     }
 
     .date-range-status-button-active {
-      @apply btn-color;
+      @apply btn-accent;
     }
 
     .date-range-status-button-inactive {
@@ -378,6 +400,20 @@
     @apply fill-mono-33 hover:fill-primary-light;
   }
 }
+@layer components {
+  .action-btns {
+    @apply flex justify-between;
+  }
+  
+  .export-btn, .print-btn {
+    @apply btn-base hover-scd px-4 py-2;
+  }
+  
+  
+  .import-btn {
+    @apply btn-base hover-pri px-4 py-2;
+  }
+}
 
 /* UTILITY STYLES */
 @layer utilities {
@@ -386,11 +422,11 @@
   }
 
   .animation {
-    @apply duration-300 ease-in-out;
+    @apply duration-300 ease-in-out transition-all;
   }
 
   .dragging-section-header {
-    @apply p-4 rounded-lg font-bold z-50 shadow-lg;
+    @apply p-4 rounded font-bold z-50 shadow-lg;
   }
 
   .item-enter {
@@ -410,7 +446,6 @@
   }
 }
 
-
 /* PRINT STYLES */
 @media print {
   @page {
@@ -420,9 +455,7 @@
   body {
     margin: 1.6cm;
   }
-  .action-buttons {
-    display: none;
-  }
+
   .page-break {
     page-break-before: always;
   }

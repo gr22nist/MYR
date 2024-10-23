@@ -37,7 +37,7 @@ const ToastComponent = () => {
       fixed left-1/2 transform -translate-x-1/2 text-center
       p-4 max-w-sm w-full mx-4
       text-white 
-      rounded-md shadow-lg
+      rounded shadow-lg
       z-50 transition-all duration-300 ease-in-out
       ${toastVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}
       top-8 sm:top-16

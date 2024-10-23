@@ -81,14 +81,14 @@ const LinkItems = ({ links = [], onChange, isEditing }) => {
               placeholder="URL을 입력하세요"
               spellCheck="false"
             />
-            <button onClick={handleAddLink} className="bg-secondary-dark text-white px-4 py-2 rounded-lg hover:bg-primary-light transition-colors">추가</button>
+            <button onClick={handleAddLink} className="bg-secondary-dark text-white px-4 py-2 rounded hover:bg-primary-light transition-colors">추가</button>
           </div>
           {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {links.map((item, index) => (
-          <div key={index} className="flex items-center space-x-2 p-2 bg-gray-100 rounded-lg">
+          <div key={index} className="flex items-center space-x-2 p-2 bg-gray-100 rounded">
             <div className="flex-grow flex items-center space-x-2 min-w-0">
               <span className="font-semibold whitespace-nowrap">{item.siteName}</span>
               <a

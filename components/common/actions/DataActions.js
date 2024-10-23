@@ -5,10 +5,12 @@ import ImportAction from './ImportAction';
 
 const DataActions = ({ onExport, onImport, dataType }) => {
   return (
-    <div className="flex items-center justify-end gap-2">
-      <ExportAction onExport={onExport} dataType={dataType} />
-      <ImportAction onImport={onImport} dataType={dataType} />
+    <div className='data-container'>
       <AutoSaveIndicator />
+      <div className='data-btns'>
+        <ExportAction onExport={onExport} dataType={dataType} />
+        <ImportAction onImport={onImport} dataType={dataType} />
+      </div>
     </div>
   );
 };

@@ -22,7 +22,7 @@ const ModalComponent = ({ isOpen, onClose, children }) => {
       }}
       closeTimeoutMS={300}
     >
-      <div className="font-sans relative p-6 bg-white rounded-lg shadow-xl max-w-md w-full mx-auto transform transition-all duration-300 ease-in-out">
+      <div className="font-sans relative p-6 bg-white rounded shadow-xl max-w-md w-full mx-auto transform transition-all duration-300 ease-in-out">
         <button
           onClick={handleCloseModal}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"

@@ -10,23 +10,6 @@ import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
 import usecustomStore from '@/store/customStore';
 import DataActions from '@/components/common/actions/DataActions';
-import useResumeStore from '@/store/resumeStore';
-import {
-  loadCareers,
-  loadEducations,
-  loadUserInfo,
-  loadProfilePhoto,
-  loadProfileData,
-  loadCustomSections,
-  loadSectionOrder,
-  saveCareers,
-  saveEducations,
-  saveUserInfo,
-  saveProfilePhoto,
-  saveProfileData,
-  saveCustomSections,
-  saveSectionOrder
-} from '@/utils/indexedDB';
 import useProfileStore from '@/store/profileStore';
 import useCareerStore from '@/store/careerStore';
 import useEducationStore from '@/store/educationStore';
@@ -139,12 +122,6 @@ const Resume = () => {
     setAreAllSectionsExpanded(newExpandedState);
   }, [areAllSectionsExpanded, orderedSections]);
 
-  const { exportProfile, loadProfile } = useProfileStore();
-  const { exportCareers } = useCareerStore();
-  const { exportEducations } = useEducationStore();
-  const { exportCustomSections } = usecustomStore();
-  const { exportUserInfo } = useUserInfoStore();
-
   const handleExport = async () => {
     try {
       const exportData = await exportAllData();
@@ -181,27 +158,29 @@ const Resume = () => {
         onImport={handleImport}
         dataType="이력서"
       />
-      <Profile />
-      <UserInfoForm />
-      <DynamicSortableSectionList
-        sections={orderedSections}
-        onSectionChange={updateSection}
-        onDelete={handleDeleteSection}
-        onReorder={handleReorder}
-        expandedSections={expandedSections}
-        onToggleExpand={toggleExpand}
-      />
-      <CustomForm onAddSection={handleAddSection} />
-      <ResetModal
-        isOpen={isResetModalOpen}
-        onClose={() => setIsResetModalOpen(false)}
-        onConfirm={handleConfirmReset}
-      />
-      <FloatingControls 
-        onReset={handleResetClick}
-        onToggleAllSections={toggleAllSections}
-        areAllSectionsExpanded={areAllSectionsExpanded}
-      />
+      <section className='layout-section'>
+        <Profile />
+        <UserInfoForm />
+        <DynamicSortableSectionList
+          sections={orderedSections}
+          onSectionChange={updateSection}
+          onDelete={handleDeleteSection}
+          onReorder={handleReorder}
+          expandedSections={expandedSections}
+          onToggleExpand={toggleExpand}
+        />
+        <CustomForm onAddSection={handleAddSection} />
+        <ResetModal
+          isOpen={isResetModalOpen}
+          onClose={() => setIsResetModalOpen(false)}
+          onConfirm={handleConfirmReset}
+        />
+        <FloatingControls 
+          onReset={handleResetClick}
+          onToggleAllSections={toggleAllSections}
+          areAllSectionsExpanded={areAllSectionsExpanded}
+        />
+      </section>
     </div>
   );
 };
