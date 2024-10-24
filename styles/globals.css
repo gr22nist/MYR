@@ -63,7 +63,7 @@
 
 /* Profile Styles */
 .profile-container {
-  @apply flex flex-col gap-4;
+  @apply flex flex-col gap-4 border-b;
 }
 
 .profile-title {
@@ -71,7 +71,7 @@
 }
 
 .profile-text-area {
-  @apply p-4  border-0 rounded overflow-hidden w-full resize-none animation outline-none;
+  @apply p-4 border-0 rounded overflow-hidden w-full resize-none animation outline-none;
 }
 
 .profile-text-area-empty {
@@ -87,8 +87,25 @@
 }
 
 .profile-text-area-paragraph {
-  @apply profile-text-area flex lg:text-lg;
+  @apply profile-text-area flex lg:text-lg pb-8;
 }
+
+
+/* LAYOUT STYLES */
+@layer components {
+  .resume-container {
+    @apply flex flex-col gap-8;
+  }
+  
+  .profile-view-title {
+    @apply lg:text-4xl text-3xl font-bold lg:leading-normal;
+  }
+  
+  .profile-view-paragraph {
+    @apply lg:text-lg pb-8;
+  }
+}
+
 
   /* QuickBtns Styles */
   @layer components {

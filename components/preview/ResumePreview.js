@@ -60,7 +60,7 @@ const ResumePreview = ({ resumeData }) => {
         return (
           <div key="profile" className="profile-container pdf-section">
             <div className="profile-title">
-              <p className="profile-text-area-title leading-normal">
+              <p className="profile-view-title">
                 {renderWithLineBreaks(decryptedData.profileData?.title || '')}
               </p>
               {decryptedData.profilePhoto && decryptedData.profilePhoto.value && (
@@ -74,7 +74,7 @@ const ResumePreview = ({ resumeData }) => {
                 </div>
               )}
             </div>
-            <div className="profile-text-area-paragraph">
+            <div className="profile-view-paragraph">
               {renderWithLineBreaks(decryptedData.profileData?.paragraph)}
             </div>
           </div>
@@ -202,7 +202,7 @@ const ResumePreview = ({ resumeData }) => {
   };
 
   return (
-    <div id="resume-preview">
+    <div id="resume-preview" className="resume-container">
       {resumeData.map((section) => renderSection(section))}
     </div>
   );
