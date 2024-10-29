@@ -6,7 +6,7 @@ const NavBar = () => {
   return (
     <header className='nav-container'>
       <nav className='nav-wrap'>
-        <Link href='/' passHref>
+        <Link href='/' passHref aria-label='홈'>
           <Logo className='nav-logo' />
         </Link> 
         <ul className='nav-list'>
