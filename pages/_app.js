@@ -12,8 +12,9 @@ const suit = localFont({
   src: '../public/fonts/SUIT-Variable.woff2',
   weight: '100 900',
   variable: '--font-suit',
-  display: 'swap',
+  display: 'block',
   preload: true,
+  fallback: ['system-ui', 'sans-serif']
 });
 
 ReactModal.setAppElement('#__next');
@@ -26,7 +27,7 @@ function MYR({ Component, pageProps }) {
   }, []);
 
   return (
-    <main className={`${suit.variable} font-suit`}>
+    <main className={`${suit.variable} font-suit antialiased`}>
       <Layout>
         <Component {...pageProps} />
         <Analytics />

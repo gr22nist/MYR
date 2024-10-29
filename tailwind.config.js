@@ -45,8 +45,8 @@ export const theme = {
         '100%': { opacity: '0', transform: 'translateY(-20px)' },
       },
       skeleton: {
-        '0%': { backgroundPosition: '200% 0' },
-        '100%': { backgroundPosition: '-200% 0' },
+        '0%': { backgroundPosition: '100% 50%' },
+        '100%': { backgroundPosition: '0% 50%' },
       },
     },
     animation: {

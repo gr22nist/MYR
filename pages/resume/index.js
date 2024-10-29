@@ -8,16 +8,11 @@ import CustomForm from '@/components/resume/custom/CustomForm';
 import useResumeSections from '@/hooks/useResumeSections';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
-import usecustomStore from '@/store/customStore';
 import DataActions from '@/components/common/actions/DataActions';
-import useProfileStore from '@/store/profileStore';
-import useCareerStore from '@/store/careerStore';
-import useEducationStore from '@/store/educationStore';
-import useUserInfoStore from '@/store/userInfoStore';
 import useSectionOrderStore from '@/store/sectionOrderStore';
 import { exportAllData, importData } from '@/utils/indexedDB';
 
-const DynamicSortableSectionList = dynamic(() => import('@/components/common/SortableSectionList'), {
+const DynamicSortableSectionList = dynamic(() => import('@/components/common/dnd/SortableSectionList'), {
   ssr: false,
 });
 

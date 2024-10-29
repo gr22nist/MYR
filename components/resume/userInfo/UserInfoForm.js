@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import PropTypes from 'prop-types';
-import SortableItem from '@/components/common/SortableItem';
+import SortableItem from '@/components/common/dnd/SortableItem';
 import TagButtons from '@/components/common/TagButtons';
 import ModalComponent from '@/components/common/ModalComponent';
 import UserInfoItem from './UserInfoItem';
