@@ -1,7 +1,6 @@
-import Dexie from 'dexie';
-
 let db;
 let initializationPromise = null;
+let DexieModule = null;
 
 export const initializeDB = async () => {
   if (initializationPromise) {
@@ -13,22 +12,26 @@ export const initializeDB = async () => {
       return db;
     }
 
-    db = new Dexie('ResumeDB');
-    db.version(1).stores({
-      profileData: 'key',
-      profilePhotos: 'key',
-      userInfo: '&id',
-      careers: '&id',
-      educations: '&id',
-      customSections: '&id',
-      sectionOrder: '&id, order',
-    });
-
     try {
+      if (!DexieModule) {
+        DexieModule = await import('dexie').then(mod => mod.default);
+      }
+
+      db = new DexieModule('ResumeDB');
+      db.version(1).stores({
+        profileData: 'key',
+        profilePhotos: 'key',
+        userInfo: '&id',
+        careers: '&id',
+        educations: '&id',
+        customSections: '&id',
+        sectionOrder: '&id, order',
+      });
+
       await db.open();
       return db;
     } catch (error) {
-      console.error('데이터베이스 열기 실패:', error);
+      console.error('데이터베이스 초기화 실패:', error);
       db = null;
       throw error;
     } finally {
@@ -47,7 +50,7 @@ export const getDB = async (retries = 3) => {
     return db;
   } catch (error) {
     if (retries > 0) {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 1초 대기
+      await new Promise(resolve => setTimeout(resolve, 1000));
       return getDB(retries - 1);
     }
     throw error;
