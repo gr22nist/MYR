@@ -268,7 +268,7 @@
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center rounded;
+    @apply w-full flex flex-col gap-4 items-center;
   }
 
   .controls{
