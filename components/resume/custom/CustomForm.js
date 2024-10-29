@@ -31,7 +31,7 @@ const CustomForm = React.memo(({ onAddSection }) => {
 
   return (
     <div className='controls-container'>
-      <div className='info-message text-small'>
+      <div className='info-message'>
         작성하고 싶은 정보가 있는데 필드가 없나요? 직접 만들어보세요.
         저서, 논문, 봉사 경험, 교육활동 등 무엇이든 간단한 텍스트로 작성 가능합니다.
       </div>
