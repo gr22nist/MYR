@@ -156,7 +156,7 @@ const Resume = () => {
       <DataActions 
         onExport={handleExport} 
         onImport={handleImport}
-        dataType="이력서"
+        dataType='이력서'
       />
       <section className='layout-section'>
         <Profile />

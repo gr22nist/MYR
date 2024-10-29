@@ -3,34 +3,34 @@ import { fonts } from './utils/fonts';  // fonts 임포트 추가
 
 /** @type {import('tailwindcss').Config} */
 export const content = [
-  "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-  "./components/**/*.{js,ts,jsx,tsx,mdx}",
-  "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  "./src/**/*.{js,ts,jsx,tsx,mdx}",
+  './pages/**/*.{js,ts,jsx,tsx,mdx}',
+  './components/**/*.{js,ts,jsx,tsx,mdx}',
+  './app/**/*.{js,ts,jsx,tsx,mdx}',
+  './src/**/*.{js,ts,jsx,tsx,mdx}',
   './styles/**/*.js',
 ];
 export const theme = {
   extend: {
     colors: {
       ...colors,
-      background: "var(--background)",
-      foreground: "var(--foreground)",
+      background: 'var(--background)',
+      foreground: 'var(--foreground)',
     },
     fontSize: {
       // 기본 폰트 크기와 라인 높이 설정
       base: ['1rem', { lineHeight: '1.5' }],
     },
     fontFamily: {
-      suit: ["var(--font-suit)"],
-      // nanum: ["var(--font-nanum)"],
+      suit: ['var(--font-suit)'],
+      // nanum: ['var(--font-nanum)'],
     },
     width: {
-      "myr": "1144px",
-      "label": "520px",
+      'myr': '1144px',
+      'label': '520px',
 
     },
     maxWidth: {
-      "myr": "1240px",
+      'myr': '1240px',
     },
     transitionDuration: {
       '400': '400ms',

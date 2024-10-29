@@ -18,8 +18,8 @@ const DeleteButton = ({ onClick, isSubItem, ariaLabel = '삭제' }) => {
     >
       <IconButton 
         icon={isSubItem ? DeleteBtn : DeleteLineBtn}
-        size="small"
-        aria-hidden="true"
+        size='small'
+        aria-hidden='true'
         className={'btn-rotate'}
       />
     </button>

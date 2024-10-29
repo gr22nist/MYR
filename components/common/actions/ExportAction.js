@@ -22,7 +22,7 @@ const ExportAction = ({ onExport, dataType }) => {
   };
 
   return (
-    <button onClick={handleExport} className="export-btn">
+    <button onClick={handleExport} className='export-btn'>
       내보내기
     </button>
   );

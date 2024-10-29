@@ -17,7 +17,7 @@ const QuickBtns = ({ onReset, onToggleAllSections, areAllSectionsExpanded }) => 
           초기화
         </span>
       </button>
-      <Link href="/resume/preview" legacyBehavior>
+      <Link href='/resume/preview' legacyBehavior>
         <a className='quick-btn'>
           <ViewBtn className='btn-icon' />
           <span className='text-sm'>

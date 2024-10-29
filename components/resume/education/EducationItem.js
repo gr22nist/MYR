@@ -40,24 +40,24 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
       nodeRef={nodeRef}
       in={true}
       timeout={300}
-      classNames="fade"
+      classNames='fade'
       appear
     >
       <div ref={nodeRef} className={`education-item my-4 relative flex flex-col gap-2 ${className}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex gap-4 items-center">
-            <div className="w-label">
+        <div className='flex items-center justify-between'>
+          <div className='flex gap-4 items-center'>
+            <div className='w-label'>
               <FloatingLabelInput
-                label="학교명"
+                label='학교명'
                 value={education.schoolName || ''}
                 onChange={(e) => handleChange('schoolName', e.target.value)}
                 placeholder={PLACEHOLDERS.education.schoolName}
-                spellCheck="false"
-                maxLength="100"
-                className="w-full"
+                spellCheck='false'
+                maxLength='100'
+                className='w-full'
                 isCore={true}
                 isTitle={true}
-                tooltipMessage="학교명을 꼭 입력해 주세요."
+                tooltipMessage='학교명을 꼭 입력해 주세요.'
               />
             </div>
             <DateRangeInput
@@ -72,7 +72,7 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
           <ActionButtons 
             onDelete={() => onDelete(education.id)} 
             isDeletable={isDeletable} 
-            mode="item"
+            mode='item'
             isSubItem={isSubItem}
             dragHandleProps={dragHandleProps}
           />
@@ -80,13 +80,13 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
         {isExpanded && (
           <>
             <FloatingLabelTextarea
-              label="전공"
+              label='전공'
               value={education.major || ''}
               onChange={(e) => handleChange('major', e.target.value)}
               placeholder={PLACEHOLDERS.education.majors}
-              spellCheck="false"
-              maxLength="100"
-              className="w-full"
+              spellCheck='false'
+              maxLength='100'
+              className='w-full'
             />
           </>
         )}

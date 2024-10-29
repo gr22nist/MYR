@@ -31,7 +31,7 @@ const SortableCareerItem = ({ career, onCareerChange, onDelete, isDeletable, isE
   } : {};
 
   return (
-    <CSSTransition nodeRef={nodeRef} timeout={150} classNames="item">
+    <CSSTransition nodeRef={nodeRef} timeout={150} classNames='item'>
       <div 
         ref={(node) => {
           setNodeRef(node);

@@ -64,8 +64,8 @@ const EducationList = ({ isExpanded, onToggle, section, onSectionChange }) => {
     <>
       <AddBtn
         onClick={handleAddEducation}
-        label="새로운 학력을 추가해보세요"
-        ariaLabel="새 학력 항목 추가"
+        label='새로운 학력을 추가해보세요'
+        ariaLabel='새 학력 항목 추가'
       />
       <DndContext
         sensors={sensors}

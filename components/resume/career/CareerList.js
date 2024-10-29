@@ -63,8 +63,8 @@ const CareerList = ({ isExpanded, onToggle, section, onSectionChange }) => {
     <>
       <AddBtn 
         onClick={handleAddCareer}  // 여기서 handleAddCareer 함수를 전달합니다.
-        label="새로운 경력을 추가해보세요" 
-        ariaLabel="새 경력 항목 추가"
+        label='새로운 경력을 추가해보세요' 
+        ariaLabel='새 경력 항목 추가'
       />
       <DndContext 
         sensors={sensors} 

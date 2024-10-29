@@ -48,24 +48,24 @@ const CareerItem = ({
       nodeRef={nodeRef}
       in={true}
       timeout={300}
-      classNames="fade"
+      classNames='fade'
       unmountOnExit
     >
       <div ref={nodeRef} className={`career-item my-4 relative flex flex-col gap-2 ${className}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex gap-4 items-center">
-            <div className="w-label">
+        <div className='flex items-center justify-between'>
+          <div className='flex gap-4 items-center'>
+            <div className='w-label'>
               <FloatingLabelInput
-                label="회사명"
+                label='회사명'
                 value={career.companyName || ''}
                 onChange={(e) => handleChange('companyName', e.target.value)}
                 placeholder={PLACEHOLDERS.career.companyName}
-                spellCheck="false"
-                maxLength="100"
-                className="w-full"
+                spellCheck='false'
+                maxLength='100'
+                className='w-full'
                 isCore={true}
                 isTitle={true}
-                tooltipMessage="회사명을 꼭 입력해 주세요."
+                tooltipMessage='회사명을 꼭 입력해 주세요.'
               />
             </div>
             <DateRangeInput
@@ -79,7 +79,7 @@ const CareerItem = ({
           <ActionButtons 
             onDelete={() => onDelete(career.id)} 
             isDeletable={isDeletable} 
-            mode="item"
+            mode='item'
             isSubItem={isSubItem}
             dragHandleProps={dragHandleProps}
           />
@@ -87,22 +87,22 @@ const CareerItem = ({
         {isExpanded && (
           <>
             <FloatingLabelInput
-              label="포지션"
+              label='포지션'
               value={career.position || ''}
               onChange={(e) => handleChange('position', e.target.value)}
               placeholder={PLACEHOLDERS.career.position}
-              spellCheck="false"
-              maxLength="100"
-              className="w-full"
+              spellCheck='false'
+              maxLength='100'
+              className='w-full'
             />
             <FloatingLabelTextarea
-              label="주요 업무"
+              label='주요 업무'
               value={career.mainTask || ''}
               onChange={(e) => handleChange('mainTask', e.target.value)}
               placeholder={PLACEHOLDERS.career.tasks}
-              spellCheck="false"
-              maxLength="1000"
-              className="w-full"
+              spellCheck='false'
+              maxLength='1000'
+              className='w-full'
             />
           </>
         )}

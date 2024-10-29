@@ -14,7 +14,7 @@ const FloatingControls = ({ onReset, onToggleAllSections, areAllSectionsExpanded
   }, []);
 
   return (
-    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 mx-auto bg-white rounded-full shadow-lg p-2">
+    <div className='fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 mx-auto bg-white rounded-full shadow-lg p-2'>
       <QuickBtns 
         onReset={onReset} 
         onToggleAllSections={onToggleAllSections}

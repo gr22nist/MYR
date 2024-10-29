@@ -41,19 +41,19 @@ const EmailInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div>
       <BaseInput
-        label="이메일"
-        id="email"
-        type="email"
+        label='이메일'
+        id='email'
+        type='email'
         value={email}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="example@example.com"
+        placeholder='example@example.com'
         error={error}
       />
       <Button
         onClick={handleConfirm}
         disabled={!!error || !email}
-        className="mt-4 w-full"
+        className='mt-4 w-full'
       >
         확인
       </Button>

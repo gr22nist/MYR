@@ -35,21 +35,21 @@ const CustomForm = ({ onAddSection }) => {
   }, [canAddSection, addCustomSection, loadAllSections]);
 
   return (
-    <div className="controls-container">
-      <div className="info-message">
-        <p className="text-small">
+    <div className='controls-container'>
+      <div className='info-message'>
+        <p className='text-small'>
           작성하고 싶은 정보가 있는데 필드가 없나요? 직접 만들어보세요.
           저서, 논문, 봉사 경험, 교육활동 등 무엇이든 간단한 텍스트로 작성 가능합니다.
         </p>
       </div>
-      <div className="controls">
+      <div className='controls'>
         <button 
           onClick={() => handleAddSection(CUSTOM_SECTIONS.type)}
-          className="controls-custom-btn"
+          className='controls-custom-btn'
         >
           + 자유 서식 추가하기
         </button>
-        <div className="control-type-btn">
+        <div className='control-type-btn'>
           <TagButtons 
             tags={tags}
             onTagClick={handleAddSection}

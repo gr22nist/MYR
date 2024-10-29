@@ -114,34 +114,34 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
   }, [onImageChange, showToast]);
 
   return (
-    <div className="flex items-center flex-col">
+    <div className='flex items-center flex-col'>
       <div 
-        className="relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded flex items-center justify-center"
+        className='relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded flex items-center justify-center'
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {currentImage ? (
-          <div className="relative w-full h-full group">
+          <div className='relative w-full h-full group'>
             <Image
               src={currentImage}
-              alt="Profile"
+              alt='Profile'
               fill
               style={{ objectFit: 'cover' }}
             />
             {isHovered && (
-              <div className="absolute inset-0 bg-mono-11 bg-opacity-50 flex items-center justify-center transition-opacity">
+              <div className='absolute inset-0 bg-mono-11 bg-opacity-50 flex items-center justify-center transition-opacity'>
                 <button onClick={handlePhotoDelete}>
-                  <PhotoRemove className="w-8 h-8 text-white" />
+                  <PhotoRemove className='w-8 h-8 text-white' />
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <label htmlFor="photo-upload" className="w-full h-full flex flex-col items-center justify-center bg-mono-f5 cursor-pointer">
+          <label htmlFor='photo-upload' className='w-full h-full flex flex-col items-center justify-center bg-mono-f5 cursor-pointer'>
             {isHovered ? (
-              <PhotoAdd className="w-8 h-8 text-mono-99" />
+              <PhotoAdd className='w-8 h-8 text-mono-99' />
             ) : (
-              <p className="text-xs text-center text-mono-99 leading-normal">
+              <p className='text-xs text-center text-mono-99 leading-normal'>
                 사진 첨부가 <br />꼭 필요한 곳에만<br />사용해보세요<br /><br /> 108*144
               </p>
             )}
@@ -149,12 +149,12 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
         )}
       </div>
       <input
-        id="photo-upload"
+        id='photo-upload'
         ref={fileInputRef}
-        type="file"
-        accept="image/*"
+        type='file'
+        accept='image/*'
         onChange={handlePhotoUpload}
-        className="hidden"
+        className='hidden'
       />
     </div>
   );

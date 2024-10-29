@@ -4,8 +4,8 @@ const BaseInput = ({ label, id, value, onChange, placeholder, error, type = 'tex
   const InputComponent = multiline ? 'textarea' : 'input';
 
   return (
-    <div className="mb-6">
-      <label htmlFor={id} className="block lg:text-sm text-xs font-medium text-gray-700 mb-1">{label}</label>
+    <div className='mb-6'>
+      <label htmlFor={id} className='block lg:text-sm text-xs font-medium text-gray-700 mb-1'>{label}</label>
         <InputComponent
           type={multiline ? undefined : type}
           id={id}
@@ -21,7 +21,7 @@ const BaseInput = ({ label, id, value, onChange, placeholder, error, type = 'tex
           {...props}
         />
         {error && (
-          <p className="mt-1 lg:text-sm text-xs text-red-500 absolute">{error}</p>
+          <p className='mt-1 lg:text-sm text-xs text-red-500 absolute'>{error}</p>
         )}
     </div>
   );

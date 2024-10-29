@@ -6,12 +6,12 @@ import '../styles/modal.css';
 import ReactModal from 'react-modal';
 import localFont from 'next/font/local';
 import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const suit = localFont({
   src: '../public/fonts/SUIT-Variable.woff2',
   weight: '100 900',
-  variable: "--font-suit",
+  variable: '--font-suit',
   display: 'swap',
   preload: true,
 });

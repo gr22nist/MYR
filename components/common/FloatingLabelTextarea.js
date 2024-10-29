@@ -56,7 +56,7 @@ const FloatingLabelTextarea = ({
   `;
 
   return (
-    <div className="floating-label-container w-full">
+    <div className='floating-label-container w-full'>
       <textarea
         ref={textareaRef}
         className={textareaClasses}

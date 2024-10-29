@@ -1,8 +1,6 @@
 import React, { Fragment } from 'react';
 import { decryptData } from '@/utils/cryptoUtils';
 import Image from 'next/image';
-import { QRCodeSVG } from 'qrcode.react';
-
 
 const renderWithLineBreaks = (text) => {
   if (!text) return null;
@@ -58,31 +56,31 @@ const ResumePreview = ({ resumeData }) => {
     switch (section.type) {
       case 'profile':
         return (
-          <div key="profile" className="profile-container pdf-section">
-            <div className="profile-title">
-              <p className="profile-view-title">
+          <div key='profile' className='profile-container pdf-section'>
+            <div className='profile-title'>
+              <p className='profile-view-title'>
                 {renderWithLineBreaks(decryptedData.profileData?.title || '')}
               </p>
               {decryptedData.profilePhoto && decryptedData.profilePhoto.value && (
-                <div className="w-[108px] h-[140px] relative">
+                <div className='w-[108px] h-[140px] relative'>
                   <Image
                     src={decryptedData.profilePhoto.value}
-                    alt="Profile"
+                    alt='Profile'
                     fill
                     style={{ objectFit: 'cover' }}
                   />
                 </div>
               )}
             </div>
-            <div className="profile-view-paragraph">
+            <div className='profile-view-paragraph'>
               {renderWithLineBreaks(decryptedData.profileData?.paragraph)}
             </div>
           </div>
         );
       case 'userInfo':
         return (
-          <div key="userInfo" className="userinfo-container pdf-section mb-6">
-            <div className="userinfo-grid">
+          <div key='userInfo' className='userinfo-container pdf-section mb-6'>
+            <div className='userinfo-grid'>
               {decryptedData.map((info, index) => {
                 let displayValue, displayType;
                 
@@ -104,9 +102,9 @@ const ResumePreview = ({ resumeData }) => {
                 }
 
                 return (
-                  <div key={index} className="userinfo-item flex flex-col">
-                    <span className="userinfo-label font-bold mb-1">{displayType || '정보'}</span>
-                    <span className="userinfo-value">
+                  <div key={index} className='userinfo-item flex flex-col'>
+                    <span className='userinfo-label font-bold mb-1'>{displayType || '정보'}</span>
+                    <span className='userinfo-value'>
                       {renderWithLineBreaks(displayValue)}
                     </span>
                   </div>
@@ -118,22 +116,22 @@ const ResumePreview = ({ resumeData }) => {
       case 'careers':
         if (decryptedData.length === 0 || !decryptedData.some(career => career.value && Object.values(career.value).some(v => v !== null && v !== ''))) return null;
         return (
-          <div key="careers" className="careers-section pdf-section mb-6">
-            <h2 className="section-title">경력</h2>
+          <div key='careers' className='careers-section pdf-section mb-6'>
+            <h2 className='section-title'>경력</h2>
             {decryptedData.map((career, index) => (
               career.value && Object.values(career.value).some(v => v !== null && v !== '') ? (
-                <div key={index} className="career-item">
-                  {career.value.companyName && <h3 className="company-name">{career.value.companyName}</h3>}
-                  {career.value.position && <p className="position">{career.value.position}</p>}
+                <div key={index} className='career-item'>
+                  {career.value.companyName && <h3 className='company-name'>{career.value.companyName}</h3>}
+                  {career.value.position && <p className='position'>{career.value.position}</p>}
                   {(career.value.startDate || career.value.endDate) && (
-                    <p className="date-range">
+                    <p className='date-range'>
                       {career.value.startDate || ''}
                       {(career.value.startDate && career.value.endDate) && ' - '}
                       {career.value.isCurrent ? '현재' : career.value.endDate || ''}
                     </p>
                   )}
                   {career.value.mainTask && (
-                    <div className="main-tasks">
+                    <div className='main-tasks'>
                       {renderWithLineBreaks(career.value.mainTask)}
                     </div>
                   )}
@@ -145,21 +143,21 @@ const ResumePreview = ({ resumeData }) => {
       case 'educations':
         if (decryptedData.length === 0 || !decryptedData.some(education => education.value && Object.values(education.value).some(v => v !== null && v !== ''))) return null;
         return (
-          <div key="educations" className="educations-section pdf-section mb-6">
-            <h2 className="section-title">학력</h2>
+          <div key='educations' className='educations-section pdf-section mb-6'>
+            <h2 className='section-title'>학력</h2>
             {decryptedData.map((education, index) => (
               education.value && Object.values(education.value).some(v => v !== null && v !== '') ? (
-                <div key={index} className="education-item">
-                  {education.value.schoolName && <h3 className="school-name">{education.value.schoolName}</h3>}
-                  {education.value.major && <p className="major">{education.value.major}</p>}
+                <div key={index} className='education-item'>
+                  {education.value.schoolName && <h3 className='school-name'>{education.value.schoolName}</h3>}
+                  {education.value.major && <p className='major'>{education.value.major}</p>}
                   {(education.value.startDate || education.value.endDate) && (
-                    <p className="date-range">
+                    <p className='date-range'>
                       {education.value.startDate || ''}
                       {(education.value.startDate && education.value.endDate) && ' - '}
                       {education.value.isCurrent ? '현재' : education.value.endDate || ''}
                     </p>
                   )}
-                  {education.value.graduationStatus && <p className="graduation-status">{education.value.graduationStatus}</p>}
+                  {education.value.graduationStatus && <p className='graduation-status'>{education.value.graduationStatus}</p>}
                 </div>
               ) : null
             ))}
@@ -169,19 +167,19 @@ const ResumePreview = ({ resumeData }) => {
         const customData = decryptedData.value;
 
         return (
-          <div key={customData.id || decryptedData.id} className="custom-section">
-            <h2 className="section-title">{customData.title || ''}</h2>
+          <div key={customData.id || decryptedData.id} className='custom-section'>
+            <h2 className='section-title'>{customData.title || ''}</h2>
             {customData.type === 'link' ? (
-              <div className="link-items-container">
+              <div className='link-items-container'>
                 {(customData.links || []).map((link, index) => (
-                  <div key={index} className="link-item">
-                    <div className="link-content">
-                      <span className="link-site-name">{link.siteName}</span>
+                  <div key={index} className='link-item'>
+                    <div className='link-content'>
+                      <span className='link-site-name'>{link.siteName}</span>
                       <a
                         href={link.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="link-url"
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='link-url'
                       >
                         {link.link}
                       </a>
@@ -190,7 +188,7 @@ const ResumePreview = ({ resumeData }) => {
                 ))}
               </div>
             ) : (
-              <div className="custom-content">
+              <div className='custom-content'>
                 {renderWithLineBreaks(customData.content || '')}
               </div>
             )}
@@ -202,7 +200,7 @@ const ResumePreview = ({ resumeData }) => {
   };
 
   return (
-    <div id="resume-preview" className="resume-container">
+    <div id='resume-preview' className='resume-container'>
       {resumeData.map((section) => renderSection(section))}
     </div>
   );

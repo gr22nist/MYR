@@ -51,29 +51,29 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
     }
   }, [handleConfirm, inputValue]);
 
-  const displayValue = inputValue ? inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
+  const displayValue = inputValue ? inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 
   return (
     <div>
-      <div className="relative mb-4">
+      <div className='relative mb-4'>
         <BaseInput
-          label="연봉"
+          label='연봉'
           value={displayValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder="0"
+          placeholder='0'
         />
-        <span className="absolute top-0 right-0 lg:text-sm text-xs text-mono-99">단위: 만원</span>
+        <span className='absolute top-0 right-0 lg:text-sm text-xs text-mono-99'>단위: 만원</span>
       </div>
       <Button
         onClick={handleConfirm}
         disabled={!inputValue}
-        className="mt-4 w-full"
+        className='mt-4 w-full'
       >
         확인
       </Button>
       {confirmedValue && (
-        <p className="mt-2 lg:text-sm text-xs text-gray-500">
+        <p className='mt-2 lg:text-sm text-xs text-gray-500'>
           입력된 연봉: {confirmedValue}
         </p>
       )}

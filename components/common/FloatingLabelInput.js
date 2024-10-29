@@ -37,8 +37,8 @@ const FloatingLabelInput = ({
   }, [inputRef]);
 
   return (
-    <div className="floating-label-container">
-      <Tooltip content={isCore && !value ? tooltipMessage : ""} disabled={!!value}>
+    <div className='floating-label-container'>
+      <Tooltip content={isCore && !value ? tooltipMessage : ''} disabled={!!value}>
         <input
           ref={internalRef}
           type={type}

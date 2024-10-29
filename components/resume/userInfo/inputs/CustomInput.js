@@ -38,23 +38,23 @@ const CustomInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div className='custom-container'>
       <BaseInput
-        label="제목"
+        label='제목'
         value={title}
         onChange={handleTitleChange}
-        placeholder="제목을 입력하세요"
+        placeholder='제목을 입력하세요'
         onKeyDown={handleKeyDown}
       />
       <BaseInput
-        label="내용"
+        label='내용'
         value={value}
         onChange={handleValueChange}
         onKeyDown={handleKeyDown}
-        placeholder="내용을 입력하세요"
+        placeholder='내용을 입력하세요'
       />
       <Button
         onClick={handleConfirm}
         disabled={!title || !value}
-        className="mt-4 w-full"
+        className='mt-4 w-full'
       >
         확인
       </Button>

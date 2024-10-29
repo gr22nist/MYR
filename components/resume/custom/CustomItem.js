@@ -24,11 +24,11 @@ const CustomItem = ({ section, onChange, isEditing }) => {
     <div>
       {isEditing ? (
         <FloatingLabelTextarea
-          label="내용"
+          label='내용'
           value={section.content || ''}
           onChange={(e) => handleChange('content', e.target.value)}
           placeholder={PLACEHOLDERS[section.type] || PLACEHOLDERS.default}
-          spellCheck="false"
+          spellCheck='false'
         />
       ) : (
         <div>{section.content}</div>

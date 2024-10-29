@@ -153,23 +153,23 @@ const UserInfoForm = () => {
   };
 
   const renderAddSection = () => (
-    <div className="controls-container">
-      <div className="info-message">
-        <p className="text-small">
+    <div className='controls-container'>
+      <div className='info-message'>
+        <p className='text-small'>
           작성이 필요한 개인정보(병역 유무, 성별, 나이 등)가 있는 경우에는 자유서식을 사용해보세요. 
           추가된 항목이 없으면 작성 완료 시 해당 영역이 보이지 않습니다.
         </p>
       </div>
       
-      <div className="controls">
+      <div className='controls'>
         <button 
           onClick={() => setIsCustomModalOpen(true)}
-          className="controls-custom-btn"
+          className='controls-custom-btn'
         >
           + 개인정보 자유 서식
         </button>
         
-        <div className="control-type-btn">
+        <div className='control-type-btn'>
           <TagButtons 
             tags={tags}
             activeTag={activeField?.type}
@@ -218,7 +218,7 @@ const UserInfoForm = () => {
   }
 
   return (
-    <div className="userinfo-form">
+    <div className='userinfo-form'>
       {renderAddSection()}
       
       {items.length > 0 && (
@@ -229,7 +229,7 @@ const UserInfoForm = () => {
           onDragEnd={handleDragEnd}
         >
           <SortableContext items={items.map(item => item.id)} strategy={rectSortingStrategy}>
-            <div className="grid-container">
+            <div className='grid-container'>
               {memoizedItems}
             </div>
           </SortableContext>

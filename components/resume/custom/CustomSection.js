@@ -40,15 +40,15 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
     if (isCustomType) {
       return (
         <FloatingLabelInput
-          label="제목"
+          label='제목'
           value={section.title || ''}
           onChange={(e) => handleChange({ ...section, title: e.target.value })}
-          placeholder="제목을 입력해주세요"
-          spellCheck="false"
-          maxLength="100"
+          placeholder='제목을 입력해주세요'
+          spellCheck='false'
+          maxLength='100'
           isCore={true}
           isTitle={true}
-          tooltipMessage="제목을 꼭 입력해 주세요."
+          tooltipMessage='제목을 꼭 입력해 주세요.'
         />
       );
     } else {
@@ -63,7 +63,7 @@ const CustomSection = ({ section, onSectionChange, onDelete, isExpanded, onToggl
         isExpanded={isExpanded}
         onToggle={onToggle}
         dragHandleProps={{ ...attributes, ...listeners }}
-        mode="custom"
+        mode='custom'
         onDelete={handleDelete}
         isCustomTitle={isCustomType}
       >

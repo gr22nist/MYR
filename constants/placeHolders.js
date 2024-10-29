@@ -1,7 +1,7 @@
 export const PLACEHOLDERS = {
   career: {
-    companyName: "예: 네이버 주식회사, Google",
-    position: " 예: 소프트웨어 엔지니어, UX/UI 디자이너",
+    companyName: '예: 네이버 주식회사, Google',
+    position: ' 예: 소프트웨어 엔지니어, UX/UI 디자이너',
     tasks: `
 · 담당 업무에 대해 간단한 서술형 문장으로 작성하시는 것을 추천드립니다.
 · 프로젝트 단위의 업무가 흔한 직군이라면 대표 프로젝트에 대한 소개를 추가 해주세요.
@@ -11,7 +11,7 @@ export const PLACEHOLDERS = {
   },
   
   education: {
-    schoolName: "예: 서울대학교, Harvard University",
+    schoolName: '예: 서울대학교, Harvard University',
     majors: `
 · 학점이나 긍정적인 특이사항, 교내 활동 등을 어필해보세요.
 · 졸업논문이나 수상이력을 포함시키는 것도 좋습니다.

@@ -49,17 +49,17 @@ const PhoneInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div>
       <BaseInput
-        label="연락처"
+        label='연락처'
         value={phone}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="010-0000-0000"
+        placeholder='010-0000-0000'
         error={error}
       />
       <Button
         onClick={handleConfirm}
         disabled={!!error || !phone}
-        className="mt-4 w-full"
+        className='mt-4 w-full'
       >
         확인
       </Button>

@@ -27,22 +27,22 @@ const ImportAction = ({ onImport, dataType }) => {
 
   return (
     <>
-      <button onClick={() => setIsImportModalOpen(true)} className="import-btn">
+      <button onClick={() => setIsImportModalOpen(true)} className='import-btn'>
         가져오기
       </button>
       <ModalComponent isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)}>
-        <h2 className="text-xl font-bold mb-4">{dataType} 데이터 가져오기</h2>
-        <p className="mb-4">내보내기 한 JSON 파일을 선택하여<br />{dataType} 데이터를 가져올 수 있습니다.</p>
+        <h2 className='text-xl font-bold mb-4'>{dataType} 데이터 가져오기</h2>
+        <p className='mb-4'>내보내기 한 JSON 파일을 선택하여<br />{dataType} 데이터를 가져올 수 있습니다.</p>
         <input
-          type="file"
-          accept=".json"
+          type='file'
+          accept='.json'
           onChange={handleImport}
-          className="block w-full text-sm text-gray-500
+          className='block w-full text-sm text-gray-500
             file:mr-4 file:py-2 file:px-4
             file:rounded-full file:border-0
             file:text-sm file:font-semibold
             file:bg-secondary-dark file:text-white
-            hover:file:bg-primary-light file:duration-300 file:ease-in-out"
+            hover:file:bg-primary-light file:duration-300 file:ease-in-out'
         />
       </ModalComponent>
     </>

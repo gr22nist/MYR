@@ -1,27 +1,27 @@
-import React from "react";
-import Link from "next/link";
-import { Logo } from "@/components/icons/IconSet";
+import React from 'react';
+import Link from 'next/link';
+import { Logo } from '@/components/icons/IconSet';
 
 const NavBar = () => {
   return (
     <header className='nav-container'>
       <nav className='nav-wrap'>
-        <Link href="/" passHref>
+        <Link href='/' passHref>
           <Logo className='nav-logo' />
         </Link> 
         <ul className='nav-list'>
           <li className='nav-item'>
-            <Link href="/resume" passHref>
+            <Link href='/resume' passHref>
               이력서
             </Link>  
           </li>
           {/* <li className={navBar.navItem}>
-            <Link href="/coverletter" passHref>
+            <Link href='/coverletter' passHref>
               자기소개서
             </Link>  
           </li>
           <li className={navBar.navItem}>
-            <Link href="/about" passHref>
+            <Link href='/about' passHref>
               서비스 소개
             </Link>  
           </li> */}

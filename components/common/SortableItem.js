@@ -28,7 +28,7 @@ const SortableItem = ({
   const dragHandleProps = { ...attributes, ...listeners };
 
   return (
-    <div ref={setNodeRef} style={style} className="transition-all duration-300">
+    <div ref={setNodeRef} style={style} className='transition-all duration-300'>
       {typeof children === 'function' ? children(dragHandleProps) : children}
     </div>
   );

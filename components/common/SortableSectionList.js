@@ -70,7 +70,7 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
         isExpanded={isExpanded}
         onToggle={() => onToggleExpand(section.id)}
         onDelete={() => onDelete(section.id)}
-        mode="section"
+        mode='section'
         dragHandleProps={!isExpanded ? { 'data-drag-handle': true } : {}}
       >
         <SectionComponent
@@ -102,7 +102,7 @@ const SortableSectionList = ({ sections, onSectionChange, onDelete, onReorder, e
       </SortableContext>
       <DragOverlay>
         {activeId ? (
-          <div className="dragging-section-header">
+          <div className='dragging-section-header'>
             {sections.find(section => section.id === activeId)?.title}
           </div>
         ) : null}

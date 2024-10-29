@@ -13,17 +13,17 @@ const AddBtn = ({ onClick, label, ariaLabel = '추가' }) => {
   return (
     <button
       onClick={handleClick}
-      className="w-full p-4 text-mono-66 hover:bg-mono-f5 rounded transition-colors duration-300 flex items-center justify-between"
+      className='w-full p-4 text-mono-66 hover:bg-mono-f5 rounded transition-colors duration-300 flex items-center justify-between'
       aria-label={ariaLabel}
     >
-      <div className="flex items-center">
+      <div className='flex items-center'>
         <IconButton 
           icon={AddLineBtn} 
-          hoverFill="fill-secondary-dark"
-          size="small"
-          aria-hidden="true"
+          hoverFill='fill-secondary-dark'
+          size='small'
+          aria-hidden='true'
         />
-        <span className="ml-2">{label}</span>
+        <span className='ml-2'>{label}</span>
       </div>
     </button>
   );

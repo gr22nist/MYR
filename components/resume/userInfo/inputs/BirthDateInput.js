@@ -89,18 +89,18 @@ const BirthDateInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div>
       <BaseInput
-        label="생년월일"
+        label='생년월일'
         value={birthDate}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="YYMMDD"
+        placeholder='YYMMDD'
         error={error}
         maxLength={6}
       />
       <Button
         onClick={handleConfirm}
         disabled={!!error || birthDate.length !== 6}
-        className="mt-4 w-full"
+        className='mt-4 w-full'
       >
         확인
       </Button>

@@ -62,40 +62,40 @@ const LinkItems = ({ links = [], onChange, isEditing }) => {
   return (
     <div>
       {isEditing && (
-        <div className="flex flex-col">
-          <div className="flex w-full items-center gap-2">
+        <div className='flex flex-col'>
+          <div className='flex w-full items-center gap-2'>
             <FloatingLabelInput
               inputRef={siteNameInputRef}
-              label="사이트명"
+              label='사이트명'
               value={siteName}
               onChange={handleSiteNameChange}
-              placeholder="사이트 이름을 입력하세요"
-              spellCheck="false"
-              maxLength="100"
+              placeholder='사이트 이름을 입력하세요'
+              spellCheck='false'
+              maxLength='100'
             />
             <FloatingLabelInput
               inputRef={linkInputRef}
-              label="링크"
+              label='링크'
               value={link}
               onChange={handleLinkChange}
-              placeholder="URL을 입력하세요"
-              spellCheck="false"
+              placeholder='URL을 입력하세요'
+              spellCheck='false'
             />
-            <button onClick={handleAddLink} className="bg-secondary-dark text-white px-4 py-2 rounded hover:bg-primary-light transition-colors">추가</button>
+            <button onClick={handleAddLink} className='bg-secondary-dark text-white px-4 py-2 rounded hover:bg-primary-light transition-colors'>추가</button>
           </div>
-          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+          {error && <p className='text-red-500 text-sm mt-1'>{error}</p>}
         </div>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
         {links.map((item, index) => (
-          <div key={index} className="flex items-center space-x-2 p-2 bg-gray-100 rounded">
-            <div className="flex-grow flex items-center space-x-2 min-w-0">
-              <span className="font-semibold whitespace-nowrap">{item.siteName}</span>
+          <div key={index} className='flex items-center space-x-2 p-2 bg-gray-100 rounded'>
+            <div className='flex-grow flex items-center space-x-2 min-w-0'>
+              <span className='font-semibold whitespace-nowrap'>{item.siteName}</span>
               <a
                 href={item.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-blue-500 hover:underline'
               >
                 {item.link}
               </a>
@@ -103,7 +103,7 @@ const LinkItems = ({ links = [], onChange, isEditing }) => {
             {isEditing && (
               <button
                 onClick={() => handleRemoveLink(index)}
-                className="text-red-500 hover:text-red-700 flex-shrink-0"
+                className='text-red-500 hover:text-red-700 flex-shrink-0'
               >
                 삭제
               </button>

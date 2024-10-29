@@ -32,23 +32,23 @@ const DateRangeInput = ({
   , [status]);
 
   return (
-    <div className="date-range-container">
-      <div className="date-range-input-group">
+    <div className='date-range-container'>
+      <div className='date-range-input-group'>
         <input
-          type="text"
-          className="date-range-input"
+          type='text'
+          className='date-range-input'
           value={startDate}
           onChange={(e) => {
             handleStartDateChange(e);
             onChange({ startDate: e.target.value, endDate, isCurrent, status });
           }}
           onBlur={validateDates}
-          placeholder="202401"
-          maxLength="7"
+          placeholder='202401'
+          maxLength='7'
         />
-        <span className="date-range-separator">~</span>
+        <span className='date-range-separator'>~</span>
         <input
-          type="text"
+          type='text'
           className={`date-range-input ${isCurrent ? 'date-range-input-current' : ''}`}
           value={isCurrent ? '현재' : endDate}
           onChange={(e) => {
@@ -56,25 +56,25 @@ const DateRangeInput = ({
             onChange({ startDate, endDate: e.target.value, isCurrent, status });
           }}
           onBlur={validateDates}
-          placeholder="202401"
+          placeholder='202401'
           disabled={isCurrent}
-          maxLength="7"
+          maxLength='7'
         />
-        <label className="date-range-checkbox-label">
+        <label className='date-range-checkbox-label'>
           <input
-            type="checkbox"
-            className="date-range-checkbox"
+            type='checkbox'
+            className='date-range-checkbox'
             checked={isCurrent}
             onChange={(e) => {
               handleCurrentChange(e);
               onChange({ startDate, endDate, isCurrent: e.target.checked, status });
             }}
           />
-          <span className="date-range-checkbox-text">현재</span>
+          <span className='date-range-checkbox-text'>현재</span>
         </label>
       </div>
       {showGraduationStatus && (
-        <div className="date-range-status-group">
+        <div className='date-range-status-group'>
           {['졸업', '졸업예정', '재학중'].map((statusOption) => (
             <button 
               key={statusOption}
@@ -87,7 +87,7 @@ const DateRangeInput = ({
         </div>
       )}
       {errorMessage && (
-        <p className="date-range-error">{errorMessage}</p>
+        <p className='date-range-error'>{errorMessage}</p>
       )}
     </div>
   );

@@ -20,12 +20,12 @@ const DragHandleComponent = ({ id, isSubItem, dragHandleProps }) => {
       ref={setNodeRef} 
       style={style} 
       {...handleProps} 
-      className="drag-item"
+      className='drag-item'
     >
       <IconButton 
         icon={isSubItem ? DragHandleBtn : DragHandleLineBtn}
-        size="small"
-        aria-hidden="true"
+        size='small'
+        aria-hidden='true'
       />
     </div>
   );

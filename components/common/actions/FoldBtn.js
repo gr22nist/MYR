@@ -17,9 +17,9 @@ const FoldButton = ({ onClick, isExpanded, ariaLabel = '접기/펼치기' }) => 
     >
       <IconButton 
         icon={FoldIcon}
-        hoverFill="fill-secondary-dark"
-        size="small"
-        aria-hidden="true"
+        hoverFill='fill-secondary-dark'
+        size='small'
+        aria-hidden='true'
         className={`btn-rotate ${isExpanded ? 'rotate-180 hover:rotate-0' : ''}`}
       />
     </button>
