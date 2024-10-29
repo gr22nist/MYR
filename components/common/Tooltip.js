@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 
 const Tooltip = ({ children, content, disabled }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,9 +15,8 @@ const Tooltip = ({ children, content, disabled }) => {
   const updatePosition = () => {
     if (targetRef.current) {
       const rect = targetRef.current.getBoundingClientRect();
-      const x = rect.left; // 우측 정렬을 위해 right 값 사용
-      const y = rect.top - 8; // 툴팁과 요소 사이의 간격
-      
+      const x = rect.left;
+      const y = rect.top - 8;
       setPosition({ x, y });
     }
   };
@@ -51,13 +50,13 @@ const Tooltip = ({ children, content, disabled }) => {
       >
         {children}
       </div>
-      {isVisible && content && typeof document !== 'undefined' && ReactDOM.createPortal(
+      {isVisible && content && typeof document !== 'undefined' && createPortal(
         <div 
           className='fixed z-50 px-3 py-2 lg:text-sm text-xs font-medium text-white bg-primary-light rounded shadow-sm opacity-90'
           style={{
             left: `${position.x}px`,
             top: `${position.y}px`,
-            transform: 'translate(0, -100%)', // 우측 정렬을 위해 x축 변환 제거
+            transform: 'translate(0, -100%)',
             pointerEvents: 'none',
           }}
         >
