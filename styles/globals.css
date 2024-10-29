@@ -63,7 +63,7 @@
 
 /* Profile Styles */
 .profile-container {
-  @apply flex flex-col gap-4 border-b;
+  @apply flex flex-col gap-4 border-b will-change-[height] transform-gpu contain-content;
 }
 
 .profile-title {
@@ -75,7 +75,7 @@
 }
 
 .profile-text-area-empty {
-  @apply bg-mono-f5;
+  @apply bg-mono-f5 contain-content;
 }
 
 .profile-text-area:focus {
@@ -83,13 +83,16 @@
 }
 
 .profile-text-area-title {
-  @apply profile-text-area lg:text-4xl text-3xl font-bold lg:leading-normal;
+  @apply profile-text-area lg:text-4xl text-3xl font-bold lg:leading-normal cls;
 }
 
 .profile-text-area-paragraph {
   @apply profile-text-area flex lg:text-lg pb-8;
 }
 
+.cls {
+  @apply contain-content text-render-speed backface-hidden font-smooth-antialiased;
+}
 
 /* LAYOUT STYLES */
 @layer components {
@@ -268,23 +271,23 @@
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center rounded;
+    @apply w-full flex flex-col gap-4 items-center transform-gpu cls;
   }
 
   .controls{
-    @apply flex-base bg-white rounded p-2 min-h-14 w-full;
+    @apply flex-base bg-white rounded p-2 min-h-14 w-full contain-content;
   }
 
   .controls-custom-btn {
-    @apply btn-accent px-6 py-4 rounded transition-colors text-base font-bold flex-shrink-0;
+    @apply btn-accent px-6 py-4 rounded transition-colors text-base font-bold flex-shrink-0 contain-content text-render-speed;
   }
   
   .info-message {
-    @apply flex-base border rounded border-mono-cc text-mono-99 p-4;
+    @apply flex-base border rounded border-mono-cc text-mono-99 p-4 text-small cls;
   }
 
   .control-type-btn {
-    @apply flex-base rounded p-2;
+    @apply flex-base rounded p-2 contain-content;
   }
 
   .disable-btn {
@@ -475,5 +478,12 @@
 
   .page-break {
     page-break-before: always;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-text-area-title,
+  .profile-text-area-paragraph {
+    @apply transition-none;
   }
 }

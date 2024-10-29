@@ -62,7 +62,7 @@ const CareerList = ({ isExpanded, onToggle, section, onSectionChange }) => {
   return (
     <>
       <AddBtn 
-        onClick={handleAddCareer}  // 여기서 handleAddCareer 함수를 전달합니다.
+        onClick={handleAddCareer}
         label='새로운 경력을 추가해보세요' 
         ariaLabel='새 경력 항목 추가'
       />

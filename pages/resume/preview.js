@@ -4,8 +4,11 @@ import { exportAllData } from '@/utils/indexedDB';
 import ResumePreview from '@/components/preview/ResumePreview';
 import { decryptData } from '@/utils/cryptoUtils';
 import Link from 'next/link';
-import { PDFDocument, rgb } from 'pdf-lib';
-import html2canvas from 'html2canvas';
+import dynamic from 'next/dynamic';
+
+const ReactToPrint = dynamic(() => import('react-to-print').then(mod => ({ 
+  default: mod.useReactToPrint 
+})), { ssr: false });
 
 const PreviewPage = () => {
   const router = useRouter();
@@ -13,17 +16,15 @@ const PreviewPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const componentRef = useRef(null);
-  const [isClient, setIsClient] = useState(false);
-  const [printRef, setPrintRef] = useState(null);
+
+  // 프린트 핸들러 설정
+  const handlePrint = ReactToPrint({
+    content: () => componentRef.current,
+    documentTitle: 'resume',
+    removeAfterPrint: true,
+  });
 
   useEffect(() => {
-    setIsClient(true);
-    const loadReactToPrint = async () => {
-      const { print } = await import('react-to-print');
-      setPrintRef(print);
-    };
-    loadReactToPrint();
-
     const fetchData = async () => {
       try {
         setIsLoading(true);
@@ -77,50 +78,6 @@ const PreviewPage = () => {
     fetchData();
   }, []);
 
-  const handlePrint = async () => {
-    if (!componentRef.current) return;
-
-    // 버튼을 임시로 숨깁니다.
-    const actionButtons = componentRef.current.querySelector('.action-buttons');
-    if (actionButtons) {
-      actionButtons.style.display = 'none';
-    }
-
-    const canvas = await html2canvas(componentRef.current, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      windowWidth: componentRef.current.scrollWidth,
-      windowHeight: componentRef.current.scrollHeight,
-    });
-
-    // 버튼을 다시 표시합니다.
-    if (actionButtons) {
-      actionButtons.style.display = '';
-    }
-
-    const imgData = canvas.toDataURL('image/png');
-
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([canvas.width / 2, canvas.height / 2]);
-
-    const pngImage = await pdfDoc.embedPng(imgData);
-    const { width, height } = page.getSize();
-    page.drawImage(pngImage, {
-      x: 0,
-      y: 0,
-      width: width,
-      height: height,
-    });
-
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'resume.pdf';
-    link.click();
-  };
-
   if (isLoading) {
     return <div>데이터를 불러오는 중...</div>;
   }
@@ -132,19 +89,21 @@ const PreviewPage = () => {
   return (
     <div className='layout-container'>
       <div className='action-btns'>
-        <Link href='/resume' legacyBehavior>
-          <a className='back-btn'>돌아가기</a>
+        <Link href='/resume' className='back-btn'>
+          돌아가기
         </Link>
-        <button onClick={handlePrint} className='print-btn'>PDF 저장</button>
+        <button onClick={handlePrint} className='print-btn'>
+          인쇄하기
+        </button>
       </div>
       
-        <section className='layout-section' ref={componentRef}>
+      <section className='layout-section' ref={componentRef}>
         {resumeData ? (
           <ResumePreview resumeData={resumeData} />
         ) : (
           <div>데이터가 없습니다.</div>
         )}
-        </section>
+      </section>
     </div>
   );
 };

@@ -54,6 +54,12 @@ export const theme = {
       'item-exit': 'itemExit 300ms ease-in',
       skeleton: 'skeleton 1.5s infinite',
     },
+    willChange: {
+      'height': 'height',
+    },
+    transformOrigin: {
+      'gpu': 'translateZ(0)',
+    },
   },
 };
 export const plugins = [
@@ -61,6 +67,18 @@ export const plugins = [
     const newUtilities = {
       '.page-break-inside-avoid': {
         'page-break-inside': 'avoid',
+      },
+      '.contain-content': {
+        'contain': 'content',
+      },
+      '.text-render-speed': {
+        'text-rendering': 'optimizeSpeed',
+      },
+      '.backface-hidden': {
+        'backface-visibility': 'hidden',
+      },
+      '.font-smooth-antialiased': {
+        '-webkit-font-smoothing': 'antialiased',
       },
     }
     addUtilities(newUtilities, ['responsive', 'hover'])

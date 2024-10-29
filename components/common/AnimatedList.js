@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
-const AnimatedList = ({ items, renderItem, keyExtractor, className = '' }) => {
+const AnimatedList = ({ items, renderItem, keyExtractor, className = 'cls' }) => {
   const nodeRefs = useMemo(() => items.map(() => React.createRef()), [items]);
 
   return (

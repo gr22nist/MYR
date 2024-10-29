@@ -1,3 +1,5 @@
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com https://cdn.jsdelivr.net https://t1.daumcdn.net;
@@ -22,7 +24,6 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // 모든 경로에 대해 헤더 적용
         source: '/:path*',
         headers: securityHeaders,
       },
@@ -30,4 +31,8 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+const analyzeBundleConfig = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+export default analyzeBundleConfig(nextConfig);
