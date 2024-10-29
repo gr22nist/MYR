@@ -271,7 +271,7 @@
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center cls;
+    @apply w-full flex flex-col gap-4 items-center transform-gpu cls;
   }
 
   .controls{

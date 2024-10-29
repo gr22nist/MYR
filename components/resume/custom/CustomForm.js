@@ -6,7 +6,7 @@ import useResumeSections from '@/hooks/useResumeSections';
 
 const UNIQUE_SECTION_TYPES = ['project', 'award', 'certificate', 'language', 'skill', 'link'];
 
-const CustomForm = React.memo(() => {
+const CustomForm = React.memo(({ onAddSection }) => {
   const { addCustomSection, predefinedSections } = usecustomStore();
   const { loadAllSections } = useResumeSections();
 
@@ -31,14 +31,14 @@ const CustomForm = React.memo(() => {
 
   return (
     <div className='controls-container'>
-      <div className='info-message text-small cls'>
+      <div className='info-message text-small'>
         작성하고 싶은 정보가 있는데 필드가 없나요? 직접 만들어보세요.
         저서, 논문, 봉사 경험, 교육활동 등 무엇이든 간단한 텍스트로 작성 가능합니다.
       </div>
       <div className='controls'>
         <button 
           onClick={() => handleAddSection(CUSTOM_SECTIONS.type)}
-          className='controls-custom-btn cls'
+          className='controls-custom-btn'
         >
           + 자유 서식 추가하기
         </button>
