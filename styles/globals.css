@@ -271,23 +271,23 @@
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center;
+    @apply w-full flex flex-col gap-4 items-center contain-content;
   }
 
   .controls{
-    @apply flex-base bg-white rounded p-2 min-h-14 w-full;
+    @apply flex-base bg-white rounded p-2 min-h-14 w-full contain-content;
   }
 
   .controls-custom-btn {
-    @apply btn-accent px-6 py-4 rounded transition-colors text-base font-bold flex-shrink-0;
+    @apply btn-accent px-6 py-4 rounded transition-colors text-base font-bold flex-shrink-0 contain-content text-render-speed;
   }
   
   .info-message {
-    @apply flex-base border rounded border-mono-cc text-mono-99 p-4;
+    @apply flex-base border rounded border-mono-cc text-mono-99 p-4 text-small cls;
   }
 
   .control-type-btn {
-    @apply flex-base rounded p-2;
+    @apply flex-base rounded p-2 contain-content;
   }
 
   .disable-btn {
