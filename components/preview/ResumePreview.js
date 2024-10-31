@@ -33,7 +33,6 @@ const ResumePreview = ({ resumeData }) => {
         } else if (key === 'value' && typeof section[key] === 'string') {
           try {
             const decryptedValue = decryptData(section[key]);
-            // 복호화된 값이 이미 객체인지 확인
             decryptedSection[key] = typeof decryptedValue === 'object' ? decryptedValue : JSON.parse(decryptedValue);
           } catch (error) {
             console.error('Failed to parse decrypted data:', error);

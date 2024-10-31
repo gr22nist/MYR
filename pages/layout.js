@@ -23,7 +23,7 @@ const Layout = ({ children }) => {
       </Head>
       <Navbar />
       <ToastComponent />
-      <main className='bg-mono-ee py-8'>
+      <main className='main-container'>
         <MobileWarning />
         { children }
       </main>

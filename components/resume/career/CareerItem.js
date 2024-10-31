@@ -51,10 +51,10 @@ const CareerItem = ({
       classNames='fade'
       unmountOnExit
     >
-      <div ref={nodeRef} className={`career-item my-4 relative flex flex-col gap-2 ${className}`}>
-        <div className='flex items-center justify-between'>
-          <div className='flex gap-4 items-center'>
-            <div className='w-label'>
+      <div ref={nodeRef} className={`resume-item-container ${className}`}>
+        <div className='resume-item-header'>
+          <div className='resume-item-title'>
+            <div className='resume-item-label-container'>
               <FloatingLabelInput
                 label='회사명'
                 value={career.companyName || ''}

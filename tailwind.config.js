@@ -1,5 +1,5 @@
 import colors from './styles/colors';
-import { fonts } from './utils/fonts';  // fonts 임포트 추가
+import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export const content = [
@@ -17,12 +17,10 @@ export const theme = {
       foreground: 'var(--foreground)',
     },
     fontSize: {
-      // 기본 폰트 크기와 라인 높이 설정
       base: ['1rem', { lineHeight: '1.5' }],
     },
     fontFamily: {
       suit: ['var(--font-suit)'],
-      // nanum: ['var(--font-nanum)'],
     },
     width: {
       'myr': '1144px',
@@ -60,9 +58,24 @@ export const theme = {
     transformOrigin: {
       'gpu': 'translateZ(0)',
     },
+    typography: {
+      DEFAULT: {
+        css: {
+          maxWidth: 'none',
+          color: colors.mono[11],
+          a: {
+            color: colors.primary.light,
+            '&:hover': {
+              color: colors.primary.dark,
+            },
+          },
+        },
+      },
+    },
   },
 };
 export const plugins = [
+  typography,
   function({ addUtilities }) {
     const newUtilities = {
       '.page-break-inside-avoid': {

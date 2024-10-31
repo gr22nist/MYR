@@ -12,38 +12,50 @@
 /* BASE STYLES */
 @layer components {
   .layout {
-    @apply container max-w-myr mx-auto;
+    @apply container max-w-myr px-5 mx-auto;
   }
   
   .input-base {
-    @apply w-full p-4 transition-colors duration-300 rounded;
+    @apply w-full p-5 transition-colors rounded;
   }
   
-  .focus-style {
+  .focus {
     @apply focus:border-0 focus:ring-0 focus:outline-none;
   }
   
-  .placeholder-style {
+  .placeholder {
     @apply [&::placeholder]:whitespace-pre-wrap [&::placeholder]:leading-normal [&::placeholder]:text-mono-99;
   }
   
   .flex-base {
     @apply flex justify-center items-center;
   }
+  
+  .flex-between {
+    @apply flex justify-between items-center;
+  }
+
+  .flex-cols {
+    @apply flex flex-col;
+  }
 }
 
 /* LAYOUT STYLES */
 @layer components {
+  .main-container {
+    @apply bg-mono-ee py-8;
+  }
+
   .layout-container {
-    @apply layout py-4 mt-8 flex flex-col gap-4 transform-gpu;
+    @apply layout flex-cols gap-4 py-4 mt-8  transform-gpu;
   }
 
   .layout-section {
-    @apply layout px-16 py-20 flex flex-col gap-10 justify-center bg-white;
+    @apply layout px-16 py-20 flex flex-col gap-6 justify-center bg-white;
   }
   
   .date-input {
-    @apply max-w-20 p-2 transition-colors duration-300 text-small rounded bg-mono-f5;
+    @apply max-w-20 p-2 transition-colors text-small rounded bg-mono-f5;
   }
   
   .check-box {
@@ -51,14 +63,12 @@
   }
   
   .data-container {
-    @apply flex justify-between gap-2;
+    @apply flex-between gap-2;
   }
   
   .data-btns {
     @apply flex gap-2;
   }
-
-
 }
 
 /* Profile Styles */
@@ -66,29 +76,58 @@
   @apply flex flex-col gap-4 border-b will-change-[height] transform-gpu contain-content;
 }
 
+.profile-title-wrap {
+  @apply w-full flex-between items-stretch gap-4;
+}
+
 .profile-title {
-  @apply w-full flex flex-row justify-between items-center gap-4;
+  @apply flex-grow flex items-center;
 }
 
 .profile-text-area {
   @apply p-4 border-0 rounded overflow-hidden w-full resize-none animation outline-none;
 }
 
-.profile-text-area-empty {
-  @apply bg-mono-f5 contain-content;
-}
-
 .profile-text-area:focus {
   @apply bg-blue-50;
 }
 
+.profile-text-area-empty {
+  @apply bg-mono-f5 contain-content;
+}
+
 .profile-text-area-title {
-  @apply profile-text-area lg:text-4xl text-3xl font-bold lg:leading-normal cls;
+  @apply profile-text-area text-4xl font-bold leading-normal cls;
 }
 
 .profile-text-area-paragraph {
   @apply profile-text-area flex lg:text-lg pb-8;
 }
+
+.profile-img-container {
+  @apply flex items-center;
+}
+
+.profile-img {
+  @apply relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded flex-base;
+}
+
+.profile-img-hover {
+  @apply absolute inset-0 bg-mono-11 bg-opacity-50 flex-base;
+}
+
+.profile-img-label {
+  @apply w-full h-full flex-base flex-col bg-mono-f5 cursor-pointer;
+}
+
+.profile-img-label-text {
+  @apply text-xs text-center text-mono-99;
+}
+
+
+
+
+
 
 .cls {
   @apply contain-content text-render-speed backface-hidden font-smooth-antialiased;
@@ -101,7 +140,7 @@
   }
   
   .profile-view-title {
-    @apply lg:text-4xl text-3xl font-bold lg:leading-normal;
+    @apply lg:text-4xl font-bold leading-normal;
   }
   
   .profile-view-paragraph {
@@ -180,7 +219,7 @@
   }
 
   .floating-label-input {
-    @apply focus-style input-base;
+    @apply focus input-base;
   }
 
   .floating-label-input-focused {
@@ -196,7 +235,7 @@
   }
 
   .floating-label-input-title {
-    @apply w-label;
+    @apply md:w-label w-full text-xl font-bold;
   }
 
   .floating-label-input:not(.floating-label-input-focused) {
@@ -212,7 +251,7 @@
   }
 
   .floating-label {
-    @apply absolute right-4 transition-all animation;
+    @apply absolute right-4 animation;
   }
 
   .floating-label-active {
@@ -263,19 +302,28 @@
     @apply text-mono-dd hover:text-secondary-dark animation;
   }
 
-  /* text style */
+  /* Text Style */
   .text-small {
     @apply lg:text-sm text-xs;
+  }
+
+  /* Accordion Style */
+  .accordion-container {
+    @apply animation rounded;
+  }
+
+  .accordion {
+    @apply flex-between;
   }
 
   /* btn Control Styles */
 
   .controls-container {
-    @apply w-full flex flex-col gap-4 items-center transform-gpu cls;
+    @apply w-full flex-cols gap-4 items-center transform-gpu cls;
   }
 
   .controls{
-    @apply flex-base bg-white rounded p-2 min-h-14 w-full contain-content;
+    @apply flex-base lg:flex-row flex-col gap-4 bg-white rounded p-2 min-h-14 w-full  contain-content;
   }
 
   .controls-custom-btn {
@@ -295,7 +343,7 @@
   }
 
   .grid-container {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
   }
 
   .tags-container {
@@ -315,7 +363,7 @@
   /* DateRangeInput Styles */
   @layer components {
     .date-range-container {
-      @apply flex gap-2;
+      @apply flex-cols lg:flex-base gap-2;
     }
 
     .date-range-input-group {
@@ -323,7 +371,7 @@
     }
 
     .date-range-input {
-      @apply date-input focus-style;
+      @apply date-input focus;
     }
 
     .date-range-input-current {
@@ -370,11 +418,15 @@
 
   /* Resume Item Styles */
   .resume-item-container {
-    @apply my-4 relative flex flex-col gap-2;
+    @apply flex-cols lg:flex gap-2;
   }
 
   .resume-item-header {
-    @apply flex items-center justify-between;
+    @apply flex lg:flex-between;
+  }
+
+  .resume-item-title {
+    @apply flex gap-4 items-center;
   }
 
   .resume-item-input-container {
@@ -382,7 +434,11 @@
   }
 
   .resume-item-label-container {
-    @apply w-label;
+    @apply w-full md:w-label ;
+  }
+  
+  .action-btns {
+    @apply flex items-center gap-2 pr-4;
   }
 
   /* Education Item Styles */
@@ -405,7 +461,7 @@
   }
 
   .nav-wrap {
-    @apply layout flex justify-between py-4 items-center;
+    @apply layout flex-between py-4;
   }
 
   .nav-list {
@@ -422,7 +478,7 @@
 }
 @layer components {
   .action-btns {
-    @apply flex justify-between;
+    @apply flex-between;
   }
   
   .export-btn, .print-btn {

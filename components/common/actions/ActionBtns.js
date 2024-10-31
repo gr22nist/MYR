@@ -50,7 +50,7 @@ const ActionButtons = ({ onDelete, isDeletable, onFold, isExpanded, id, mode = '
   };
 
   return (
-    <div className='flex items-center gap-2' onClick={(e) => e.stopPropagation()}>
+    <div className='action-btns' onClick={(e) => e.stopPropagation()}>
       {renderButtons()}
     </div>
   );

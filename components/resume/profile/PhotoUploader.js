@@ -1,11 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
+import dynamic from 'next/dynamic';
 import imageCompression from 'browser-image-compression';
 import useGlobalStore from '@/store/globalStore';
 import { saveProfilePhoto, deleteProfilePhoto } from '@/utils/indexedDB';
 
-// 컴포넌트 외부로 이동
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const PhotoUploader = ({ onImageChange, currentImage }) => {
@@ -114,35 +114,35 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
   }, [onImageChange, showToast]);
 
   return (
-    <div className='flex items-center flex-col'>
+    <div className='profile-img-container'>
       <div 
-        className='relative w-[108px] h-[140px] overflow-hidden cursor-pointer rounded flex items-center justify-center'
+        className='profile-img'
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {currentImage ? (
-          <div className='relative w-full h-full group'>
+          <div>
             <Image
               src={currentImage}
               alt='Profile'
               fill
-              style={{ objectFit: 'cover' }}
+              classname='object-cover'
             />
             {isHovered && (
-              <div className='absolute inset-0 bg-mono-11 bg-opacity-50 flex items-center justify-center transition-opacity'>
+              <div className='profile-img-hover'>
                 <button onClick={handlePhotoDelete}>
-                  <PhotoRemove className='w-8 h-8 text-white' />
+                  <PhotoRemove width={32} height={32} className='text-white' />
                 </button>
               </div>
             )}
           </div>
         ) : (
-          <label htmlFor='photo-upload' className='w-full h-full flex flex-col items-center justify-center bg-mono-f5 cursor-pointer'>
+          <label htmlFor='photo-upload' className='profile-img-label'>
             {isHovered ? (
-              <PhotoAdd className='w-8 h-8 text-mono-99' />
+              <PhotoAdd width={32} height={32} className='fill-mono-99' />
             ) : (
-              <p className='text-xs text-center text-mono-99 leading-normal'>
-                사진 첨부가 <br />꼭 필요한 곳에만<br />사용해보세요<br /><br /> 108*144
+              <p className='profile-img-label-text'>
+                사진 첨부가 <br />필요한 곳에만<br />사용해보세요
               </p>
             )}
           </label>

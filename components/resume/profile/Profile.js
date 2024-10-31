@@ -77,27 +77,13 @@ const Profile = React.memo(() => {
 		};
 	}, [autoResize]);
 
-	// 성능 측정 (개발 모드에서만)
-	// useEffect(() => {
-	// 	if (process.env.NODE_ENV === 'development' && window.performance) {
-	// 		const observer = new PerformanceObserver((list) => {
-	// 			const entries = list.getEntries();
-	// 			entries.forEach(entry => {
-	// 				console.log(`${entry.name}: ${entry.startTime}ms`);
-	// 			});
-	// 		});
-	// 		observer.observe({ entryTypes: ['paint', 'largest-contentful-paint'] });
-	// 		return () => observer.disconnect();
-	// 	}
-	// }, []);
-
 	if (isLoading) return null;
 	if (error) return <div>에러 발생: {error}</div>;
 
 	return (
 		<section className='profile-container'>
-			<div className='profile-title flex items-stretch'>
-				<div className='flex-grow flex items-center'>
+			<div className='profile-title-wrap'>
+				<div className='profile-title'>
 					<textarea
 						className={`profile-text-area-title ${!profile.title ? 'profile-text-area-empty' : ''}`}
 						value={profile.title || ''}
