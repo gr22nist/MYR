@@ -1,8 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import Image from 'next/image';
 import { PhotoAdd, PhotoRemove } from '@/components/icons/IconSet';
-import dynamic from 'next/dynamic';
-import imageCompression from 'browser-image-compression';
 import useGlobalStore from '@/store/globalStore';
 import { saveProfilePhoto, deleteProfilePhoto } from '@/utils/indexedDB';
 
@@ -21,6 +19,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
       useWebWorker: true
     };
     try {
+      const imageCompression = (await import('browser-image-compression')).default;
       const compressedFile = await imageCompression(file, options);
       return compressedFile;
     } catch (error) {
