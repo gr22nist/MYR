@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# My력서 (MyResume)
 
-## Getting Started
+> **누구나 간단하게 작성하는 나의 역사, My력서**
+>
+> 안전하고 간편한 온라인 이력서 작성 서비스
 
-First, run the development server:
+## 🎯 소개
 
+My력서는 Next.js 기반의 온라인 이력서 작성 웹 애플리케이션입니다. 이력서에는 개인의 학력, 경력, 연락처 등 민감한 개인정보가 포함됩니다. 이러한 정보를 서버에 저장하는 순간, 유출 위험이 발생할 수 있다는 점을 고민했습니다.
+
+그래서 My력서는 모든 데이터를 오직 사용자의 브라우저에만 저장하고, 서버를 전혀 사용하지 않는 방식을 선택했습니다. 마치 개인 컴퓨터에서 문서 작업을 하는 것처럼, 사용자의 소중한 정보는 사용자의 기기에만 안전하게 보관됩니다.
+
+### 특장점
+- **개인정보 보호**:
+  - 서버 없이 브라우저에서만 동작하여 데이터 유출 원천 차단
+  - AES-256 암호화로 로컬 데이터 보호
+  - IndexedDB를 통한 안전한 데이터 저장
+  - CSP를 통한 리소스 보안 강화
+
+- **안정적인 데이터 관리**:
+  - 실시간 자동 저장
+  - 브라우저 충돌 대비 데이터 백업
+  - JSON 형식 데이터 이식성
+  - 완전한 초기화 및 복원 시스템
+
+- **사용자 경험 고려**:
+  - 드래그 앤 드롭 섹션 정렬
+  - 커스텀 섹션 지원
+  - PC 환경 최적화 UI
+  - PDF 출력 지원
+
+- **성능 및 접근성**:
+  - 동적 임포트를 통한 번들 최적화
+  - 이미지 압축 및 최적화
+  - 시맨틱 HTML과 ARIA 레이블
+
+### 데이터 보안 안내
+> **💡 사용자의 소중한 정보를 안전하게 지키기 위한 안내**
+>
+> My력서는 모든 데이터를 암호화하여 안전하게 보관합니다. 하지만 더 철저한 보안을 위해서는 사용자의 컴퓨터도 안전하게 관리되어야 합니다. 
+> 
+> - 신뢰할 수 있는 백신 프로그램 사용
+> - 운영체제와 브라우저의 최신 보안 업데이트 유지
+> - 중요한 작업 후에는 데이터 내보내기 기능으로 백업하기
+
+## ✨ 주요 기능
+
+### 1. 데이터 관리
+- 📝 실시간 자동 저장
+- 🔒 로컬 데이터 암호화
+- 📤 데이터 이식성
+  - JSON 형식 내보내기/가져오기
+  - 크로스 브라우저 지원
+  - 기기 간 데이터 이동
+- 🔄 초기화 및 복원
+
+### 2. 섹션 관리
+- ✏️ 기본 섹션 (경력, 학력)
+- ➕ 커스텀 섹션 추가/수정/삭제
+- 🔄 드래그 앤 드롭 순서 변경
+- 📌 섹션 접기/펼치기
+
+### 3. 문서 관리
+- 🖨️ PDF 출력
+- 📱 반응형 디자인 (PC 최적화)
+
+## 🛠️ 기술 스택
+
+### Core
+- Next.js 14
+- React 18
+- Tailwind CSS
+- Zustand (상태관리)
+
+### 주요 라이브러리
+- **UI/UX**
+  - @dnd-kit/* : 드래그 앤 드롭 구현
+  - react-modal : 접근성이 고려된 모달
+  - react-transition-group : 부드러운 애니메이션 처리
+
+- **데이터 & 보안**
+  - crypto-js : AES-256 암호화
+  - dexie : IndexedDB 래퍼
+  - browser-image-compression : 이미지 최적화
+
+- **기능**
+  - react-to-print : PDF 출력 (동적 임포트)
+  - react-daum-postcode : 주소 검색 (동적 임포트)
+
+### 개발 도구
+- ESLint : 코드 품질 관리
+- @next/bundle-analyzer : 번들 최적화
+- Vercel : 배포 및 분석
+
+## 🚀 시작하기
+
+### 설치 방법
 ```bash
+# 저장소 복제
+git clone https://github.com/gr22nist/MYR.git
+
+# 종속성 설치
+npm install
+
+# 개발 서버 실행
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 환경 변수 설정
+`.env.local` 파일을 생성하고 다음 변수를 설정하세요:
+```bash
+NEXT_PUBLIC_SECRET_KEY=your-secret-key  # AES-256 암호화에 사용될 키
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🌐 브라우저 지원
+- Chrome (최신 버전)
+- Firefox (최신 버전)
+- Safari (최신 버전)
+- Edge (최신 버전)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+> ⚠️ Internet Explorer는 지원하지 않습니다
 
-## Learn More
+## 🔍 데모
+- [My력서 바로가기](https://myrec.kr/)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 📝 라이선스
+이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참고하세요.
