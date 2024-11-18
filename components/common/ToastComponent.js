@@ -7,14 +7,14 @@ const ToastComponent = () => {
   useEffect(() => {
     if (toastVisible) {
       const timer = setTimeout(() => {
-        hideToast(); // 3초 후에 토스트를 숨김
-      }, 3000); // 3초 후 토스트 자동 숨김
+        hideToast();
+      }, 1800);
       
-      return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+      return () => clearTimeout(timer);
     }
   }, [toastVisible, hideToast]);
 
-  if (!toastVisible) return null; // 토스트가 보이지 않을 때는 렌더링하지 않음
+  if (!toastVisible) return null;
 
   const getToastColor = () => {
     switch (toastType) {

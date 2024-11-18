@@ -12,27 +12,25 @@ const useProfileStore = create((set, get) => ({
   error: null,
 
   loadProfile: async () => {
-    set({ isLoading: true, error: null });
     try {
-      await getDB();
-      
       const profileData = await loadProfileData();
-      const profilePhoto = await loadProfilePhoto();
-
-      set({ 
-        profile: {
-          ...profileData,
-          imageUrl: profilePhoto,
-        } || { title: '', paragraph: '', imageUrl: null },
-        isLoading: false,
-      });
+      if (profileData) {
+        set({ 
+          profile: {
+            ...profileData,
+            imageUrl: await loadProfilePhoto() || null
+          },
+          isLoading: false 
+        });
+      } else {
+        set({ 
+          profile: { title: '', paragraph: '', imageUrl: null },
+          isLoading: false 
+        });
+      }
     } catch (error) {
       console.error('프로필 로딩 중 오류:', error);
-      set({ 
-        error: error.message || '프로필 로딩 중 알 수 없는 오류가 발생했습니다.', 
-        isLoading: false,
-        profile: { title: '', paragraph: '', imageUrl: null },
-      });
+      set({ error: error.message, isLoading: false });
     }
   },
 
@@ -42,10 +40,19 @@ const useProfileStore = create((set, get) => ({
         ...state.profile, 
         [field]: value,
       };
-      const isProfileEmpty = Object.values(newProfile).every(v => v === '' || v === null);
-      saveProfileData(isProfileEmpty ? null : newProfile).catch(error => {
+      
+      console.log('updateProfile - newProfile:', newProfile);
+      
+      const { imageUrl, ...profileDataToSave } = newProfile;
+      const isProfileEmpty = !profileDataToSave.title && !profileDataToSave.paragraph;
+      
+      console.log('Saving to IndexedDB:', profileDataToSave);
+
+      saveProfileData(isProfileEmpty ? null : profileDataToSave).catch(error => {
+        console.error('프로필 저장 중 오류:', error);
         set({ error: error.message });
       });
+      
       return { profile: newProfile };
     });
   },

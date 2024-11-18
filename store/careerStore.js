@@ -10,7 +10,7 @@ const createInitialCareer = () => ({
   startDate: '',
   endDate: '',
   isCurrent: false,
-  tasks: '',
+  mainTask: '',
   order: 0
 });
 
@@ -54,15 +54,25 @@ const useCareerStore = create((set, get) => ({
       const newCareers = state.careers.map(career => 
         career.id === updatedCareer.id ? updatedCareer : career
       ).filter(career => Object.entries(career).some(([key, v]) => 
-        key !== 'id' && key !== 'order' &&
-        v !== '' && v !== false && v != null && v !== undefined &&
+        key !== 'id' && 
+        key !== 'order' &&
+        key !== 'startDate' &&
+        key !== 'endDate' &&
+        key !== 'isCurrent' &&
+        v !== '' && 
+        v !== false && 
+        v != null && 
+        v !== undefined &&
         !(typeof v === 'object' && Object.keys(v).length === 0)
       ));
-      console.log('Filtered careers:', newCareers);
       
       if (JSON.stringify(newCareers) !== JSON.stringify(state.careers)) {
         saveCareersToDB(newCareers);
-        useResumeStore.getState().updateSection({ id: 'career', type: 'career', items: newCareers });
+        useResumeStore.getState().updateSection({ 
+          id: 'career', 
+          type: 'career', 
+          items: newCareers 
+        });
         return { careers: newCareers };
       }
       return state;

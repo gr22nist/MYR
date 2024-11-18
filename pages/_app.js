@@ -10,9 +10,9 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const suit = localFont({
   src: '../public/fonts/SUIT-Variable.woff2',
-  weight: '100 900',
+  weight: '100 700 900',
   variable: '--font-suit',
-  display: 'block',
+  display: 'swap',
   preload: true,
   fallback: ['system-ui', 'sans-serif']
 });
