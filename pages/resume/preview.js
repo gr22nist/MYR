@@ -4,11 +4,7 @@ import { exportAllData } from '@/utils/indexedDB';
 import ResumePreview from '@/components/preview/ResumePreview';
 import { decryptData } from '@/utils/cryptoUtils';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-
-const ReactToPrint = dynamic(() => import('react-to-print').then(mod => ({ 
-  default: mod.useReactToPrint 
-})), { ssr: false });
+import { useReactToPrint } from 'react-to-print';
 
 const PreviewPage = () => {
   const router = useRouter();
@@ -17,11 +13,37 @@ const PreviewPage = () => {
   const [error, setError] = useState(null);
   const componentRef = useRef(null);
 
-  // 프린트 핸들러 설정
-  const handlePrint = ReactToPrint({
+  const handlePrint = useReactToPrint({
     content: () => componentRef.current,
     documentTitle: 'resume',
     removeAfterPrint: true,
+    onBeforeGetContent: () => Promise.resolve(),
+    onAfterPrint: () => console.log('인쇄가 완료되었습니다.'),
+    pageStyle: `
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+      @media print {
+        html, body {
+          height: 100%;
+          margin: 0 !important;
+          padding: 0 !important;
+          background: #fff;
+        }
+        .action-btns {
+          display: none !important;
+        }
+        .layout-container {
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .layout-section {
+          padding: 0 !important;
+          background: none !important;
+        }
+      }
+    `
   });
 
   useEffect(() => {
@@ -87,17 +109,17 @@ const PreviewPage = () => {
   }
 
   return (
-    <div className='layout-container'>
-      <div className='action-btns'>
-        <Link href='/resume' className='back-btn'>
+    <div className="layout-container print:m-0 print:p-0">
+      <div className="action-btns print:hidden">
+        <Link href="/resume" className="back-btn">
           돌아가기
         </Link>
-        <button onClick={handlePrint} className='print-btn'>
+        <button onClick={handlePrint} className="print-btn">
           인쇄하기
         </button>
       </div>
       
-      <section className='layout-section' ref={componentRef}>
+      <section className="layout-section print:p-0 print:bg-none" ref={componentRef}>
         {resumeData ? (
           <ResumePreview resumeData={resumeData} />
         ) : (

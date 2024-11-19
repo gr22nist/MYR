@@ -607,12 +607,31 @@
     size: A4;
     margin: 0;
   }
-  body {
-    margin: 1.6cm;
+  
+  html, body {
+    height: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff;
   }
 
-  .page-break {
-    page-break-before: always;
+  .action-btns {
+    display: none !important;
+  }
+
+  .layout-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .layout-section {
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  /* 불필요한 요소 숨기기 */
+  .print:hidden {
+    display: none !important;
   }
 }
 

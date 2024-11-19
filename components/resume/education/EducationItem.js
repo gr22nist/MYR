@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react';
-import DateRangeInput from '@/components/common/DateRangeInput';
+import DateRange from '@/components/common/DateRange';
+import GraduationStatus from '@/components/common/GraduationStatus';
 import FloatingLabelInput from '@/components/common/FloatingLabelInput';
 import FloatingLabelTextarea from '@/components/common/FloatingLabelTextarea';
 import ActionButtons from '@/components/common/actions/ActionBtns';
@@ -9,29 +10,26 @@ import { PLACEHOLDERS } from '@/constants/placeHolders';
 const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDeletable, dragHandleProps, isSubItem = false, isExpanded, className }) => {
   const nodeRef = useRef(null);
 
-  const handleChange = useCallback((field, value) => {
-    const updatedEducation = { ...education, [field]: value };
-    const isEmpty = Object.entries(updatedEducation).every(([key, v]) => 
-      key === 'id' || key === 'order' || key === 'graduationStatus' ||
-      v === '' || v === false || v == null || v === undefined || 
-      (typeof v === 'object' && Object.keys(v).length === 0)
-    );
-    console.log('updatedEducation:', updatedEducation, 'isEmpty:', isEmpty);
-    if (isEmpty) {
-      console.log('Deleting education:', education.id);
-      onDelete(education.id);
-    } else {
-      onEducationChange(updatedEducation);
-    }
-  }, [education, onEducationChange, onDelete]);
-
-  const handleDateChange = useCallback(({ startDate, endDate, isCurrent, status }) => {
+  const handleDateChange = useCallback(({ startDate, endDate, isCurrent }) => {
     onEducationChange({
       ...education,
       startDate,
-      endDate: isCurrent ? '현재' : endDate,
-      isCurrent,
-      graduationStatus: status
+      endDate,
+      isCurrent
+    });
+  }, [education, onEducationChange]);
+
+  const handleGraduationStatusChange = useCallback((newStatus) => {
+    onEducationChange({
+      ...education,
+      graduationStatus: newStatus
+    });
+  }, [education, onEducationChange]);
+
+  const handleChange = useCallback((field, value) => {
+    onEducationChange({
+      ...education,
+      [field]: value
     });
   }, [education, onEducationChange]);
 
@@ -60,14 +58,18 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
                 tooltipMessage='학교명을 꼭 입력해 주세요.'
               />
             </div>
-            <DateRangeInput
-              onChange={handleDateChange}
-              initialStartDate={education.startDate || ''}
-              initialEndDate={education.endDate || ''}
-              initialIsCurrent={education.isCurrent || false}
-              initialStatus={education.graduationStatus || ''}
-              showGraduationStatus={true}
-            />
+            <div className='date-status-container'>
+              <DateRange
+                onChange={handleDateChange}
+                initialStartDate={education.startDate || ''}
+                initialEndDate={education.endDate || ''}
+                initialIsCurrent={education.isCurrent || false}
+              />
+              <GraduationStatus
+                status={education.graduationStatus || ''}
+                onChange={handleGraduationStatusChange}
+              />
+            </div>
           </div>
           <ActionButtons 
             onDelete={() => onDelete(education.id)} 
