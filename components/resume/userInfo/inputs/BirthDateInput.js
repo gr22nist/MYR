@@ -1,16 +1,18 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import BaseInput from '@/components/common/BaseInput';
+import { FormInput } from '@/components/ui/form-input';
 import Button from '@/components/common/Button';
 
 const BirthDateInput = ({ onChange, onClose, initialValue }) => {
   const [birthDate, setBirthDate] = useState('');
   const [error, setError] = useState('');
+  const [confirmedValue, setConfirmedValue] = useState('');
 
   useEffect(() => {
     if (initialValue) {
-      // YYYY-MM-DD 또는 YYYYMMDD 형식에서 YYMMDD 추출
-      const cleaned = initialValue.replace(/-/g, '');
-      setBirthDate(cleaned.slice(-6));
+      const cleaned = initialValue.replace(/\//g, '');
+      const yymmdd = cleaned.slice(-6);
+      setBirthDate(yymmdd);
+      setConfirmedValue(initialValue);
       setError('');
     }
   }, [initialValue]);
@@ -38,10 +40,15 @@ const BirthDateInput = ({ onChange, onClose, initialValue }) => {
     return true;
   }, [isLeapYear]);
 
-  const handleChange = useCallback((e) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6);
-    setBirthDate(value);
-    setError(validateDate(value) ? '' : '유효한 생년월일을 입력해주세요.');
+  const handleChange = useCallback((value) => {
+    const numericValue = value.replace(/\D/g, '').slice(0, 6);
+    setBirthDate(numericValue);
+    
+    if (numericValue.length === 6) {
+      setError(validateDate(numericValue) ? '' : '유효한 생년월일을 입력해주세요.');
+    } else {
+      setError('');
+    }
   }, [validateDate]);
 
   const handleConfirm = useCallback(() => {
@@ -54,48 +61,65 @@ const BirthDateInput = ({ onChange, onClose, initialValue }) => {
       const month = parseInt(birthDate.slice(2, 4));
       const day = parseInt(birthDate.slice(4, 6));
 
-      // 1900년대 또는 2000년대 결정
       if (fullYear + 2000 > currentYear) {
         fullYear += 1900;
       } else {
         fullYear += 2000;
       }
 
-      // 나이 계산
       let age = currentYear - fullYear;
       if (currentMonth < month || (currentMonth === month && currentDay < day)) {
         age--;
       }
 
-      // 나이 범위 확인 (13세 ~ 120세)
       if (age < 13 || age > 120) {
         setError('생년월일은 13세부터 120세까지만 입력 가능합니다.');
         return;
       }
 
-      const formattedDate = `${fullYear}-${birthDate.slice(2, 4)}-${birthDate.slice(4, 6)}`;
+      const formattedDate = `${fullYear}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}`;
+      setConfirmedValue(formattedDate);
       onChange(formattedDate);
       onClose();
     }
   }, [error, birthDate, onChange, onClose]);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && !error && birthDate.length === 6) {
+  const handleKeyPress = useCallback((e) => {
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    if (!allowedKeys.includes(e.key) && !/^[0-9]$/.test(e.key)) {
       e.preventDefault();
+    }
+  }, []);
+
+  const handleEnterPress = useCallback(() => {
+    if (!error && birthDate.length === 6) {
       handleConfirm();
     }
-  }, [handleConfirm, error, birthDate]);
+  }, [error, birthDate, handleConfirm]);
 
   return (
     <div>
-      <BaseInput
-        label='생년월일'
+      <FormInput
+        label={
+          <div className="flex flex-col items-center">
+            <span>생년월일</span>
+            {confirmedValue && (
+              <span className="text-sm text-gray-500">
+                기존 입력값:{confirmedValue}
+              </span>
+            )}
+          </div>
+        }
+        id='birthDate'
         value={birthDate}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder='YYMMDD'
+        onKeyDown={handleKeyPress}
+        onEnterPress={handleEnterPress}
+        placeholder='생년월일 6자리'
         error={error}
         maxLength={6}
+        inputMode="numeric"
+        pattern="[0-9]*"
       />
       <Button
         onClick={handleConfirm}

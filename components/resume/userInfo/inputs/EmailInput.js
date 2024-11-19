@@ -1,14 +1,16 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import BaseInput from '@/components/common/BaseInput';
+import { FormInput } from '@/components/ui/form-input';
 import Button from '@/components/common/Button';
 
 const EmailInput = ({ onChange, onClose, initialValue }) => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [confirmedValue, setConfirmedValue] = useState('');
 
   useEffect(() => {
     if (initialValue) {
       setEmail(initialValue);
+      setConfirmedValue(initialValue);
       setError('');
     }
   }, [initialValue]);
@@ -18,35 +20,43 @@ const EmailInput = ({ onChange, onClose, initialValue }) => {
     return re.test(email);
   };
 
-  const handleChange = useCallback((e) => {
-    const value = e.target.value;
+  const handleChange = useCallback((value) => {
     setEmail(value);
     setError(validateEmail(value) ? '' : '유효한 이메일 주소를 입력해주세요.');
   }, []);
 
   const handleConfirm = useCallback(() => {
     if (!error && email) {
+      setConfirmedValue(email);
       onChange(email);
       onClose();
     }
   }, [error, email, onChange, onClose]);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && !error && email) {
-      e.preventDefault();
+  const handleEnterPress = useCallback(() => {
+    if (!error && email) {
       handleConfirm();
     }
-  }, [handleConfirm, error, email]);
+  }, [error, email, handleConfirm]);
 
   return (
     <div>
-      <BaseInput
-        label='이메일'
+      <FormInput
+        label={
+          <div className="flex justify-between items-center">
+            <span>이메일</span>
+            {confirmedValue && (
+              <span className="text-sm text-gray-500">
+                {confirmedValue}
+              </span>
+            )}
+          </div>
+        }
         id='email'
         type='email'
         value={email}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
+        onEnterPress={handleEnterPress}
         placeholder='example@example.com'
         error={error}
       />

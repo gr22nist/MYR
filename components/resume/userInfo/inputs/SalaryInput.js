@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import BaseInput from '@/components/common/BaseInput';
+import { FormInput } from '@/components/ui/form-input';
 import Button from '@/components/common/Button';
 
 const SalaryInput = ({ onChange, onClose, initialValue }) => {
@@ -13,22 +13,22 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
     }
   }, [initialValue]);
 
-  const handleChange = useCallback((e) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    setInputValue(value);
-  }, []);
-
   const formatSalary = useCallback((value) => {
     const numValue = parseInt(value, 10);
     if (numValue >= 10000) {
       const uk = Math.floor(numValue / 10000);
       const man = numValue % 10000;
       if (man === 0) {
-        return `${uk.toLocaleString()}억 원`;
+        return `${uk.toLocaleString()}억`;
       }
-      return `${uk.toLocaleString()}억 ${man.toLocaleString()}만 원`;
+      return `${uk.toLocaleString()}억 ${man.toLocaleString()}만`;
     }
-    return `${numValue.toLocaleString()}만 원`;
+    return `${numValue.toLocaleString()}만`;
+  }, []);
+
+  const handleChange = useCallback((value) => {
+    const numericValue = value.replace(/[^0-9]/g, '');
+    setInputValue(numericValue);
   }, []);
 
   const handleConfirm = useCallback(() => {
@@ -44,27 +44,43 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
     onClose();
   }, [inputValue, formatSalary, onChange, onClose]);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === 'Enter' && inputValue) {
-      e.preventDefault();
+  const handleEnterPress = useCallback(() => {
+    if (inputValue) {
       handleConfirm();
     }
-  }, [handleConfirm, inputValue]);
+  }, [inputValue, handleConfirm]);
+
+  const handleKeyPress = useCallback((e) => {
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
+    if (!allowedKeys.includes(e.key) && !/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
+  }, []);
 
   const displayValue = inputValue ? inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 
   return (
     <div>
-      <div className='relative mb-4'>
-        <BaseInput
-          label='연봉'
-          value={displayValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder='0'
-        />
-        <span className='absolute top-0 right-0 lg:text-sm text-xs text-mono-99'>단위: 만원</span>
-      </div>
+      <FormInput
+        label={
+          <div className="flex justify-between items-center">
+            <span>연봉</span>
+            {confirmedValue && (
+              <span className="text-sm text-gray-500">
+                {confirmedValue}
+              </span>
+            )}
+          </div>
+        }
+        id='salary'
+        value={displayValue}
+        onChange={handleChange}
+        onKeyDown={handleKeyPress}
+        onEnterPress={handleEnterPress}
+        placeholder='단위: 만'
+        inputMode="numeric"
+        pattern="[0-9]*"
+      />
       <Button
         onClick={handleConfirm}
         disabled={!inputValue}
@@ -72,11 +88,6 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
       >
         확인
       </Button>
-      {confirmedValue && (
-        <p className='mt-2 lg:text-sm text-xs text-gray-500'>
-          입력된 연봉: {confirmedValue}
-        </p>
-      )}
     </div>
   );
 };
