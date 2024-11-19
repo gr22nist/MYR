@@ -51,18 +51,29 @@ const useEducationStore = create((set, get) => ({
   
   updateEducation: (updatedEducation) => {
     set(state => {
-      console.log('Updating education:', updatedEducation);
       const newEducations = state.educations.map(edu => 
-        edu.id === updatedEducation.id ? updatedEducation : edu
+        edu.id === updatedEducation.id ? {
+          ...updatedEducation,
+          graduationStatus: updatedEducation.graduationStatus || '졸업'
+        } : edu
       ).filter(edu => Object.entries(edu).some(([key, v]) => 
-        key !== 'id' && key !== 'order' && key !== 'graduationStatus' &&
-        v !== '' && v !== false && v != null && v !== undefined &&
-        !(typeof v === 'object' && Object.keys(v).length === 0)
+        key !== 'id' && 
+        key !== 'order' && 
+        (key === 'graduationStatus' || (
+          v !== '' && 
+          v !== false && 
+          v != null && 
+          v !== undefined &&
+          !(typeof v === 'object' && Object.keys(v).length === 0)
+        ))
       ));
-      console.log('Filtered educations:', newEducations);
       
       saveEducationsToDB(newEducations);
-      useResumeStore.getState().updateSection({ id: 'education', type: 'education', items: newEducations });
+      useResumeStore.getState().updateSection({ 
+        id: 'education', 
+        type: 'education', 
+        items: newEducations 
+      });
       return { educations: newEducations };
     });
   },
