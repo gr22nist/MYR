@@ -9,24 +9,24 @@
   }
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -35,25 +35,25 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -100,11 +100,11 @@
   }
 
   .layout-container {
-    @apply layout flex-cols gap-4 py-4 mt-8  transform-gpu;
+    @apply layout flex-cols gap-4 py-4 mt-8 transform-gpu;
   }
 
   .layout-section {
-    @apply layout px-16 py-20 flex flex-col gap-6 justify-center bg-white;
+    @apply layout px-4 lg:px-16 py-8 lg:py-20 flex flex-col gap-6 justify-center bg-white;
   }
   
   .date-input {
@@ -126,35 +126,35 @@
 
 /* Profile Styles */
 .profile-container {
-  @apply flex flex-col gap-4 border-b will-change-[height] transform-gpu contain-content;
+  @apply flex-cols gap-4 mb-8;
 }
 
 .profile-title-wrap {
-  @apply w-full flex-between items-stretch gap-4;
+  @apply w-full flex-cols lg:flex-row items-start gap-4;
 }
 
 .profile-title {
-  @apply flex-grow flex items-center;
+  @apply flex-grow;
 }
 
 .profile-text-area {
-  @apply p-4 border-0 rounded overflow-hidden w-full resize-none animation outline-none;
-}
-
-.profile-text-area:focus {
-  @apply bg-blue-50;
-}
-
-.profile-text-area-empty {
-  @apply bg-mono-f5 contain-content;
+  @apply p-4 border-0 rounded overflow-hidden w-full resize-none outline-none bg-mono-f5 transition-all duration-300;
 }
 
 .profile-text-area-title {
-  @apply profile-text-area text-4xl font-bold leading-normal cls;
+  @apply profile-text-area text-2xl lg:text-4xl font-bold leading-normal lg:leading-normal;
 }
 
 .profile-text-area-paragraph {
-  @apply profile-text-area flex lg:text-lg pb-8;
+  @apply profile-text-area text-base lg:text-lg;
+}
+
+.profile-text-area:focus {
+  @apply bg-blue-50 ring-2 ring-transparent;
+}
+
+.profile-text-area::placeholder {
+  @apply text-mono-99;
 }
 
 .profile-img-container {
@@ -416,7 +416,7 @@
   /* DateRangeInput Styles */
   @layer components {
     .date-range-container {
-      @apply flex-cols lg:flex-base gap-2;
+      @apply flex-cols lg:flex-row gap-2 lg:w-auto w-full flex-shrink-0;
     }
 
     .date-range-input-group {
@@ -424,7 +424,7 @@
     }
 
     .date-range-input {
-      @apply date-input focus;
+      @apply w-24 flex-shrink-0;
     }
 
     .date-range-input-current {
@@ -436,7 +436,7 @@
     }
 
     .date-range-checkbox-label {
-      @apply flex items-center gap-1 cursor-pointer;
+      @apply whitespace-nowrap flex-shrink-0;
     }
 
     .date-range-checkbox {
@@ -471,27 +471,53 @@
 
   /* Resume Item Styles */
   .resume-item-container {
-    @apply flex-cols lg:flex gap-2;
+    @apply flex-cols gap-4 p-4 lg:p-6 bg-white rounded-lg;
   }
 
   .resume-item-header {
-    @apply flex lg:flex-between;
+    @apply flex-cols gap-4;
+  }
+
+  .resume-item-header-top {
+    @apply flex w-full items-start;
   }
 
   .resume-item-title {
-    @apply flex gap-4 items-center;
+    @apply flex-cols gap-4 w-full;
   }
 
-  .resume-item-input-container {
-    @apply flex gap-4 items-center;
+  .resume-item-main-group {
+    @apply flex-cols lg:flex-row w-full gap-4;
   }
 
-  .resume-item-label-container {
-    @apply w-full md:w-label ;
+  .company-name-input {
+    @apply flex-grow min-w-0 mr-auto;
   }
-  
-  .action-btns {
-    @apply flex items-center gap-2 pr-4;
+
+  .date-range-container {
+    @apply flex-cols lg:flex-row gap-2 lg:w-auto w-full flex-shrink-0;
+  }
+
+  .action-buttons {
+    @apply flex items-center gap-1 ml-4 flex-shrink-0;
+  }
+
+  /* 드래그 핸들과 삭제 버튼을 위한 컨테이너 */
+  .action-buttons-group {
+    @apply flex items-center;
+  }
+
+  /* 개별 버튼 스타일 */
+  .action-button {
+    @apply p-2 rounded-full hover:bg-gray-100 transition-colors;
+  }
+
+  .drag-handle {
+    @apply cursor-move touch-none;
+  }
+
+  .delete-button {
+    @apply text-red-500 hover:text-red-600;
   }
 
   /* Education Item Styles */
@@ -604,4 +630,29 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.date-range-group {
+  @apply flex items-center gap-2 lg:w-auto w-full;
+}
+
+.graduation-status-group {
+  @apply flex gap-2 lg:mt-0 mt-2 lg:w-auto w-full;
+}
+
+.graduation-status-btn {
+  @apply w-12 h-12 px-3 py-1 text-xs rounded-full transition-colors
+         hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.graduation-status-btn.active {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.resume-item-title {
+  @apply flex flex-col w-full gap-2;
+}
+
+.action-buttons {
+  @apply flex-base gap-2;
 }

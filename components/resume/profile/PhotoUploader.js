@@ -125,7 +125,7 @@ const PhotoUploader = ({ onImageChange, currentImage }) => {
               src={currentImage}
               alt='Profile'
               fill
-              classname='object-cover'
+              className='object-cover'
             />
             {isHovered && (
               <div className='profile-img-hover'>
