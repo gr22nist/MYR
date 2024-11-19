@@ -1,30 +1,36 @@
 import { useState, useCallback } from 'react';
 
 export const useIMEInput = (initialValue = '', onChange) => {
-  const [composing, setComposing] = useState(false);
-  const [internalValue, setInternalValue] = useState(initialValue);
+  const [isComposing, setIsComposing] = useState(false);
+  const [value, setValue] = useState(initialValue);
 
   const handleChange = useCallback((e) => {
     const newValue = e.target.value;
-    setInternalValue(newValue);
-    if (!composing) {
-      onChange(e);
+    setValue(newValue);
+    
+    if (!isComposing) {
+      onChange(newValue);
     }
-  }, [composing, onChange]);
+  }, [isComposing, onChange]);
 
   const handleCompositionStart = useCallback(() => {
-    setComposing(true);
+    setIsComposing(true);
   }, []);
 
   const handleCompositionEnd = useCallback((e) => {
-    setComposing(false);
-    onChange(e);
+    setIsComposing(false);
+    onChange(e.target.value);
   }, [onChange]);
 
+  const updateValue = useCallback((newValue) => {
+    setValue(newValue);
+  }, []);
+
   return {
-    value: internalValue,
+    value,
     onChange: handleChange,
     onCompositionStart: handleCompositionStart,
     onCompositionEnd: handleCompositionEnd,
+    updateValue
   };
 };
