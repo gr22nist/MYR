@@ -27,7 +27,8 @@ const DateRange = ({
   const handleCurrentChange = () => {
     const newIsCurrent = !isCurrent;
     setIsCurrent(newIsCurrent);
-    validateAndUpdate(startDate, endDate, newIsCurrent);
+    setEndDate('');
+    validateAndUpdate(startDate, '', newIsCurrent);
   };
 
   const validateAndUpdate = (start, end, current) => {
@@ -47,32 +48,38 @@ const DateRange = ({
   };
 
   return (
-    <div className='date-range-group'>
-      <input
-        type='text'
-        value={startDate}
-        onChange={handleStartDateChange}
-        placeholder='YYYY.MM'
-        className='date-range-input'
-      />
-      <span className='date-range-separator'>-</span>
-      <input
-        type='text'
-        value={isCurrent ? '' : endDate}
-        onChange={handleEndDateChange}
-        placeholder='YYYY.MM'
-        className='date-range-input'
-        disabled={isCurrent}
-      />
-      <label className='date-range-current'>
+    <div className="date-range-container items-center">
+      <div className="date-range-input-group">
         <input
-          type='checkbox'
-          checked={isCurrent}
-          onChange={handleCurrentChange}
+          type="text"
+          value={startDate}
+          onChange={handleStartDateChange}
+          placeholder="YYYY.MM"
+          className="date-range-input"
         />
-        <span>현재</span>
-      </label>
-      {errorMessage && <p className='date-range-error'>{errorMessage}</p>}
+        <span className="date-range-separator">-</span>
+        <input
+          type="text"
+          value={isCurrent ? '현재' : endDate}
+          onChange={handleEndDateChange}
+          placeholder="YYYY.MM"
+          className="date-range-input"
+          disabled={isCurrent}
+        />
+      </div>
+      <div className="date-range-checkbox-group">
+        <label className="date-range-checkbox-wrapper">
+          <input
+            type="checkbox"
+            checked={isCurrent}
+            onChange={handleCurrentChange}
+            className="date-range-checkbox"
+          />
+          <span className="date-range-checkbox-custom"></span>
+          <span className="date-range-checkbox-label">현재</span>
+        </label>
+      </div>
+      {errorMessage && <p className="date-range-error">{errorMessage}</p>}
     </div>
   );
 };

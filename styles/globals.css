@@ -416,56 +416,86 @@
   /* DateRangeInput Styles */
   @layer components {
     .date-range-container {
-      @apply flex-cols lg:flex-row gap-2 lg:w-auto w-full flex-shrink-0;
+      @apply flex justify-between gap-2 w-full;
     }
 
     .date-range-input-group {
-      @apply flex-base gap-2;
+      @apply flex items-center gap-1;
     }
 
     .date-range-input {
-      @apply w-24 flex-shrink-0;
-    }
-
-    .date-range-input-current {
-      @apply opacity-100;
+      @apply w-[80px] px-2 py-1.5 text-sm border rounded-lg
+             focus:ring-2 focus:ring-blue-500 focus:border-transparent
+             transition-all duration-200;
     }
 
     .date-range-separator {
-      @apply text-mono-66;
+      @apply text-gray-400 mx-1;
     }
 
-    .date-range-checkbox-label {
-      @apply whitespace-nowrap flex-shrink-0;
+    .date-range-checkbox-group {
+      @apply flex items-center justify-end ml-auto;
+    }
+
+    /* 체크박스 커스텀 스타일 */
+    .date-range-checkbox-wrapper {
+      @apply flex items-center justify-center;
     }
 
     .date-range-checkbox {
-      @apply h-5 w-5 rounded border-mono-cc text-mono-66 focus:ring-mono-66;
+      @apply absolute opacity-0 w-0 h-0;
     }
 
-
-    .date-range-checkbox-text {
-      @apply text-small text-mono-66;
+    .date-range-checkbox-custom {
+      @apply flex items-center justify-center w-5 h-5 
+             border-2 rounded-md cursor-pointer
+             transition-all duration-200
+             border-gray-300 hover:border-blue-500;
     }
 
-    .date-range-status-group {
-      @apply flex gap-2;
+    .date-range-checkbox:checked + .date-range-checkbox-custom {
+      @apply bg-blue-500 border-blue-500;
     }
 
-    .date-range-status-button {
-      @apply px-2 rounded-full text-xs font-bold;
+    .date-range-checkbox:checked + .date-range-checkbox-custom:after {
+      content: '';
+      @apply absolute w-2 h-3.5 border-r-2 border-b-2 border-white
+             transform rotate-45 -translate-y-[2px];
     }
 
-    .date-range-status-button-active {
-      @apply btn-accent;
+    .date-range-checkbox-label {
+      @apply ml-2 text-sm text-gray-600 cursor-pointer select-none
+             whitespace-nowrap;
     }
 
-    .date-range-status-button-inactive {
-      @apply btn-inactive;
+    /* 반응형 조정 */
+    @media (max-width: 640px) {
+      .date-range-container {
+        @apply flex-row items-start;
+      }
+      
+      .date-range-input-group {
+        @apply flex-[2_2_0%];
+      }
+      
+      .date-range-checkbox-group {
+        @apply flex-[1_1_0%] justify-end;
+      }
     }
 
-    .date-range-error {
-      @apply text-red-500 text-xs mt-1;
+    /* 모바일 최적화 */
+    @media (max-width: 480px) {
+      .date-range-container {
+        @apply flex-nowrap;
+      }
+      
+      .date-range-input {
+        @apply text-sm px-1;
+      }
+      
+      .date-range-separator {
+        @apply mx-0.5;
+      }
     }
   }
 
@@ -656,16 +686,45 @@
 }
 
 .graduation-status-group {
-  @apply flex gap-2 lg:mt-0 mt-2 lg:w-auto w-full;
+  @apply inline-flex items-center rounded-lg bg-gray-100 p-1 
+         shadow-sm w-auto flex-shrink-0;
 }
 
 .graduation-status-btn {
-  @apply w-12 h-12 px-3 py-1 text-xs rounded-full transition-colors
-         hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply relative min-w-[4.5rem] px-3 py-2 text-xs font-medium
+         transition-all duration-200 ease-in-out
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+         disabled:cursor-not-allowed disabled:opacity-50
+         rounded-md;
+}
+
+.graduation-status-btn:not(.active) {
+  @apply text-gray-700 hover:text-gray-900 hover:bg-gray-200/70;
 }
 
 .graduation-status-btn.active {
-  @apply bg-blue-500 text-white hover:bg-blue-600;
+  @apply bg-white text-blue-600 shadow-sm
+         transform scale-[1.02] font-semibold;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 640px) {
+  .graduation-status-group {
+    @apply w-full justify-center;
+  }
+  
+  .graduation-status-btn {
+    @apply flex-1 min-w-0 text-center justify-center;
+  }
+}
+
+/* 애니메이션 효과 */
+.graduation-status-btn {
+  @apply transform transition-transform duration-100;
+}
+
+.graduation-status-btn:active {
+  @apply scale-95;
 }
 
 .resume-item-title {
@@ -674,4 +733,22 @@
 
 .action-buttons {
   @apply flex-base gap-2;
+}
+
+/* Graduation Status */
+.graduation-status-container {
+  @apply flex flex-col lg:flex-row items-start lg:items-center gap-4 mt-4 lg:mt-0;
+}
+
+.graduation-status-group {
+  @apply flex gap-2;
+}
+
+.graduation-status-btn {
+  @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+         hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+}
+
+.graduation-status-btn.active {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
 }
