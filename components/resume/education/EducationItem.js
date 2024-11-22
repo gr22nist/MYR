@@ -42,6 +42,13 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
       appear
     >
       <div ref={nodeRef} className={`resume-item-container ${className}`}>
+        <ActionButtons 
+          onDelete={() => onDelete(education.id)} 
+          isDeletable={isDeletable} 
+          mode='item'
+          isSubItem={isSubItem}
+          dragHandleProps={dragHandleProps}
+        />
         <div className='resume-item-header'>
           <div className='resume-item-title'>
             <div className='resume-item-label-container'>
@@ -75,13 +82,6 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
               </div>
             </div>
           </div>
-          <ActionButtons 
-            onDelete={() => onDelete(education.id)} 
-            isDeletable={isDeletable} 
-            mode='item'
-            isSubItem={isSubItem}
-            dragHandleProps={dragHandleProps}
-          />
         </div>
         {isExpanded && (
           <>

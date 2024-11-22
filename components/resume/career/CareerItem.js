@@ -58,15 +58,15 @@ const CareerItem = React.memo(({
       appear
     >
       <div ref={nodeRef} className={`resume-item-container ${className}`}>
+        <ActionButtons 
+          onDelete={() => onDelete(career.id)} 
+          isDeletable={isDeletable} 
+          mode='item'
+          isSubItem={isSubItem}
+          dragHandleProps={dragHandleProps}
+          className='action-buttons'
+        />
         <div className='resume-item-header'>
-          <ActionButtons 
-            onDelete={() => onDelete(career.id)} 
-            isDeletable={isDeletable} 
-            mode='item'
-            isSubItem={isSubItem}
-            dragHandleProps={dragHandleProps}
-            className='action-buttons'
-          />
           <div className='resume-item-title'>
             <div className='resume-item-label-container'>
               <FloatingLabelInput

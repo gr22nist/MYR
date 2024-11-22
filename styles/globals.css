@@ -416,7 +416,7 @@
   /* DateRangeInput Styles */
   @layer components {
     .date-range-container {
-      @apply flex justify-between gap-2 w-full;
+      @apply flex gap-2 w-full;
     }
 
     .date-range-input-group {
@@ -424,8 +424,8 @@
     }
 
     .date-range-input {
-      @apply w-[80px] px-2 py-1.5 text-sm border rounded-lg
-             focus:ring-2 focus:ring-blue-500 focus:border-transparent
+      @apply w-[84px] px-2 py-1.5 text-sm border rounded
+             focus:ring-1 focus:ring-mono-66 focus:border-transparent
              transition-all duration-200;
     }
 
@@ -434,7 +434,7 @@
     }
 
     .date-range-checkbox-group {
-      @apply flex items-center justify-end ml-auto;
+      @apply flex items-center;
     }
 
     /* 체크박스 커스텀 스타일 */
@@ -501,7 +501,7 @@
 
   /* Resume Item Styles */
   .resume-item-container {
-    @apply flex-cols gap-4 p-4 lg:p-6 bg-white rounded-lg;
+    @apply flex-cols gap-4 px-2 lg:px-4 bg-white rounded-lg;
   }
 
   .resume-item-header {
@@ -525,7 +525,7 @@
   }
 
   .date-range-container {
-    @apply flex-cols lg:flex-row gap-2 lg:w-auto w-full flex-shrink-0;
+    @apply flex-cols lg:flex-row gap-2 lg:w-auto w-full;
   }
 
   .action-buttons {
@@ -587,7 +587,7 @@
 }
 @layer components {
   .action-btns {
-    @apply flex-between;
+    @apply flex justify-end gap-2;
   }
   
   .export-btn, .print-btn {
@@ -686,20 +686,19 @@
 }
 
 .graduation-status-group {
-  @apply inline-flex items-center rounded-lg bg-gray-100 p-1 
+  @apply inline-flex items-center rounded-full bg-mono-f5 p-1 
          shadow-sm w-auto flex-shrink-0;
 }
 
 .graduation-status-btn {
-  @apply relative min-w-[4.5rem] px-3 py-2 text-xs font-medium
+  @apply min-w-20 px-2 py-1 text-xs font-medium
          transition-all duration-200 ease-in-out
-         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
          disabled:cursor-not-allowed disabled:opacity-50
          rounded-md;
 }
 
 .graduation-status-btn:not(.active) {
-  @apply text-gray-700 hover:text-gray-900 hover:bg-gray-200/70;
+  @apply text-mono-66 hover:bg-mono-dd;
 }
 
 .graduation-status-btn.active {
@@ -746,9 +745,9 @@
 
 .graduation-status-btn {
   @apply px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
-         hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+         hover:bg-mono-dd;
 }
 
 .graduation-status-btn.active {
-  @apply bg-blue-500 text-white hover:bg-blue-600;
+  @apply bg-foreground text-white hover:bg-primary-light;
 }
