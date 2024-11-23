@@ -3,13 +3,12 @@ import dynamic from 'next/dynamic';
 import Profile from '@/components/resume/profile/Profile';
 import UserInfoForm from '@/components/resume/userInfo/UserInfoForm';
 import { useResumeActions } from '@/hooks/useResumeActions';
-import FloatingControls from '@/components/common/actions/FloatingControls';
 import CustomForm from '@/components/resume/custom/CustomForm';
 import useResumeSections from '@/hooks/useResumeSections';
 import SkeletonLoader from '@/components/common/SkeletonLoader';
 import ResetModal from '@/components/common/actions/ResetModal';
-import DataActions from '@/components/common/actions/DataActions';
 import useSectionOrderStore from '@/store/sectionOrderStore';
+import TopActions from '@/components/common/actions/TopActions';
 import { exportAllData, importData } from '@/utils/indexedDB';
 
 const DynamicSortableSectionList = dynamic(() => import('@/components/common/dnd/SortableSectionList'), {
@@ -148,9 +147,12 @@ const Resume = () => {
 
   return (
     <div className='layout-container'>
-      <DataActions 
-        onExport={handleExport} 
+      <TopActions 
+        onExport={handleExport}
         onImport={handleImport}
+        onReset={handleResetClick}
+        onToggleAllSections={toggleAllSections}
+        areAllSectionsExpanded={areAllSectionsExpanded}
         dataType='이력서'
       />
       <section className='layout-section'>
@@ -169,11 +171,6 @@ const Resume = () => {
           isOpen={isResetModalOpen}
           onClose={() => setIsResetModalOpen(false)}
           onConfirm={handleConfirmReset}
-        />
-        <FloatingControls 
-          onReset={handleResetClick}
-          onToggleAllSections={toggleAllSections}
-          areAllSectionsExpanded={areAllSectionsExpanded}
         />
       </section>
     </div>
