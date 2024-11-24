@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import { exportAllData } from '@/utils/indexedDB';
 import ResumePreview from '@/components/preview/ResumePreview';
 import { decryptData } from '@/utils/cryptoUtils';
-import Link from 'next/link';
 import { useReactToPrint } from 'react-to-print';
+import PreviewActions from '@/components/common/actions/PreviewActions';
 
 const PreviewPage = () => {
   const router = useRouter();
@@ -110,15 +110,7 @@ const PreviewPage = () => {
 
   return (
     <div className="layout-container print:m-0 print:p-0">
-      <div className="action-btns print:hidden">
-        <Link href="/resume" className="back-btn">
-          돌아가기
-        </Link>
-        <button onClick={handlePrint} className="print-btn">
-          인쇄하기
-        </button>
-      </div>
-      
+      <PreviewActions onPrint={handlePrint} />
       <section className="layout-section print:p-0 print:bg-none" ref={componentRef}>
         {resumeData ? (
           <ResumePreview resumeData={resumeData} />

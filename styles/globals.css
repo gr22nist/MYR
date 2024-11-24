@@ -760,22 +760,34 @@
   @apply flex justify-between items-center gap-4;
 }
 
-.top-actions-left {
-  @apply flex items-center gap-4;
+.view-btns, .data-manage-btns {
+  @apply flex items-center gap-2;
 }
 
-.top-actions-right {
-  @apply flex items-center;
+.action-btn {
+  @apply flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200;
 }
 
-/* 모바일 대응 */
+.action-btn.danger {
+  @apply text-red-500 hover:bg-red-50;
+}
+
 @media (max-width: 768px) {
   .top-actions-group {
     @apply flex-col gap-4;
   }
   
-  .top-actions-left,
-  .top-actions-right {
+  .view-btns, .data-manage-btns {
     @apply w-full justify-between;
+  }
+}
+
+.preview-btns {
+  @apply flex items-center gap-2 w-full justify-end;
+}
+
+@media (max-width: 768px) {
+  .preview-btns {
+    @apply justify-between;
   }
 }

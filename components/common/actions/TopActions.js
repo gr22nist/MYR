@@ -1,8 +1,7 @@
 import React from 'react';
 import AutoSaveIndicator from '@/components/common/AutoSaveIndicator';
-import ExportAction from './ExportAction';
-import ImportAction from './ImportAction';
-import QuickBtns from './QuickBtns';
+import ViewButtons from './ViewButtons';
+import DataManageButtons from './DataManageButtons';
 
 const TopActions = ({ 
   onExport, 
@@ -15,20 +14,22 @@ const TopActions = ({
   return (
     <div className='top-actions'>
       <div className='top-actions-group'>
-        <div className='top-actions-left'>
-          <AutoSaveIndicator />
-          <div className='data-btns'>
-            <ExportAction onExport={onExport} dataType={dataType} />
-            <ImportAction onImport={onImport} dataType={dataType} />
-          </div>
-        </div>
-        <div className='top-actions-right'>
-          <QuickBtns 
-            onReset={onReset}
-            onToggleAllSections={onToggleAllSections}
-            areAllSectionsExpanded={areAllSectionsExpanded}
-          />
-        </div>
+        {/* 왼쪽: 상태 표시 */}
+        <AutoSaveIndicator />
+        
+        {/* 중앙: 보기 관련 버튼 */}
+        <ViewButtons 
+          onToggleAllSections={onToggleAllSections}
+          areAllSectionsExpanded={areAllSectionsExpanded}
+        />
+
+        {/* 오른쪽: 데이터 관리 */}
+        <DataManageButtons 
+          onExport={onExport}
+          onImport={onImport}
+          onReset={onReset}
+          dataType={dataType}
+        />
       </div>
     </div>
   );
