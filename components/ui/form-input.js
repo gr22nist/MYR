@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "./input";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,8 @@ const FormInput = React.forwardRef(({
   onKeyDown,
   ...props 
 }, ref) => {
+  const [isFocused, setIsFocused] = useState(false);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && onEnterPress) {
       e.preventDefault();
@@ -21,7 +23,7 @@ const FormInput = React.forwardRef(({
   };
 
   return (
-    <div className="w-full space-y-2">
+    <div className="custom-container">
       {label && (
         <label 
           htmlFor={id}
@@ -41,9 +43,15 @@ const FormInput = React.forwardRef(({
           "focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           error ? "border-red-500 focus:ring-red-500" : "border-gray-200",
-          className
+          className,
+          "transition-all duration-200",
+          isFocused && "ring-2 ring-primary/20",
+          !error && props.value && "ring-2 ring-green-500/20",
+          error && "ring-2 ring-red-500/20"
         )}
         onKeyDown={handleKeyDown}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         {...props}
       />
       {error && (

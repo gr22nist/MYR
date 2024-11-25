@@ -4,7 +4,13 @@ import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } fro
 import PropTypes from 'prop-types';
 import SortableItem from '@/components/common/dnd/SortableItem';
 import TagButtons from '@/components/common/TagButtons';
-import ModalComponent from '@/components/common/ModalComponent';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import UserInfoItem from './UserInfoItem';
 import AddressInput from './inputs/AddressInput';
 import BirthDateInput from './inputs/BirthDateInput';
@@ -210,6 +216,42 @@ const UserInfoForm = () => {
     />
   )), [items, draggedItem, handleRemoveItem, setActiveField]);
 
+  const renderFieldModal = () => {
+    if (!activeField) return null;
+    const currentItem = items.find(item => item.id === activeField.id);
+    const initialValue = currentItem ? currentItem.value : null;
+    const fieldComponent = fieldComponents[activeField.type](initialValue);
+
+    return (
+      <Dialog open={!!activeField} onOpenChange={() => setActiveField(null)}>
+        <DialogContent className="max-w-[340px] sm:max-w-[400px] p-6 gap-6">
+          <DialogHeader className="space-y-3">
+            <DialogTitle className="text-xl font-semibold">
+              {typeToKorean[activeField.type] || '정보 입력'}
+            </DialogTitle>
+          </DialogHeader>
+          {fieldComponent}
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  const renderCustomModal = () => (
+    <Dialog open={isCustomModalOpen} onOpenChange={() => setIsCustomModalOpen(false)}>
+      <DialogContent className="flex flex-col max-w-[340px] sm:max-w-[400px] p-6 gap-6">
+        <DialogHeader className="space-y-4">
+          <DialogTitle className="text-xl font-semibold">
+            개인정보 자유 서식
+          </DialogTitle>
+        </DialogHeader>
+        <CustomInput 
+          onChange={(title, value) => handleFieldChange('custom', { title, value })} 
+          onClose={() => setIsCustomModalOpen(false)}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+
   if (isLoading) {
     return null;
   }
@@ -233,20 +275,8 @@ const UserInfoForm = () => {
         </DndContext>
       )}
 
-      <ModalComponent isOpen={!!activeField} onClose={() => setActiveField(null)}>
-        {activeField && (() => {
-          const currentItem = items.find(item => item.id === activeField.id);
-          const initialValue = currentItem ? currentItem.value : null;
-          return fieldComponents[activeField.type](initialValue);
-        })()}
-      </ModalComponent>
-
-      <ModalComponent isOpen={isCustomModalOpen} onClose={() => setIsCustomModalOpen(false)}>
-        <CustomInput 
-          onChange={(title, value) => handleFieldChange('custom', { title, value })} 
-          onClose={() => setIsCustomModalOpen(false)}
-        />
-      </ModalComponent>
+      {renderFieldModal()}
+      {renderCustomModal()}
     </div>
   );
 };

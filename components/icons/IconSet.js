@@ -244,3 +244,25 @@ export const HashBtn = ({
     <path d="M10.4199 13.42H13.2599L13.5799 10.58H10.7399L10.4199 13.42Z" fill=""/>
   </Icon>
 );
+
+export const SaveIcon = ({
+  title,
+  width = 24,
+  height = 24,
+  viewBox = "0 0 24 24",
+  ...props
+}) => (
+  <Icon title={title} width={width} height={height} viewBox={viewBox} {...props}>
+    <path 
+      d='M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4' 
+      fill='none' 
+      strokeLinecap='round' 
+      strokeLinejoin='round' 
+      strokeWidth='2' 
+      stroke='currentColor'
+    />
+  </Icon>
+);
+
+
+

@@ -1,5 +1,6 @@
 import React from 'react';
 import useGlobalStore from '@/store/globalStore';
+import { ExportBtn } from '@/components/icons/IconSet';
 
 const ExportAction = ({ onExport, dataType }) => {
   const { showToast } = useGlobalStore();
@@ -22,8 +23,9 @@ const ExportAction = ({ onExport, dataType }) => {
   };
 
   return (
-    <button onClick={handleExport} className='export-btn'>
-      내보내기
+    <button onClick={handleExport} className='action-btn'>
+      <ExportBtn className='btn-icon' />
+      <span>내보내기</span>
     </button>
   );
 };

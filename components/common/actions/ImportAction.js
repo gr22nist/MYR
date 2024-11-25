@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ModalComponent from '@/components/common/ModalComponent';
 import useGlobalStore from '@/store/globalStore';
+import { ImportBtn } from '@/components/icons/IconSet';
 
 const ImportAction = ({ onImport, dataType }) => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -27,8 +28,9 @@ const ImportAction = ({ onImport, dataType }) => {
 
   return (
     <>
-      <button onClick={() => setIsImportModalOpen(true)} className='import-btn'>
-        가져오기
+      <button onClick={() => setIsImportModalOpen(true)} className='action-btn'>
+        <ImportBtn className='btn-icon' />
+        <span>가져오기</span>
       </button>
       <ModalComponent isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)}>
         <h2 className='text-xl font-bold mb-4'>{dataType} 데이터 가져오기</h2>

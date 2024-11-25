@@ -8,9 +8,9 @@ const Button = ({ children, onClick, disabled, className, ...props }) => {
       className={`
         px-4 py-2 rounded font-medium text-white transition-all duration-300 ease-in-out
         ${disabled
-          ? 'bg-gray-400 cursor-not-allowed'
-          : 'bg-blue-500 hover:bg-blue-600 active:bg-blue-700'}
-        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+          ? 'bg-mono-99 cursor-not-allowed'
+          : 'bg-primary hover:bg-primary/90 active:bg-primary/95'}
+        focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50
         ${className}
       `}
       {...props}
