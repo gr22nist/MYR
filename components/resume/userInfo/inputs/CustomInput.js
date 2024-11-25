@@ -41,16 +41,12 @@ const CustomInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div className='custom-container'>
       <FormInput
-        label={
-          <div className="flex justify-between items-center">
-            <span>제목</span>
-            {confirmedValues.title && (
-              <span className="text-sm text-gray-500">
-                {confirmedValues.title}
-              </span>
-            )}
+        label={confirmedValues.title && (
+          <div className="user-info-input-label">
+            <span>기존 제목:</span>
+            <span>{confirmedValues.title}</span>
           </div>
-        }
+        )}
         id='customTitle'
         value={title}
         onChange={handleTitleChange}
@@ -58,16 +54,12 @@ const CustomInput = ({ onChange, onClose, initialValue }) => {
         placeholder='제목을 입력하세요'
       />
       <FormInput
-        label={
-          <div className="flex justify-between items-center">
-            <span>내용</span>
-            {confirmedValues.value && (
-              <span className="text-sm text-gray-500">
-                {confirmedValues.value}
-              </span>
-            )}
+        label={confirmedValues.value && (
+          <div className="user-info-input-label">
+            <span>기존 내용:</span>
+            <span>{confirmedValues.value}</span>
           </div>
-        }
+        )}
         id='customValue'
         value={value}
         onChange={handleValueChange}

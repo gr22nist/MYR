@@ -100,16 +100,12 @@ const BirthDateInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div>
       <FormInput
-        label={
-          <div className="flex flex-col items-center">
-            <span>생년월일</span>
-            {confirmedValue && (
-              <span className="text-sm text-gray-500">
-                기존 입력값:{confirmedValue}
-              </span>
-            )}
+        label={confirmedValue && (
+          <div className="user-info-input-label">
+            <span>기존 입력값:</span>
+            <span>{confirmedValue}</span>
           </div>
-        }
+        )}
         id='birthDate'
         value={birthDate}
         onChange={handleChange}

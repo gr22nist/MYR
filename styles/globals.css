@@ -96,11 +96,11 @@
 /* LAYOUT STYLES */
 @layer components {
   .main-container {
-    @apply bg-mono-ee py-8;
+    @apply bg-mono-ee pb-8;
   }
 
   .layout-container {
-    @apply layout flex-cols gap-4 py-4 mt-8 transform-gpu;
+    @apply layout flex-cols gap-4 transform-gpu;
   }
 
   .layout-section {
@@ -213,7 +213,7 @@
     }
   
     .btn-icon {
-      @apply fill-secondary-dark hover:fill-primary-light animation hover:rotate-180;
+      @apply fill-secondary-dark hover:fill-primary-light animation hover:scale-110;
     }
   }
   
@@ -226,10 +226,6 @@
 
   .drag-item {
     @apply cursor-grab active:cursor-grabbing;
-  }
-
-  .btn-rotate {
-    @apply transform transition-transform animation hover:rotate-180;
   }
 
   /* Skeleton Loading Styles */
@@ -753,41 +749,73 @@
 }
 
 .top-actions {
-  @apply sticky top-[72px] z-50 bg-white/90 backdrop-blur-sm py-4 px-6 shadow-sm;
+  @apply sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm w-full;
 }
 
 .top-actions-group {
-  @apply flex justify-between items-center gap-4;
-}
-
-.view-btns, .data-manage-btns {
-  @apply flex items-center gap-2;
+  @apply layout flex items-center justify-between gap-2 py-3 px-4;
 }
 
 .action-btn {
-  @apply flex items-center gap-2 px-4 py-2 rounded-md transition-all duration-200;
+  @apply flex items-center gap-2 px-3 py-2 rounded-md text-sm 
+         hover:bg-gray-100 transition-colors duration-200;
 }
 
+.action-btn .btn-icon {
+  @apply w-5 h-5;
+}
+
+.action-btn span {
+  @apply hidden md:inline; /* 모바일에서는 텍스트 숨김 */
+}
+
+/* 버튼 그룹 스타일링 */
+.view-btns, .data-manage-btns {
+  @apply flex items-center gap-1;
+}
+
+/* 위험 버튼 (초기화 등) */
 .action-btn.danger {
-  @apply text-red-500 hover:bg-red-50;
+  @apply text-red-600 hover:bg-red-50;
 }
 
+/* 모바일 최적화 */
 @media (max-width: 768px) {
   .top-actions-group {
-    @apply flex-col gap-4;
+    @apply py-2 px-3 gap-1;
   }
   
-  .view-btns, .data-manage-btns {
-    @apply w-full justify-between;
+  .action-btn {
+    @apply px-2 py-1.5;
   }
 }
 
-.preview-btns {
-  @apply flex items-center gap-2 w-full justify-end;
+.btn-icon {
+  @apply transition-transform duration-300;
 }
 
-@media (max-width: 768px) {
-  .preview-btns {
-    @apply justify-between;
-  }
+.btn-icon:hover {
+  @apply scale-110; /* 180도 회전 대신 살짝 커지는 효과 */
+}
+
+.action-btn:active .btn-icon {
+  @apply scale-95; /* 클릭시 살짝 작아지는 효과 */
+}
+
+.user-info-input-label {
+  @apply flex justify-between bg-accent-light p-2 rounded-md text-background items-center gap-1;
+}
+
+.custom-container {
+  @apply flex flex-col gap-4;
+}
+
+.error-message {
+  @apply transition-all duration-200;
+  @apply transform-gpu;
+  @apply opacity-0 -translate-y-1;
+}
+
+.error-message.show {
+  @apply opacity-100 translate-y-0;
 }

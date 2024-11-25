@@ -22,7 +22,11 @@ const EmailInput = ({ onChange, onClose, initialValue }) => {
 
   const handleChange = useCallback((value) => {
     setEmail(value);
-    setError(validateEmail(value) ? '' : '유효한 이메일 주소를 입력해주세요.');
+    if (value && !validateEmail(value)) {
+      setError('유효한 이메일 주소를 입력해주세요.');
+    } else {
+      setError('');
+    }
   }, []);
 
   const handleConfirm = useCallback(() => {
@@ -42,16 +46,12 @@ const EmailInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div>
       <FormInput
-        label={
-          <div className="flex justify-between items-center">
-            <span>이메일</span>
-            {confirmedValue && (
-              <span className="text-sm text-gray-500">
-                {confirmedValue}
-              </span>
-            )}
+        label={confirmedValue && (
+          <div className="user-info-input-label">
+            <span>기존 입력값:</span>
+            <span>{confirmedValue}</span>
           </div>
-        }
+        )}
         id='email'
         type='email'
         value={email}

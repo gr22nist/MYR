@@ -3,13 +3,15 @@ import { FormInput } from '@/components/ui/form-input';
 import Button from '@/components/common/Button';
 
 const SalaryInput = ({ onChange, onClose, initialValue }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [salary, setSalary] = useState('');
+  const [error, setError] = useState('');
   const [confirmedValue, setConfirmedValue] = useState('');
 
   useEffect(() => {
     if (initialValue) {
-      setInputValue(initialValue.replace(/[^0-9]/g, ''));
+      setSalary(initialValue);
       setConfirmedValue(initialValue);
+      setError('');
     }
   }, [initialValue]);
 
@@ -28,27 +30,27 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
 
   const handleChange = useCallback((value) => {
     const numericValue = value.replace(/[^0-9]/g, '');
-    setInputValue(numericValue);
+    setSalary(numericValue);
   }, []);
 
   const handleConfirm = useCallback(() => {
-    if (inputValue === '') {
+    if (salary === '') {
       setConfirmedValue('');
       onChange('');
       onClose();
       return;
     }
-    const formattedValue = formatSalary(inputValue);
+    const formattedValue = formatSalary(salary);
     setConfirmedValue(formattedValue);
     onChange(formattedValue);
     onClose();
-  }, [inputValue, formatSalary, onChange, onClose]);
+  }, [salary, formatSalary, onChange, onClose]);
 
   const handleEnterPress = useCallback(() => {
-    if (inputValue) {
+    if (salary) {
       handleConfirm();
     }
-  }, [inputValue, handleConfirm]);
+  }, [salary, handleConfirm]);
 
   const handleKeyPress = useCallback((e) => {
     const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'];
@@ -57,33 +59,29 @@ const SalaryInput = ({ onChange, onClose, initialValue }) => {
     }
   }, []);
 
-  const displayValue = inputValue ? inputValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
-
   return (
     <div>
       <FormInput
-        label={
-          <div className="flex justify-between items-center">
-            <span>연봉</span>
-            {confirmedValue && (
-              <span className="text-sm text-gray-500">
-                {confirmedValue}
-              </span>
-            )}
+        label={confirmedValue && (
+          <div className="user-info-input-label">
+            <span>기존 입력값:</span>
+            <span>{confirmedValue}</span>
           </div>
-        }
+        )}
         id='salary'
-        value={displayValue}
+        value={salary}
         onChange={handleChange}
         onKeyDown={handleKeyPress}
         onEnterPress={handleEnterPress}
-        placeholder='단위: 만'
+        placeholder='희망연봉 (만원)'
+        error={error}
+        maxLength={5}
         inputMode="numeric"
         pattern="[0-9]*"
       />
       <Button
         onClick={handleConfirm}
-        disabled={!inputValue}
+        disabled={!!error || !salary}
         className='mt-4 w-full'
       >
         확인

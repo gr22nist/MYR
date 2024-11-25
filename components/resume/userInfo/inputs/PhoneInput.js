@@ -60,22 +60,18 @@ const PhoneInput = ({ onChange, onClose, initialValue }) => {
   return (
     <div>
       <FormInput
-        label={
-          <div className="flex justify-between items-center">
-            <span>연락처</span>
-            {confirmedValue && (
-              <span className="text-sm text-gray-500">
-                {confirmedValue}
-              </span>
-            )}
+        label={confirmedValue && (
+          <div className="user-info-input-label">
+            <span>기존 입력값:</span>
+            <span>{confirmedValue}</span>
           </div>
-        }
+        )}
         id='phone'
         value={phone}
         onChange={handleChange}
         onKeyDown={handleKeyPress}
         onEnterPress={handleEnterPress}
-        placeholder='010-0000-0000'
+        placeholder='01012345678'
         error={error}
         maxLength={13}
         inputMode="numeric"
