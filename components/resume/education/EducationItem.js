@@ -42,6 +42,13 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
       appear
     >
       <div ref={nodeRef} className={`resume-item-container ${className}`}>
+        <ActionButtons 
+          onDelete={() => onDelete(education.id)} 
+          isDeletable={isDeletable} 
+          mode='item'
+          isSubItem={isSubItem}
+          dragHandleProps={dragHandleProps}
+        />
         <div className='resume-item-header'>
           <div className='resume-item-title'>
             <div className='resume-item-label-container'>
@@ -58,26 +65,23 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
                 tooltipMessage='학교명을 꼭 입력해 주세요.'
               />
             </div>
-            <div className='date-status-container'>
-              <DateRange
-                onChange={handleDateChange}
-                initialStartDate={education.startDate || ''}
-                initialEndDate={education.endDate || ''}
-                initialIsCurrent={education.isCurrent || false}
-              />
-              <GraduationStatus
-                status={education.graduationStatus || ''}
-                onChange={handleGraduationStatusChange}
-              />
+            <div className='flex flex-col lg:flex-row w-full gap-4'>
+              <div className='date-range-container'>
+                <DateRange
+                  onChange={handleDateChange}
+                  initialStartDate={education.startDate || ''}
+                  initialEndDate={education.endDate || ''}
+                  initialIsCurrent={education.isCurrent || false}
+                />
+              </div>
+              <div className='graduation-status-container'>
+                <GraduationStatus
+                  status={education.graduationStatus || ''}
+                  onChange={handleGraduationStatusChange}
+                />
+              </div>
             </div>
           </div>
-          <ActionButtons 
-            onDelete={() => onDelete(education.id)} 
-            isDeletable={isDeletable} 
-            mode='item'
-            isSubItem={isSubItem}
-            dragHandleProps={dragHandleProps}
-          />
         </div>
         {isExpanded && (
           <>
@@ -88,7 +92,7 @@ const EducationItem = React.memo(({ education, onEducationChange, onDelete, isDe
               placeholder={PLACEHOLDERS.education.majors}
               spellCheck='false'
               maxLength='100'
-              className='w-full'
+              className='w-full mt-4'
             />
           </>
         )}
