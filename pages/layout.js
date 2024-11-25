@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
   const isResumePage = router.pathname.startsWith('/resume');
   
   return (
-    <div>
+    <>
       <Head>
         <title>누구나 간단하게 작성하는 나의 역사, My력서</title>
         <meta name='description' content='누구나 간단하게 작성하는 나의 역사, My력서' />
@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
         { children }
       </main>
       {!isResumePage && <Footer />}
-    </div>
+    </>
   );
 };
 
